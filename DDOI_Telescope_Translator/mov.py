@@ -1,8 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
-from mxy import OffsetXY
+import DDOI_Telescope_Translator.tel_utils as utils
+from DDOI_Telescope_Translator.mxy import OffsetXY
 
 
 class MoveP1ToP2(TranslatorModuleFunction):
@@ -12,7 +12,7 @@ class MoveP1ToP2(TranslatorModuleFunction):
     SYNOPSIS:
         MoveP1ToP2.execute({'inst_x1': float, 'inst_y1: float,
                             'inst_x2': float, 'inst_y2: float,
-                            'inst': inst name string})
+                            'instrument': inst name string, 'print_only': bool})
 
     DESCRIPTION
         Given the starting pixel coordinates of an object on a
@@ -38,13 +38,46 @@ class MoveP1ToP2(TranslatorModuleFunction):
         2) Display the telescope move required to shift a target at
         pixel (100,200) to the pixel (300,400) without moving the telecope:
 
-            MoveP1ToP2.execute('inst': KPF)
+            MoveP1ToP2.execute('instrument': KPF, 'print_only': True)
 
     SCRIPTS CALLED
         mxy
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/mov
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_inst_x1 = utils.config_param(cfg, 'tel_keys', 'inst_x1')
+        cls.key_inst_y1 = utils.config_param(cfg, 'tel_keys', 'inst_y1')
+        cls.key_inst_x2 = utils.config_param(cfg, 'tel_keys', 'inst_x2')
+        cls.key_inst_y2 = utils.config_param(cfg, 'tel_keys', 'inst_y2')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_inst_x1: {'type': float, 'req': True,
+                              'help': 'The X pixel position of the detector position 1.'},
+            cls.key_inst_y1: {'type': float, 'req': True,
+                              'help': 'The Y pixel position of the detector position 1.'},
+            cls.key_inst_x2: {'type': float, 'req': True,
+                              'help': 'The X pixel position of the detector position 2.'},
+            cls.key_inst_y2: {'type': float, 'req': True,
+                              'help': 'The Y pixel position of the detector position 2.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -67,8 +100,12 @@ class MoveP1ToP2(TranslatorModuleFunction):
 
         cls.coords = {}
         for tel_key in tel_key_list:
-            key_inst = utils.config_param(cfg, 'tel_keys', tel_key)
-            cls.coords[tel_key] = utils.check_float(args, key_inst, logger)
+            if not hasattr(cls, tel_key):
+                key_inst = utils.config_param(cfg, 'tel_keys', tel_key)
+            else:
+                key_inst = getattr(cls, tel_key)
+
+            cls.coords[tel_key] = utils.get_arg_value(args, key_inst, logger)
 
         return True
 
@@ -120,5 +157,3 @@ class MoveP1ToP2(TranslatorModuleFunction):
         :return: None
         """
         return
-
-

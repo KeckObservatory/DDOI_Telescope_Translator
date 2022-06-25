@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 from en import OffsetEastNorth
 
 import ktl
@@ -23,6 +23,29 @@ class OffsetBackFromNod(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/fromsky
     """
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_east_offset = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+        cls.key_north_offset = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+
+        args_to_add = {
+            cls.key_east_offset: {'type': float, 'req': True,
+                                  'help': 'The offset East in arcseconds.'},
+            cls.key_north_offset: {'type': float, 'req': True,
+                                   'help': 'The offset North in arcseconds.'}}
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -53,17 +76,21 @@ class OffsetBackFromNod(TranslatorModuleFunction):
         inst = utils.get_inst_name(args, cls.__name__)
         serv_name = utils.config_param(cfg, 'ktl_serv', inst)
 
-        key_east_offset = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
-        key_north_offset = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+        if not hasattr(cls, 'key_east_offset'):
+            cls.key_east_offset = utils.config_param(cfg, 'ob_keys',
+                                                     'tel_east_offset')
+        if not hasattr(cls, 'key_north_offset'):
+            cls.key_north_offset = utils.config_param(cfg, 'ob_keys',
+                                                      'tel_north_offset')
 
-        kw_nodded_north = utils.config_param(cfg, f'ktl_kw_{inst}', 'noded_north')
-        kw_nodded_east = utils.config_param(cfg, f'ktl_kw_{inst}', 'noded_east')
+        kw_nodded_north = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_north')
+        kw_nodded_east = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_east')
 
         nodded_north = ktl.read(serv_name, kw_nodded_north)
         nodded_east = ktl.read(serv_name, kw_nodded_east)
 
-        OffsetEastNorth.execute({key_east_offset: -1.0 * nodded_east,
-                                 key_north_offset: -1.0 * nodded_north})
+        OffsetEastNorth.execute({cls.key_east_offset: -1.0 * nodded_east,
+                                 cls.key_north_offset: -1.0 * nodded_north})
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -78,5 +105,3 @@ class OffsetBackFromNod(TranslatorModuleFunction):
         :return: None
         """
         return
-
-

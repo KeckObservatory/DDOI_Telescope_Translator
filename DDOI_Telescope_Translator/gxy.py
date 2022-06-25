@@ -1,9 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
-
-import ktl
+import DDOI_Telescope_Translator.tel_utils as utils
 
 
 class OffsetGuiderCoordXY(TranslatorModuleFunction):
@@ -33,6 +31,32 @@ class OffsetGuiderCoordXY(TranslatorModuleFunction):
     """
 
     @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_x_offset = utils.config_param(cfg, 'ob_keys', 'guider_x_offset')
+        cls.key_y_offset = utils.config_param(cfg, 'ob_keys', 'guider_y_offset')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_x_offset: {'type': float, 'req': True,
+                               'help': 'The offset in Guider X offset in pixels.'},
+            cls.key_y_offset: {'type': float, 'req': True,
+                               'help': 'The offset in Guider Y offset in pixels.'}}
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
+
+    @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
         :param args:  <dict> The OB (or subset) in dictionary form
@@ -47,8 +71,8 @@ class OffsetGuiderCoordXY(TranslatorModuleFunction):
         key_x_offset = utils.config_param(cfg, 'ob_keys', 'guider_x_offset')
         key_y_offset = utils.config_param(cfg, 'ob_keys', 'guider_y_offset')
 
-        cls.x_off = utils.check_float(args, key_x_offset, logger)
-        cls.y_off = utils.check_float(args, key_y_offset, logger)
+        cls.x_off = utils.get_arg_value(args, key_x_offset, logger)
+        cls.y_off = utils.get_arg_value(args, key_y_offset, logger)
 
         return True
 
@@ -90,6 +114,4 @@ class OffsetGuiderCoordXY(TranslatorModuleFunction):
         :return: None
         """
         utils.wait_for_cycle(cfg, cls.serv_name, logger)
-
-
 

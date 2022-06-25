@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 
@@ -22,6 +22,22 @@ class GoToMark(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/gmomark
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        parser = utils.add_inst_arg(parser, cfg)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -81,6 +97,5 @@ class GoToMark(TranslatorModuleFunction):
         :return: None
         """
         utils.wait_for_cycle(cfg, cls.dcs_serv_name, logger)
-
 
 

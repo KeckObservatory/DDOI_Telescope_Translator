@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 
 class GoToBase(TranslatorModuleFunction):
@@ -73,5 +73,7 @@ class GoToBase(TranslatorModuleFunction):
         :return: None
         """
         return
+
+
 
 

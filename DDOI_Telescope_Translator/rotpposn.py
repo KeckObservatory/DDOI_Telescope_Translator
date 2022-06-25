@@ -1,10 +1,11 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 from time import sleep
+
 
 class RotatePhysicalPosAngle(TranslatorModuleFunction):
     """
@@ -35,6 +36,29 @@ class RotatePhysicalPosAngle(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/rotpposn
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_physical_angle')
+
+        args_to_add = {
+            cls.key_rot_angle: {'type': float, 'req': True,
+                                'help': 'Set the physical rotator position angle [deg].'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
+
     @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
@@ -47,13 +71,16 @@ class RotatePhysicalPosAngle(TranslatorModuleFunction):
 
         :return: bool
         """
-        # check for no arguments meaning print value
-        cls.print_only = utils.print_only(args, cfg, 'ob_keys', ['rot_physical_angle'])
+        # check if it is only set to print the current values
+        cls.print_only = args.get('print_only', False)
+
         if cls.print_only:
             return True
 
-        key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_physical_angle')
-        cls.rotator_angle = utils.check_float(args, key_rot_angle, logger)
+        if not hasattr(cls, 'key_rot_angle'):
+            cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_physical_angle')
+
+        cls.rotator_angle = utils.get_arg_value(args, cls.key_rot_angle, logger)
 
         return True
 
@@ -104,5 +131,3 @@ class RotatePhysicalPosAngle(TranslatorModuleFunction):
         ktl.waitfor(f'{kw_rotator_status}=tracking', cls.serv_name, timeout=timeout)
 
         return
-
-

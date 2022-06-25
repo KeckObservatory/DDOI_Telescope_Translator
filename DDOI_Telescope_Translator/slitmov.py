@@ -1,9 +1,11 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
+from DDOI_Telescope_Translator.mxy import OffsetXY
 
-import ktl
+import math
+
 
 
 class MoveAlongSlit(TranslatorModuleFunction):
@@ -11,7 +13,7 @@ class MoveAlongSlit(TranslatorModuleFunction):
     sltmov -- move object along the slit direction in arcsec
 
     SYNOPSIS
-        MoveAlongSlit.execute({'inst_offset_y': float, 'instrument': INST}
+        MoveAlongSlit.execute({'inst_offset_slit': float, 'instrument': INST}
 
     DESCRIPTION
         Move the telescope the given number of arcseconds along the
@@ -27,6 +29,30 @@ class MoveAlongSlit(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/slitmov
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_slit_offset = utils.config_param(cfg, 'ob_keys', 'inst_slit_offset')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_slit_offset: {'type': float, 'req': True,
+                                  'help': 'The number of arcseconds to offset object along the slit.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -54,18 +80,21 @@ class MoveAlongSlit(TranslatorModuleFunction):
 
         :return: None
         """
-        if not hasattr(cls, 'print_only'):
-            raise DDOIPreConditionNotRun(cls.__name__)
+        if not hasattr(cls, 'key_slit_offset'):
+            cls.key_slit_offset = utils.config_param(cfg, 'ob_keys', 'inst_slit_offset')
+
+        slit_offset = utils.get_arg_value(args, cls.key_slit_offset, logger)
+
+        inst = utils.get_inst_name(args, cls.__name__)
+        det_angle = utils.config_param(cfg, f'{inst}_parameters', 'det_angle')
+
+        dx = slit_offset * math.sin(math.radians(det_angle))
+        dy = slit_offset * math.cos(math.radians(det_angle))
 
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
-        key_val = {
-            '': ,
-            '': ,
-            '':
-        }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
-
+        # run mxy with the calculated offsets
+        OffsetXY.execute({'inst_x_offset': dx, 'inst_y_offset': dy, 'inst': inst})
 
         return
 
@@ -82,5 +111,3 @@ class MoveAlongSlit(TranslatorModuleFunction):
         :return: None
         """
         return
-
-

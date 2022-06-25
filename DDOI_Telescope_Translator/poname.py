@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 
@@ -44,6 +44,30 @@ class SetPointingOriginName(TranslatorModuleFunction):
     """
 
     @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_po_name = utils.config_param(cfg, 'ob_keys', 'pointing_origin_name')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_po_name: {'type': str, 'req': True,
+                              'help': 'The name of the pointing origin to select'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
+
+    @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
         :param args:  <dict> The OB (or subset) in dictionary form
@@ -70,14 +94,18 @@ class SetPointingOriginName(TranslatorModuleFunction):
         :return: None
         """
         serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
-        key_po_name = utils.config_param(cfg, 'ob_keys', 'pointing_origin_name')
+        if not hasattr(cls, 'key_po_name'):
+            cls.key_po_name = utils.config_param(cfg, 'ob_keys', 'pointing_origin_name')
 
-        if utils.print_only(args, cfg, 'ob_keys', ['pointing_origin_name']):
-            utils.write_msg(logger, ktl.read(serv_name, key_po_name))
+        # check if it is only set to print the current values
+        if args.get('print_only', False):
+            utils.write_msg(logger, ktl.read(serv_name, cls.key_po_name))
             return
 
+        po_name = utils.get_arg_value(args, cls.key_po_name, logger)
+
         key_val = {
-            'pointing_origin_name': key_po_name,
+            'pointing_origin_name': po_name,
             'pointing_origin_select': 1
         }
         utils.write_to_kw(cfg, serv_name, key_val, logger, cls.__name__)

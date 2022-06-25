@@ -1,10 +1,10 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 from time import sleep
-
-import tel_utils as utils
 
 
 class WaitForTel(TranslatorModuleFunction):
@@ -36,22 +36,44 @@ class WaitForTel(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/wftel
     """
-    def __init__(self):
-        super().__init__()
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        args_to_add = {
+            'auto_resume': {'type': int, 'req': False,
+                            'help': 'The Auto Resume parameter.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
+
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
+        :param args:  <dict> The OB (or subset) in dictionary form
+        :param logger: <DDOILoggerClient>, optional
+            The DDOILoggerClient that should be used. If none is provided,
+            defaults to a generic name specified in the config, by default None
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
 
-        :param args:
-        :param logger:
-        :param cfg:
-        :return:
+        :return: bool
         """
         # max guider exposure
         cls.timeout = utils.config_param(cfg, 'wftl', 'timeout')
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
-        auto_activate = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
+        kw_auto_activate = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
 
         cls.auto_resume = args.get('auto_resume', None)
 
@@ -61,7 +83,7 @@ class WaitForTel(TranslatorModuleFunction):
             utils.write_msg(logger, msg)
             return False
 
-        if ktl.read(cls.serv_name, auto_activate) == 'no':
+        if ktl.read(cls.serv_name, kw_auto_activate) == 'no':
             msg = 'guider not currently active'
             utils.write_msg(logger, msg)
             return False
@@ -71,11 +93,14 @@ class WaitForTel(TranslatorModuleFunction):
     @classmethod
     def perform(cls, args, logger, cfg):
         """
+        :param args:  <dict> The OB (or subset) in dictionary form
+        :param logger: <DDOILoggerClient>, optional
+            The DDOILoggerClient that should be used. If none is provided,
+            defaults to a generic name specified in the config, by default None
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
 
-        :param args: (dict)
-        :param logger:
-        :param cfg:
-        :return:
+        :return: None
         """
         if not hasattr(cls, 'timeout'):
             raise DDOIPreConditionNotRun(cls.__name__)
@@ -88,7 +113,7 @@ class WaitForTel(TranslatorModuleFunction):
 
         # set the value for the current autpause
         if not cls.auto_resume:
-            cls.auto_resume = utils.read_auto_resume_val(cfg, cls.serv_name)
+            cls.auto_resume = serv_auto_resume.read()
 
         if not cls.waited_for_val(cls.timeout, serv_auto_resume, cls.autresum):
             msg = 'timeout waiting for dcs keyword AUTRESUM to increment'
@@ -102,6 +127,16 @@ class WaitForTel(TranslatorModuleFunction):
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
+        """
+        :param args:  <dict> The OB (or subset) in dictionary form
+        :param logger: <DDOILoggerClient>, optional
+            The DDOILoggerClient that should be used. If none is provided,
+            defaults to a generic name specified in the config, by default None
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: None
+        """
         return
 
 

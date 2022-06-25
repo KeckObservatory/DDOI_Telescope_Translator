@@ -1,8 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
-
+import DDOI_Telescope_Translator.tel_utils as utils
 import ktl
 
 
@@ -14,7 +13,7 @@ class SetNodValues(TranslatorModuleFunction):
         SetNodValues.execute({
             'tel_north_offset': float,
             'tel_north_offset': float,
-            'inst': str of instrument name
+            'instrument': str of instrument name
             })
 
     DESCRIPTION
@@ -27,12 +26,12 @@ class SetNodValues(TranslatorModuleFunction):
 
     EXAMPLES
         1) Show current nod params:
-            SetNodValues.execute()
+            SetNodValues.execute({'print_only': True})
 
 
         1) Set east nod to 5 and north nod to 10:
             SetNodValues.execute({'tel_north_offset': 10.0,
-                                  'tel_east_offset': 5.0, 'inst': INST}})
+                                  'tel_east_offset': 5.0, 'instrument': INST}})
 
     KTL SERVICE & KEYWORDS
        servers: instrument
@@ -40,6 +39,33 @@ class SetNodValues(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_nod_north = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+        cls.key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_nod_north: {'type': float, 'req': True,
+                                'help': 'Set the North Nod value [arcseconds]'},
+            cls.key_nod_east: {'type': float, 'req': True,
+                               'help': 'Set the East Nod value [arcseconds]'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -56,17 +82,18 @@ class SetNodValues(TranslatorModuleFunction):
         cls.inst = utils.get_inst_name(args, cls.__name__)
 
         # check if it is only set to print the current values
-        cls.print_only = utils.print_only(
-            args, cfg, 'tel_keys', ['tel_north_offset', 'tel_east_offset'])
+        cls.print_only = args.get('print_only', False)
 
         if cls.print_only:
             return True
 
-        key_nod_north = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
-        key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+        if not hasattr(cls, 'key_nod_north'):
+            cls.key_nod_north = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+        if not hasattr(cls, 'key_nod_north'):
+            cls.key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
 
-        cls.nod_north = utils.check_float(args, key_nod_north, logger)
-        cls.nod_east = utils.check_float(args, key_nod_east, logger)
+        cls.nod_north = utils.get_arg_value(args, cls.key_nod_north, logger)
+        cls.nod_east = utils.get_arg_value(args, cls.key_nod_east, logger)
         
         return True
 
@@ -119,5 +146,3 @@ class SetNodValues(TranslatorModuleFunction):
         :return: None
         """
         return
-
-

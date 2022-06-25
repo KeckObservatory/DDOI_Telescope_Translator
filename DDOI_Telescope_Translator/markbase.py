@@ -1,9 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
-
-import ktl
+import DDOI_Telescope_Translator.tel_utils as utils
 
 
 class MarkBase(TranslatorModuleFunction):

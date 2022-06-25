@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 
@@ -42,6 +42,30 @@ class SetNodEastValue(TranslatorModuleFunction):
     """
 
     @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_nod_east: {'type': float, 'req': True,
+                               'help': 'Set the East Nod value [arcseconds]'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
+
+    @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
         :param args:  <dict> The OB (or subset) in dictionary form
@@ -56,13 +80,15 @@ class SetNodEastValue(TranslatorModuleFunction):
         cls.inst = utils.get_inst_name(args, cls.__name__)
 
         # check if it is only set to print the current values
-        cls.print_only = utils.print_only(args, cfg, 'tel_keys', ['tel_east_offset'])
+        cls.print_only = args.get('print_only', False)
 
         if cls.print_only:
             return True
 
-        key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
-        cls.nod_east = utils.check_float(args, key_nod_east, logger)
+        if not hasattr(cls, 'key_nod_east'):
+            cls.key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+
+        cls.nod_east = utils.get_arg_value(args, cls.key_nod_east, logger)
         
         return True
 
@@ -109,5 +135,3 @@ class SetNodEastValue(TranslatorModuleFunction):
         :return: None
         """
         return
-
-

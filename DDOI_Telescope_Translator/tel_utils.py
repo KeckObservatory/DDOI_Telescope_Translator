@@ -1,10 +1,13 @@
 import sys
 from time import time
+from argparse import ArgumentParser
+
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIInvalidArguments, \
+    DDOIKTLTimeOut, DDOINoInstrumentDefined
+
+from DDOI_Telescope_Translator.wftel import WaitForTel
 
 import ktl
-from ddoitranslatormodule.DDOIExceptions import DDOIInvalidArguments, \
-    DDOIKTLTimeOut, DDOINoInstrumentDefined
-from wftel import WaitForTel
 
 
 def config_param(config, section, param_name):
@@ -32,16 +35,11 @@ def config_param(config, section, param_name):
     return param_val
 
 
-def check_float(args, key, logger):
-    msg = None
-    try:
-        val = float(args[key])
-    except KeyError:
-        msg = f'{key} dictionary keys are required.'
-    except ValueError:
-        msg = f'{key} must be valid float.'
+def get_arg_value(args, key, logger):
+    val = args.get(key, None)
 
-    if msg:
+    if not val:
+        msg = f'{key} argument not defined'
         if logger:
             logger.warn(msg)
         else:
@@ -52,21 +50,33 @@ def check_float(args, key, logger):
     return val
 
 
-def print_only(args, cfg, cfg_section, key_list):
-    """
-    Used to check if no args are provided,  meaning print only.
+def add_args(parser, args_to_add, print_only=False):
+    if print_only:
+        parser.add_argument('--print_only', action='store_true', default=False)
+        args = parser.parse_known_args()
+        if args[0].print_only:
+            return parser
 
-    :param args:
-    :param cfg:
-    :param cfg_section:
-    :param key_list:
-    :return:
-    """
-    for key_name in key_list:
-        if args.get(config_param(cfg, cfg_section, key_name), None):
-            return False
+    for arg_name, arg_info in args_to_add.items():
+        parser.add_argument(f'--{arg_name}', type=arg_info['type'],
+                            required=arg_info['req'], help=arg_info['help'])
 
-    return True
+    return parser
+
+
+def add_bool_arg(parser, name, msg):
+    parser.add_argument(f'--{name}', action='store_true', default=False, help=msg)
+    return parser
+
+
+def add_inst_arg(parser, cfg):
+    insts = config_param(cfg, 'inst_list', 'insts')
+    insts = f'{insts}, {insts.lower()}'
+    inst_set = set(insts.split(', '))
+
+    parser.add_argument("--instrument", type=str, choices=inst_set, required=True,
+                        help="Name of instrument for the translator module.")
+    return parser
 
 
 def check_for_zero_offsets(offset1, offset2, logger):
@@ -138,7 +148,7 @@ def write_msg(logger, msg):
 
 
 def get_inst_name(args, class_name):
-    inst = args.get('inst', None)
+    inst = args.get('instrument', None)
     if not inst:
         msg = f'{class_name} requires instrument named to be defined'
         raise DDOINoInstrumentDefined(msg)

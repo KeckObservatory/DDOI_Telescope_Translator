@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 from time import sleep
 
@@ -29,6 +29,31 @@ class OffsetAzEl(TranslatorModuleFunction):
     """
 
     @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_az_offset = utils.config_param(cfg, 'ob_keys', 'az_offset')
+        cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
+
+        args_to_add = {
+            cls.key_az_offset: {'type': float, 'req': True,
+                                'help': 'The offset in Azimuth in degrees.'},
+            cls.key_el_offset: {'type': float, 'req': True,
+                                'help': 'The offset in Elevation in degrees.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
+
+    @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
         :param args:  <dict> The OB (or subset) in dictionary form
@@ -40,11 +65,13 @@ class OffsetAzEl(TranslatorModuleFunction):
 
         :return: bool
         """
-        key_az_offset = utils.config_param(cfg, 'ob_keys', 'az_offset')
-        key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
+        if not hasattr(cls, 'key_az_offset'):
+            cls.key_az_offset = utils.config_param(cfg, 'ob_keys', 'az_offset')
+        if not hasattr(cls, 'key_el_offset'):
+            cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
 
-        cls.az_off = utils.check_float(args, key_az_offset, logger)
-        cls.el_off = utils.check_float(args, key_el_offset, logger)
+        cls.az_off = utils.get_arg_value(args, cls.key_az_offset, logger)
+        cls.el_off = utils.get_arg_value(args, cls.key_el_offset, logger)
 
         return True
 
@@ -87,6 +114,3 @@ class OffsetAzEl(TranslatorModuleFunction):
         :return: None
         """
         utils.wait_for_cycle(cfg, cls.serv_name, logger)
-
-
-

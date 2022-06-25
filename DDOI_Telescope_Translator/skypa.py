@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun, DDOINotSelectedInstrument
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun, DDOINotSelectedInstrument
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 from time import sleep
@@ -12,7 +12,7 @@ class SetRotSkyPA(TranslatorModuleFunction):
     skypa -- set rotator celestial position angle in position angle mode
 
     SYNOPSIS
-        SetRotSkyPA.execute({'rot_cfg_pa_sky': float, 'inst': str inst,
+        SetRotSkyPA.execute({'rot_cfg_pa_sky': float, 'instrument': str inst,
                              'relative': bool})
 
     DESCRIPTION
@@ -31,17 +31,44 @@ class SetRotSkyPA(TranslatorModuleFunction):
 
     EXAMPLES
         1) Show the current PA:
-            SetRotSkyPA.execute({'inst': INST, 'relative': True})
+            SetRotSkyPA.execute({'instrument': INST, 'relative': True})
 
         2) Set the current PA to 123.45 deg:
-            SetRotSkyPA.execute({'rot_cfg_pa_sky': 123.45, 'inst': INST})
+            SetRotSkyPA.execute({'rot_cfg_pa_sky': 123.45, 'instrument': INST})
 
         2) Change the sky PA by -10 deg:
-            SetRotSkyPA.execute({'rot_cfg_pa_sky': -10.0, 'inst': INST,
+            SetRotSkyPA.execute({'rot_cfg_pa_sky': -10.0, 'instrument': INST,
                                  'relative': True})
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/skypa
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_sky_angle')
+
+        parser = utils.add_inst_arg(parser, cfg)
+        parser = utils.add_bool_arg(parser, 'relative',
+                                    'Rotate relative to the current position.')
+
+        args_to_add = {
+            cls.key_rot_angle: {'type': float, 'req': True,
+                                'help': 'Set the physical rotator position angle [deg].'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
+
     @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
@@ -58,13 +85,16 @@ class SetRotSkyPA(TranslatorModuleFunction):
         cls.relative = args.get('relative', False)
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
-        # check for no arguments meaning print value
-        cls.print_only = utils.print_only(args, cfg, 'ob_keys', ['rot_sky_angle'])
+        # check if it is only set to print the current values
+        cls.print_only = args.get('print_only', False)
+
         if cls.print_only:
             return True
 
-        key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_sky_angle')
-        cls.rotator_angle = utils.check_float(args, key_rot_angle, logger)
+        if not hasattr(cls, 'key_rot_angle'):
+            cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_sky_angle')
+
+        cls.rotator_angle = utils.check_float(args, cls.key_rot_angle, logger)
 
         # confirm INST = the selected instrument
         kw_instrument = utils.config_param(cfg, 'ktl_kw_dcs', 'instrument')
@@ -117,6 +147,4 @@ class SetRotSkyPA(TranslatorModuleFunction):
         timeout = utils.config_param(cfg, 'skypa', 'timeout')
         kw_rot_stat = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_status')
         ktl.waitfor(f'{kw_rot_stat}=8', cls.serv_name, timeout=timeout)
-
-
 

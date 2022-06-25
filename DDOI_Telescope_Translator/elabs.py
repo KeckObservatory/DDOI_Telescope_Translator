@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 
@@ -22,13 +22,35 @@ class MoveToElevation(TranslatorModuleFunction):
 
     EXAMPLES
         1) show the current elevation:
-            python3 elabs.py
+            MoveToElevation.execute({'print_only': True})
 
         2) move the telescope to an elevation of 45 deg:
-            python3 elabs.py {'tel_elevation': 45.0}
+            MoveToElevation.execute({'tel_elevation': 45.0})
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/elabs
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'tel_elevation')
+
+        args_to_add = {
+            cls.key_el_offset: {'type': float, 'req': True,
+                                'help': 'The offset in Elevation in degrees.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -42,12 +64,15 @@ class MoveToElevation(TranslatorModuleFunction):
 
         :return: bool
         """
-        key_el_offset = utils.config_param(cfg, 'ob_keys', 'tel_elevation')
+        # check if it is only set to print the current values
+        cls.print_only = args.get('print_only', False)
+        if cls.print_only:
+            return True
 
-        if key_el_offset in args:
-            cls.el_offset = utils.check_float(args, key_el_offset, logger)
-        else:
-            cls.el_offset = None
+        if not hasattr(cls, 'key_el_offset'):
+            cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'tel_elevation')
+
+        cls.el_offset = utils.get_arg_value(args, cls.key_el_offset, logger)
 
         return True
 
@@ -63,13 +88,13 @@ class MoveToElevation(TranslatorModuleFunction):
 
         :return: None
         """
-        if not hasattr(cls, 'el_offset'):
+        if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
         # only print the elevation
-        if cls.el_offset:
+        if cls.print_only:
             key_elevation = utils.config_param(cfg, 'ob_keys', 'elevation')
             el_value = ktl.read(serv_name, key_elevation)
 
@@ -99,5 +124,4 @@ class MoveToElevation(TranslatorModuleFunction):
         :return: None
         """
         return
-
 

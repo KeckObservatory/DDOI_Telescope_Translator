@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIKTLTimeOut
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 import ktl
 
@@ -27,6 +27,30 @@ class MoveTelescopeFocus(TranslatorModuleFunction):
     adapted from sh script: kss/mosfire/scripts/procs/tel/telfoc
 
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_tel_focus = utils.config_param(cfg, 'ob_keys', 'tel_foc')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_tel_focus: {'type': float, 'req': True,
+                                'help': 'The new value for telescope secondary position.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -56,14 +80,18 @@ class MoveTelescopeFocus(TranslatorModuleFunction):
         """
         serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
         kw_tel_foc = utils.config_param(cfg, 'ktl_kw_dcs', 'telescope_focus')
-        key_tel_focus = utils.config_param(cfg, 'ob_keys', 'tel_foc')
 
-        # only show the focus if no input argument
-        try:
-            focus_move_val = args[key_tel_focus]
-        except KeyError:
+        # check if it is only set to print the current values
+        cls.print_only = args.get('print_only', False)
+
+        if cls.print_only:
             current_focus = ktl.read(serv_name, kw_tel_foc)
             return current_focus
+
+        if not hasattr(cls, 'key_tel_focus'):
+            cls.key_tel_focus = utils.config_param(cfg, 'ob_keys', 'tel_foc')
+
+        focus_move_val = utils.get_arg_value(args, cls.key_tel_focus, logger)
 
         timeout = utils.config_param(cfg, 'telfoc', 'timeout')
 
@@ -95,5 +123,3 @@ class MoveTelescopeFocus(TranslatorModuleFunction):
         :return: None
         """
         return
-
-

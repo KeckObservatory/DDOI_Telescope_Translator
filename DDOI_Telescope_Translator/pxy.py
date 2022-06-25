@@ -1,8 +1,9 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
-from mxy import OffsetXY
+import DDOI_Telescope_Translator.tel_utils as utils
+from DDOI_Telescope_Translator.mxy import OffsetXY
+
 import ktl
 
 
@@ -13,7 +14,7 @@ class MovePixelXY(TranslatorModuleFunction):
     SYNOPSIS
         MovePixelXY.execute({'inst_offset_xpix': float,
                              'inst_offset_ypix': float,
-                             'inst': str of instrument name})
+                             'instrument': str of instrument name})
 
     DESCRIPTION
         Move the telescope a given number of pixels in the "x" and "y"
@@ -27,7 +28,7 @@ class MovePixelXY(TranslatorModuleFunction):
         1) Move the telescope 100 pixels in "x" and -200 in "y":
             MovePixelXY.execute({'inst_offset_xpix': 100.0,
                                  'inst_offset_ypix': -200.0,
-                                 'inst': INST})
+                                 'instrument': INST})
 
         Note that since this is a *telescope* move, the target will
         "move" in the OPPOSITE direction!
@@ -38,6 +39,31 @@ class MovePixelXY(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/pxy
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_xpix')
+        cls.key_y_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_ypix')
+
+        args_to_add = {
+            cls.key_x_offset: {'type': float, 'req': True,
+                               'help': 'The Instrument X offset in pixels.'},
+            cls.key_y_offset: {'type': float, 'req': True,
+                               'help': 'The Instrument Y offset in pixels.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -53,11 +79,13 @@ class MovePixelXY(TranslatorModuleFunction):
         """
         cls.inst = utils.get_inst_name(args, cls.__name__)
 
-        key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_xpix')
-        key_y_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_ypix')
+        if not hasattr(cls, 'key_x_offset'):
+            cls.key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_xpix')
+        if not hasattr(cls, 'key_y_offset'):
+            cls.key_y_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_ypix')
 
-        cls.x_offset = utils.check_float(args, key_x_offset, logger)
-        cls.y_offset = utils.check_float(args, key_y_offset, logger)
+        cls.x_offset = utils.get_arg_value(args, cls.key_x_offset, logger)
+        cls.y_offset = utils.get_arg_value(args, cls.key_y_offset, logger)
 
         return True
 
@@ -103,5 +131,3 @@ class MovePixelXY(TranslatorModuleFunction):
         :return: None
         """
         return
-
-

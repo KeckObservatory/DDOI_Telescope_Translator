@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
 
 class OffsetEastNorth(TranslatorModuleFunction):
@@ -33,6 +33,30 @@ class OffsetEastNorth(TranslatorModuleFunction):
     """
 
     @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_east_offset = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+        cls.key_north_offset = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+
+        args_to_add = {
+            cls.key_east_offset: {'type': float, 'req': True,
+                                  'help': 'The offset East in arcseconds.'},
+            cls.key_north_offset: {'type': float, 'req': True,
+                                   'help': 'The offset North in arcseconds.'}}
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
+
+    @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
         :param args:  <dict> The OB (or subset) in dictionary form
@@ -44,11 +68,15 @@ class OffsetEastNorth(TranslatorModuleFunction):
 
         :return: bool
         """
-        key_east_offset = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
-        key_north_offset = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+        if not hasattr(cls, 'key_east_offset'):
+            cls.key_east_offset = utils.config_param(cfg, 'ob_keys',
+                                                     'tel_east_offset')
+        if not hasattr(cls, 'key_north_offset'):
+            cls.key_north_offset = utils.config_param(cfg, 'ob_keys',
+                                                      'tel_north_offset')
 
-        cls.east_off = utils.check_float(args, key_east_offset, logger)
-        cls.north_off = utils.check_float(args, key_north_offset, logger)
+        cls.east_off = utils.get_arg_value(args, cls.key_east_offset, logger)
+        cls.north_off = utils.get_arg_value(args, cls.key_north_offset, logger)
 
         if utils.check_for_zero_offsets(cls.east_off, cls.north_off, logger):
             return False
@@ -95,6 +123,3 @@ class OffsetEastNorth(TranslatorModuleFunction):
         :return: None
         """
         utils.wait_for_cycle(cfg, cls.serv_name, logger)
-
-
-

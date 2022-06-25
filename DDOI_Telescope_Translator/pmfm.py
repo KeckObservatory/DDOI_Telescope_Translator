@@ -1,7 +1,9 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
+import ktl
 
 class PMFM(TranslatorModuleFunction):
     """
@@ -50,6 +52,26 @@ class PMFM(TranslatorModuleFunction):
     """
 
     @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        args_to_add = {
+            'pmfm': {'type': float, 'req': True,
+                     'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=True)
+
+        return super().add_cmdline_args(parser, cfg)
+
+    @classmethod
     def pre_condition(cls, args, logger, cfg):
         """
         :param args:  <dict> The OB (or subset) in dictionary form
@@ -75,17 +97,29 @@ class PMFM(TranslatorModuleFunction):
 
         :return: None
         """
-        print_only = utils.print_only(args, cfg, 'tel_keys', ['pmfm_nm'])
+        serv_name = utils.config_param(cfg, 'ktl_serv', 'acs')
+        kw_pmfm = utils.config_param(cfg, 'ktl_kw_acs', 'pmfm')
+        if args.get('print_only', False):
+            current_pmfm = ktl.read(serv_name, kw_pmfm)
+            utils.write_msg(f"The current PMFM is {current_pmfm}")
+            return
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        pmfm_new = utils.get_arg_value(args, 'pmfm', logger)
 
         key_val = {
-            '': ,
-            '': ,
-            '':
+            'pmfm': pmfm_new
         }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        utils.write_to_kw(cfg, serv_name, key_val, logger, cls.__name__)
 
+        timeout = utils.config_param(cfg, 'pmfm', 'timeout')
+        try:
+            ktl.waitfor(f'pmfm={pmfm_new}', service=serv_name, timeout=timeout)
+        except ktl.TimeoutException:
+            msg = f'{cls.__name__} current pmfm {ktl.read(serv_name, kw_pmfm)}' \
+                  f',  timeout moving to {pmfm_new}.'
+            if logger:
+                logger.error(msg)
+            raise DDOIKTLTimeOut(msg)
 
         return
 

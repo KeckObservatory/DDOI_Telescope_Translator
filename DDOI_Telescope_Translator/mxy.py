@@ -1,9 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
+import DDOI_Telescope_Translator.tel_utils as utils
 
-import ktl
 import math
 
 
@@ -13,7 +12,7 @@ class OffsetXY(TranslatorModuleFunction):
 
     SYNOPSIS
         OffsetXY.execute({'inst_x_offset': x, 'inst_y_offset': y,
-                          'inst': str of instrument name})
+                          'instrument': str of instrument name})
 
     DESCRIPTION
         Offset the telescope a given number of arcsec in the
@@ -21,13 +20,13 @@ class OffsetXY(TranslatorModuleFunction):
         relative to the current coordinates by default
 
     ARGUMENTS
-        x_offset = offset in the direction parallel with CCD rows [arcsec]
-        y_offset = offset in the direction parallel with CCD columns [arcsec]
+        inst_x_offset = offset in the direction parallel with CCD rows [arcsec]
+        inst_y_offset = offset in the direction parallel with CCD columns [arcsec]
 
     EXAMPLE
         1) Move telecope 10 arcsec along rows and -20 arcsec along columns:
             OffsetXY.execute({'inst_x_offset': 10, 'inst_y_offset': -20,
-            'inst': 'KPF'})
+            'instrument': 'KPF'})
 
         Note that since this is a *telescope* move, the target will
         "move" in the OPPOSITE direction!
@@ -38,6 +37,35 @@ class OffsetXY(TranslatorModuleFunction):
 
     adapted from kss/mosfire/scripts/procs/tel/mxy
     """
+
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <str> filepath, optional
+            File path to the config that should be used, by default None
+
+        :return: <ArgumentParser>
+        """
+        cls.key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
+        cls.key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
+
+        parser = utils.add_inst_arg(parser, cfg)
+
+        args_to_add = {
+            cls.key_x_offset: {'type': float, 'req': True,
+                               'help': 'The offset in the direction parallel '
+                                       'to CCD rows [arcsec]'},
+            cls.key_y_offset: {'type': float, 'req': True,
+                               'help': 'The offset in the direction perpendicular '
+                                       'to CCD columns [arcsec]'}
+        }
+        parser = utils.add_args(parser, args_to_add, print_only=False)
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -54,11 +82,13 @@ class OffsetXY(TranslatorModuleFunction):
         """
         cls.inst = utils.get_inst_name(args, cls.__name__)
 
-        key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
-        key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
+        if not hasattr(cls, 'key_x_offset'):
+            cls.key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
+        if not hasattr(cls, 'key_y_offset'):
+            cls.key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
 
-        cls.x_offset = utils.check_float(args, key_x_offset, logger)
-        cls.y_offset = utils.check_float(args, key_y_offset, logger)
+        cls.x_offset = utils.get_arg_value(args, cls.key_x_offset, logger)
+        cls.y_offset = utils.get_arg_value(args, cls.key_y_offset, logger)
 
         if utils.check_for_zero_offsets(cls.x_offset, cls.y_offset, logger):
             return False
@@ -113,4 +143,3 @@ class OffsetXY(TranslatorModuleFunction):
         det_v = y * math.cos(det_ang) - x * math.sin(det_ang)
 
         return det_u, det_v
-
