@@ -1,11 +1,10 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIDetectorAngleUndefined
 
-import tel_utils as utils
-from mxy import OffsetXY
+from DDOI_Telescope_Translator import tel_utils as utils
+from DDOI_Telescope_Translator.mxy import OffsetXY
 
 import math
-
 
 
 class MoveAlongSlit(TranslatorModuleFunction):

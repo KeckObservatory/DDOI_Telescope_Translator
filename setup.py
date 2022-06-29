@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 # Get some values from the setup.cfg
 
-NAME = 'DDOI_Telescope_Translator'
+NAME = 'ddoi_telescope_translator'
 VERSION = '0.1.1'
 RELEASE = 'dev' not in VERSION
 AUTHOR = "Lucas Fuhrman"
