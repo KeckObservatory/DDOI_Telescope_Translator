@@ -1,8 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import tel_utils as utils
-from mxy import OffsetXY
+import ddoi_telescope_translator.tel_utils as utils
+from ddoi_telescope_translator.mxy import OffsetXY
 
 import ktl
 

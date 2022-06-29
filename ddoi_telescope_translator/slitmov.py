@@ -1,8 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIDetectorAngleUndefined
 
-from DDOI_Telescope_Translator import tel_utils as utils
-from DDOI_Telescope_Translator.mxy import OffsetXY
+from ddoi_telescope_translator import tel_utils as utils
+from ddoi_telescope_translator.mxy import OffsetXY
 
 import math
 

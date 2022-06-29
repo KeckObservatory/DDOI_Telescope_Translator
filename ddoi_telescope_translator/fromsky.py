@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import tel_utils as utils
-from en import OffsetEastNorth
+import ddoi_telescope_translator.tel_utils as utils
+from ddoi_telescope_translator.en import OffsetEastNorth
 
 import ktl
 

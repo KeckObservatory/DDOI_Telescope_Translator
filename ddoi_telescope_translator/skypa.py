@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun, DDOINotSelectedInstrument
 
-import tel_utils as utils
+import ddoi_telescope_translator.tel_utils as utils
 
 from time import sleep
 import ktl
