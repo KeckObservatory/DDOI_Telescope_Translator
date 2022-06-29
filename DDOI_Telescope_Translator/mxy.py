@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import math
 
@@ -11,8 +11,7 @@ class OffsetXY(TranslatorModuleFunction):
     offset telescope in instrument (detector) coordinates
 
     SYNOPSIS
-        OffsetXY.execute({'inst_x_offset': x, 'inst_y_offset': y,
-                          'instrument': str of instrument name})
+        OffsetXY.execute({'inst_offset_x': x, 'inst_offset_y': y})
 
     DESCRIPTION
         Offset the telescope a given number of arcsec in the
@@ -20,13 +19,12 @@ class OffsetXY(TranslatorModuleFunction):
         relative to the current coordinates by default
 
     ARGUMENTS
-        inst_x_offset = offset in the direction parallel with CCD rows [arcsec]
-        inst_y_offset = offset in the direction parallel with CCD columns [arcsec]
+        inst_offset_x = offset in the direction parallel with CCD rows [arcsec]
+        inst_offset_y = offset in the direction parallel with CCD columns [arcsec]
 
     EXAMPLE
         1) Move telecope 10 arcsec along rows and -20 arcsec along columns:
-            OffsetXY.execute({'inst_x_offset': 10, 'inst_y_offset': -20,
-            'instrument': 'KPF'})
+            OffsetXY.execute({'inst_offset_x': 10, 'inst_offset_y': -20})
 
         Note that since this is a *telescope* move, the target will
         "move" in the OPPOSITE direction!
@@ -135,9 +133,14 @@ class OffsetXY(TranslatorModuleFunction):
         """
         utils.wait_for_cycle(cfg, cls.serv_name, logger)
 
-    @staticmethod
-    def transform_detector(cfg, x, y, inst):
+    @classmethod
+    def transform_detector(cls, cfg, x, y, inst):
         det_ang = utils.config_param(cfg, f'{inst}_parameters', 'det_angle')
+        try:
+            det_ang = float()
+        except (ValueError, TypeError):
+            msg = 'ERROR, could not determine detector angle'
+            utils.write_msg(cls.logger, msg, print_only=False)
 
         det_u = x * math.cos(det_ang) + y * math.sin(det_ang)
         det_v = y * math.cos(det_ang) - x * math.sin(det_ang)

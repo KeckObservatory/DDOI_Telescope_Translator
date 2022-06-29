@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
 from time import sleep
@@ -53,7 +53,7 @@ class WaitForTel(TranslatorModuleFunction):
             'auto_resume': {'type': int, 'req': False,
                             'help': 'The Auto Resume parameter.'}
         }
-        parser = utils.add_args(parser, args_to_add, print_only=True)
+        parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -73,7 +73,7 @@ class WaitForTel(TranslatorModuleFunction):
         # max guider exposure
         cls.timeout = utils.config_param(cfg, 'wftl', 'timeout')
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
-        kw_auto_activate = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
+        ktl_auto_activate = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
 
         cls.auto_resume = args.get('auto_resume', None)
 
@@ -83,7 +83,7 @@ class WaitForTel(TranslatorModuleFunction):
             utils.write_msg(logger, msg)
             return False
 
-        if ktl.read(cls.serv_name, kw_auto_activate) == 'no':
+        if ktl.read(cls.serv_name, ktl_auto_activate) == 'no':
             msg = 'guider not currently active'
             utils.write_msg(logger, msg)
             return False
@@ -105,11 +105,11 @@ class WaitForTel(TranslatorModuleFunction):
         if not hasattr(cls, 'timeout'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        kw_auto_resume = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
-        kw_auto_go = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_go')
+        ktl_auto_resume = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
+        ktl_auto_go = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_go')
 
-        serv_auto_resume = ktl.cache(cls.serv_name, kw_auto_resume)
-        serv_auto_go = ktl.cache(cls.serv_name, kw_auto_go)
+        serv_auto_resume = ktl.cache(cls.serv_name, ktl_auto_resume)
+        serv_auto_go = ktl.cache(cls.serv_name, ktl_auto_go)
 
         # set the value for the current autpause
         if not cls.auto_resume:
@@ -141,9 +141,9 @@ class WaitForTel(TranslatorModuleFunction):
 
 
     @staticmethod
-    def waited_for_val(timeout, kw_cache, val1, val2=None):
+    def waited_for_val(timeout, ktl_cache, val1, val2=None):
         for cnt in range(0, timeout):
-            chk_val = kw_cache.read()
+            chk_val = ktl_cache.read()
             if not val2:
                 if chk_val == val1:
                     return True

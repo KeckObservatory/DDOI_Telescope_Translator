@@ -1,8 +1,10 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
-from DDOI_Telescope_Translator.mxy import OffsetXY
+import tel_utils as utils
+from mxy import OffsetXY
+
+import ktl
 
 
 class MoveP1ToP2(TranslatorModuleFunction):
@@ -10,8 +12,8 @@ class MoveP1ToP2(TranslatorModuleFunction):
       mov -- move an object to a given position on the detector
 
     SYNOPSIS:
-        MoveP1ToP2.execute({'inst_x1': float, 'inst_y1: float,
-                            'inst_x2': float, 'inst_y2: float,
+        MoveP1ToP2.execute({'inst_x1': float, 'inst_y1': float,
+                            'inst_x2': float, 'inst_y2': float,
                             'instrument': inst name string, 'print_only': bool})
 
     DESCRIPTION
@@ -75,7 +77,7 @@ class MoveP1ToP2(TranslatorModuleFunction):
             cls.key_inst_y2: {'type': float, 'req': True,
                               'help': 'The Y pixel position of the detector position 2.'}
         }
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -94,7 +96,7 @@ class MoveP1ToP2(TranslatorModuleFunction):
         cls.inst = utils.get_inst_name(args, cls.__name__)
 
         tel_key_list = ['inst_x1', 'inst_y1', 'inst_x2', 'inst_y2']
-        cls.print_only = utils.print_only(args, cfg, 'tel_keys', tel_key_list)
+        cls.print_only = args.get('print_only', False)
         if cls.print_only:
             return True
 
@@ -125,13 +127,16 @@ class MoveP1ToP2(TranslatorModuleFunction):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         cls.inst_serv_name = utils.config_param(cfg, 'ktl_serv', cls.inst)
-        pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'pixel_scale')
+        ktl_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'pixel_scale')
+
+        pixel_scale = ktl.read(cls.inst_serv_name, ktl_pixel_scale)
 
         dx = pixel_scale * (cls.coords['inst_x1'] - cls.coords['inst_x2'])
         dy = pixel_scale * (cls.coords['inst_y1'] - cls.coords['inst_y2'])
 
         if cls.print_only:
-            print(f"Required shift is X: {dx} Y: {dy}")
+            msg = f"Required shift is X: {dx} Y: {dy}"
+            utils.write_msg(logger, msg, print_only=True)
             return
 
         key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_x_offset')

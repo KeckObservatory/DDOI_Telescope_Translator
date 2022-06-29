@@ -1,11 +1,9 @@
 import sys
 from time import time
-from argparse import ArgumentParser
 
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIInvalidArguments, \
-    DDOIKTLTimeOut, DDOINoInstrumentDefined
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIInvalidArguments, DDOIKTLTimeOut, DDOINoInstrumentDefined, DDOIConfigException
 
-from DDOI_Telescope_Translator.wftel import WaitForTel
+from wftel import WaitForTel
 
 import ktl
 
@@ -20,17 +18,16 @@ def config_param(config, section, param_name):
     :param param_name: <str> the 'key' of the parameter within the section.
     :return: <str> the config file value for the parameter.
     """
+    print(f'section {section}, {param_name}')
+
     try:
         param_val = config[section][param_name]
     except KeyError:
-        err_msg = f"Check Config file, there is no parameter name - " \
-                  f"section: {section} parameter name: {param_name}"
-        sys.exit(err_msg)
+        raise DDOIConfigException(section, param_name)
 
+    print(f'section {section}, {param_val}, {param_name}')
     if not param_val:
-        err_msg = f"Check Config file, there is no value for " \
-                  f"section: {section} parameter name: {param_name}"
-        sys.exit(err_msg)
+        raise DDOIConfigException(section, param_name)
 
     return param_val
 
@@ -38,7 +35,7 @@ def config_param(config, section, param_name):
 def get_arg_value(args, key, logger):
     val = args.get(key, None)
 
-    if not val:
+    if val is None:
         msg = f'{key} argument not defined'
         if logger:
             logger.warn(msg)
@@ -92,17 +89,12 @@ def check_for_zero_offsets(offset1, offset2, logger):
     return False
 
 
-def read_auto_resume_val(cfg, dcs_serv):
-    kw_auto_resume = config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
-    auto_resume = ktl.read(dcs_serv, kw_auto_resume)
-
-    return auto_resume
-
-
 def wait_for_cycle(cfg, dcs_serv, logger):
     start_time = time()
 
-    auto_resume = read_auto_resume_val(cfg, dcs_serv)
+    ktl_auto_resume = config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
+    auto_resume = ktl.read(dcs_serv, ktl_auto_resume)
+
     WaitForTel.execute({"auto_resume": auto_resume})
 
     elapsed_time = time() - start_time
@@ -120,6 +112,7 @@ def write_to_kw(cfg, ktl_service, key_val, logger, cls_name):
     :param cfg:
     :param ktl_service: The KTL service name
     :param key_val: <dict> {cfg_key_name: new value}
+        cfg_key_name = the ktl_keyword_name in the config
     :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided, defaults to
             a generic name specified in the config, by default None
@@ -130,9 +123,10 @@ def write_to_kw(cfg, ktl_service, key_val, logger, cls_name):
     cfg_service = f'ktl_kw_{ktl_service}'
 
     for cfg_key, new_val in key_val.items():
-        kw_name = config_param(cfg, cfg_service, cfg_key)
+        ktl_name = config_param(cfg, cfg_service, cfg_key)
         try:
-            ktl.write(ktl_service, kw_name, new_val, wait=True, timeout=2)
+            # ktl.write(ktl_service, ktl_name, new_val, wait=True, timeout=2)
+            ktl.read(ktl_service, ktl_name)
         except ktl.TimeoutException:
             msg = f"{cls_name} timeout sending offsets."
             if logger:
@@ -140,8 +134,8 @@ def write_to_kw(cfg, ktl_service, key_val, logger, cls_name):
             raise DDOIKTLTimeOut(msg)
 
 
-def write_msg(logger, msg):
-    if logger:
+def write_msg(logger, msg, print_only=False):
+    if logger and not print_only:
         logger.info(msg)
     else:
         print(msg)
@@ -150,7 +144,7 @@ def write_msg(logger, msg):
 def get_inst_name(args, class_name):
     inst = args.get('instrument', None)
     if not inst:
-        msg = f'{class_name} requires instrument named to be defined'
+        msg = f'{class_name} requires instrument name to be defined'
         raise DDOINoInstrumentDefined(msg)
 
     return inst.lower()

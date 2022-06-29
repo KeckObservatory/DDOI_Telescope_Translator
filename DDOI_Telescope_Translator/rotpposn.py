@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
 from time import sleep
@@ -12,7 +12,7 @@ class RotatePhysicalPosAngle(TranslatorModuleFunction):
     rotpposn -- set or show the instrument Rotator Physical Position angle
 
     SYNOPSIS
-        RotatePhysicalPosAngle.execute({'rot_cfg_pa': float})
+        RotatePhysicalPosAngle.execute({'rot_cfg_pa_physical': float})
 
     DESCRIPTION
         With no arguments, show the current physical position angle of
@@ -21,15 +21,15 @@ class RotatePhysicalPosAngle(TranslatorModuleFunction):
         given position angle
 
     ARGUMENTS
-        rot_cfg_pa = physical rotator position angle to set [deg]
+        rot_cfg_pa_physical = physical rotator position angle to set [deg]
 
     OPTIONS
 
     EXAMPLES
         1) Show the current rotator physical position angle:
-            RotatePhysicalPosAngle.execute()
+            RotatePhysicalPosAngle.execute({'print_only': True})
         2) Set the rotator to physical position of 1.2345 deg:
-            RotatePhysicalPosAngle.execute({'rot_cfg_pa': 1.2345})
+            RotatePhysicalPosAngle.execute({'rot_cfg_pa_physical': 1.2345})
 
     KTL SERVICE & KEYWORDS
          dcs: rotmode, rotdest, rotstat
@@ -102,8 +102,9 @@ class RotatePhysicalPosAngle(TranslatorModuleFunction):
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
         if cls.print_only:
-            kw_rotator_pos = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
-            utils.write_msg(logger, ktl.read(cls.serv_name, kw_rotator_pos))
+            ktl_rotator_pos = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
+            utils.write_msg(logger, ktl.read(cls.serv_name, ktl_rotator_pos),
+                            print_only=True)
             return
 
         key_val = {
@@ -127,7 +128,7 @@ class RotatePhysicalPosAngle(TranslatorModuleFunction):
         :return: None
         """
         timeout = utils.config_param(cfg, 'rotpposn', 'timeout')
-        kw_rotator_status = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
-        ktl.waitfor(f'{kw_rotator_status}=tracking', cls.serv_name, timeout=timeout)
+        ktl_rotator_status = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
+        ktl.waitfor(f'{ktl_rotator_status}=tracking', cls.serv_name, timeout=timeout)
 
         return

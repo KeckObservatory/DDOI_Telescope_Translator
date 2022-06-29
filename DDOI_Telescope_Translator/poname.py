@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
 
@@ -11,7 +11,7 @@ class SetPointingOriginName(TranslatorModuleFunction):
 
 
     SYNOPSIS
-        SetPointingOriginName.execute({'pointing_origin_name': ORIGIN})
+        SetPointingOriginName.execute({'tcs_cfg_po_name': ORIGIN})
 
     DESCRIPTION
         With no argument, prints the name of the currently selected
@@ -27,10 +27,10 @@ class SetPointingOriginName(TranslatorModuleFunction):
 
     EXAMPLES
         1) show the current pointing origin
-            SetPointingOriginName.execute()
+            SetPointingOriginName.execute({'print_only': True})
 
         2) change the pointing origin to Slit:
-            SetPointingOriginName.execute({'pointing_origin_name': SLIT})
+            SetPointingOriginName.execute({'tcs_cfg_po_name': SLIT})
 
     ENVIRONMENT VARIABLES
 
@@ -99,7 +99,9 @@ class SetPointingOriginName(TranslatorModuleFunction):
 
         # check if it is only set to print the current values
         if args.get('print_only', False):
-            utils.write_msg(logger, ktl.read(serv_name, cls.key_po_name))
+            ktl_po_name = utils.config_param(cfg, 'ktl_kw_dcs', 'pointing_origin_name')
+            utils.write_msg(logger, ktl.read(serv_name, ktl_po_name),
+                            print_only=True)
             return
 
         po_name = utils.get_arg_value(args, cls.key_po_name, logger)

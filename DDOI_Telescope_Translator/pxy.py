@@ -1,8 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
-from DDOI_Telescope_Translator.mxy import OffsetXY
+import tel_utils as utils
+from mxy import OffsetXY
 
 import ktl
 
@@ -105,9 +105,9 @@ class MovePixelXY(TranslatorModuleFunction):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         serv_name = utils.config_param(cfg, 'ktl_serv', cls.inst)
-        kw_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}',
+        ktl_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}',
                                             'pixel_scale')
-        pixel_scale = ktl.read(serv_name, kw_pixel_scale)
+        pixel_scale = ktl.read(serv_name, ktl_pixel_scale)
 
         dx = pixel_scale * cls.x_offset
         dy = pixel_scale * cls.y_offset
@@ -115,7 +115,7 @@ class MovePixelXY(TranslatorModuleFunction):
         key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
         key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
 
-        OffsetXY.execute({key_x_offset: dx, key_y_offset: dy})
+        OffsetXY.execute({key_x_offset: dx, key_y_offset: dy}, cfg=cfg)
 
 
     @classmethod

@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
 
@@ -11,16 +11,17 @@ class MoveTelescopeFocus(TranslatorModuleFunction):
     telfoc -- set/show the telescope secondary position
 
      SYNOPSIS
-        MoveTelescopeFocus.execute({tel_foc_x: 1.0})
+        MoveTelescopeFocus.execute({'tcs_cfg_focus': 1.0})
 
      DESCRIPTION
-        With no arguments, show the current position of the telescope
-        secondary.  With one argument, reset the telescope secondary
-        to the given position.
+        With the 'print_only' argument, show the current position of the
+        telescope secondary.  With 'tel_foc_x' argument, reset the
+        telescope secondary to the given value.
 
      DICTIONARY KEY
         tel_foc_x = new value for telescope secondary position
-
+        print_only = True
+            to print the current telescope focus value
      KTL SERVICE & KEYWORDS
          dcs: telfocus, secmove
 
@@ -79,21 +80,24 @@ class MoveTelescopeFocus(TranslatorModuleFunction):
         :return: None
         """
         serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
-        kw_tel_foc = utils.config_param(cfg, 'ktl_kw_dcs', 'telescope_focus')
+        ktl_tel_foc = utils.config_param(cfg, 'ktl_kw_dcs', 'telescope_focus')
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)
 
         if cls.print_only:
-            current_focus = ktl.read(serv_name, kw_tel_foc)
-            return current_focus
+            current_focus = ktl.read(serv_name, ktl_tel_foc)
+            msg = f"Current Focus = {current_focus}"
+            utils.write_msg(logger, msg, print_only=True)
+
+            return
 
         if not hasattr(cls, 'key_tel_focus'):
             cls.key_tel_focus = utils.config_param(cfg, 'ob_keys', 'tel_foc')
 
         focus_move_val = utils.get_arg_value(args, cls.key_tel_focus, logger)
 
-        timeout = utils.config_param(cfg, 'telfoc', 'timeout')
+        timeout = int(utils.config_param(cfg, 'telfoc', 'timeout'))
 
         key_val = {
             'telescope_focus': focus_move_val,

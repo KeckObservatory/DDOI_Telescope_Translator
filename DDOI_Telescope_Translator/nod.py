@@ -1,7 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
+
 import ktl
 
 
@@ -109,7 +110,7 @@ class SetNodValues(TranslatorModuleFunction):
 
         :return: None
         """
-        if not hasattr(cls, 'nod_east'):
+        if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         serv_name = utils.config_param(cfg, 'ktl_serv', cls.inst)
@@ -120,7 +121,7 @@ class SetNodValues(TranslatorModuleFunction):
 
             msg = f"Current Nod Values N: {ktl.read(serv_name, key_nod_north)}, " \
                   f"E: {ktl.read(serv_name, key_nod_east)}"
-            utils.write_msg(logger, msg)
+            utils.write_msg(logger, msg, print_only=True)
 
             return
 

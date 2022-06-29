@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
 
@@ -11,7 +11,7 @@ class MoveToElevation(TranslatorModuleFunction):
     elabs -- set/show telescope elevation
 
     SYNOPSIS
-        MoveToElevation.execute({'tel_elevation': 10.0})
+        MoveToElevation.execute({'tcs_coord_el': 10.0})
 
     DESCRIPTION
         With no argument, return the current telescope absolute elevation.
@@ -25,7 +25,7 @@ class MoveToElevation(TranslatorModuleFunction):
             MoveToElevation.execute({'print_only': True})
 
         2) move the telescope to an elevation of 45 deg:
-            MoveToElevation.execute({'tel_elevation': 45.0})
+            MoveToElevation.execute({'tcs_coord_el': 45.0})
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/elabs
     """
@@ -93,13 +93,14 @@ class MoveToElevation(TranslatorModuleFunction):
 
         serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
+        print(f'here, logger: {logger}')
         # only print the elevation
         if cls.print_only:
-            key_elevation = utils.config_param(cfg, 'ob_keys', 'elevation')
-            el_value = ktl.read(serv_name, key_elevation)
+            ktl_elevation = utils.config_param(cfg, 'ktl_kw_dcs', 'elevation')
+            el_value = ktl.read(serv_name, ktl_elevation)
 
             msg = f"Current Elevation = {el_value}"
-            utils.write_msg(logger, msg)
+            utils.write_msg(logger, msg, print_only=True)
 
             return
 

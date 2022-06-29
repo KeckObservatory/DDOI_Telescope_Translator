@@ -1,10 +1,10 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun, DDOINotSelectedInstrument
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun, DDOINotSelectedInstrument
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
-import ktl
 from time import sleep
+import ktl
 
 
 class SetRotSkyPA(TranslatorModuleFunction):
@@ -31,7 +31,7 @@ class SetRotSkyPA(TranslatorModuleFunction):
 
     EXAMPLES
         1) Show the current PA:
-            SetRotSkyPA.execute({'instrument': INST, 'relative': True})
+            SetRotSkyPA.execute({'print_only': True, 'instrument': INST, 'relative': True})
 
         2) Set the current PA to 123.45 deg:
             SetRotSkyPA.execute({'rot_cfg_pa_sky': 123.45, 'instrument': INST})
@@ -94,13 +94,13 @@ class SetRotSkyPA(TranslatorModuleFunction):
         if not hasattr(cls, 'key_rot_angle'):
             cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_sky_angle')
 
-        cls.rotator_angle = utils.check_float(args, cls.key_rot_angle, logger)
+        cls.rotator_angle = utils.get_arg_value(args, cls.key_rot_angle, logger)
 
         # confirm INST = the selected instrument
-        kw_instrument = utils.config_param(cfg, 'ktl_kw_dcs', 'instrument')
-        current_inst = ktl.read(cls.serv_name, kw_instrument)
-        if current_inst != cls.inst:
-            raise DDOINotSelectedInstrument(current_inst, cls.inst)
+        ktl_instrument = utils.config_param(cfg, 'ktl_kw_dcs', 'instrument')
+        current_inst = ktl.read(cls.serv_name, ktl_instrument)
+        if current_inst.lower() != cls.inst:
+            raise DDOINotSelectedInstrument(current_inst, cls.inst.upper())
 
         return True
 
@@ -119,11 +119,19 @@ class SetRotSkyPA(TranslatorModuleFunction):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
+        if cls.print_only or cls.relative:
+            ktl_rot_dest = utils.config_param(cfg, 'ktl_kw_dcs',
+                                              'rotator_destination')
+            rot_angle = ktl.read(cls.serv_name, ktl_rot_dest)
+
+        if cls.print_only:
+            msg = f"Current Rotator Angle = {rot_angle}"
+            utils.write_msg(logger, msg, print_only=True)
+            return
+
         rot_dest = args['rot_sky_angle']
         if cls.relative:
-            kw_rot_dest = utils.config_param(cfg, 'ktl_kw_dcs',
-                                             'rotator_destination')
-            rot_dest += ktl.read(cls.serv_name, kw_rot_dest)
+            rot_dest += rot_angle
 
         key_val = {
             'rotator_destination': rot_dest,
@@ -145,6 +153,6 @@ class SetRotSkyPA(TranslatorModuleFunction):
         :return: None
         """
         timeout = utils.config_param(cfg, 'skypa', 'timeout')
-        kw_rot_stat = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_status')
-        ktl.waitfor(f'{kw_rot_stat}=8', cls.serv_name, timeout=timeout)
+        ktl_rot_stat = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_status')
+        ktl.waitfor(f'{ktl_rot_stat}=8', cls.serv_name, timeout=timeout)
 

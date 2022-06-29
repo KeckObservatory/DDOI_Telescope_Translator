@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
 
@@ -68,11 +68,11 @@ class GoToMark(TranslatorModuleFunction):
         inst = utils.get_inst_name(args, cls.__name__)
 
         inst_serv_name = utils.config_param(cfg, 'ktl_serv', inst)
-        kw_ra_mark = utils.config_param(cfg, f'ktl_kw_{inst}', 'ra_mark')
-        kw_dec_mark = utils.config_param(cfg, f'ktl_kw_{inst}', 'dec_mark')
+        ktl_ra_mark = utils.config_param(cfg, f'ktl_kw_{inst}', 'ra_mark')
+        ktl_dec_mark = utils.config_param(cfg, f'ktl_kw_{inst}', 'dec_mark')
 
-        ra_mark = ktl.read(inst_serv_name, kw_ra_mark)
-        dec_mark = ktl.read(inst_serv_name, kw_dec_mark)
+        ra_mark = ktl.read(inst_serv_name, ktl_ra_mark)
+        dec_mark = ktl.read(inst_serv_name, ktl_dec_mark)
 
         cls.dcs_serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 

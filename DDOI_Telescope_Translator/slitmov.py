@@ -1,8 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIDetectorAngleUndefined
 
-import DDOI_Telescope_Translator.tel_utils as utils
-from DDOI_Telescope_Translator.mxy import OffsetXY
+import tel_utils as utils
+from mxy import OffsetXY
 
 import math
 
@@ -13,7 +13,7 @@ class MoveAlongSlit(TranslatorModuleFunction):
     sltmov -- move object along the slit direction in arcsec
 
     SYNOPSIS
-        MoveAlongSlit.execute({'inst_offset_slit': float, 'instrument': INST}
+        MoveAlongSlit.execute({'inst_offset_det': float, 'instrument': INST})
 
     DESCRIPTION
         Move the telescope the given number of arcseconds along the
@@ -24,7 +24,7 @@ class MoveAlongSlit(TranslatorModuleFunction):
           inst_offset_y - number of arcsec to offset object.
 
     EXAMPLES
-        MoveAlongSlit.execute({'inst_offset_y': 10.0, 'instrument': 'KPF'}
+        MoveAlongSlit.execute({'inst_offset_det': 10.0, 'instrument': 'KPF'})
              moves object 10 arcsec in y to more positive y values
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/slitmov
@@ -88,13 +88,23 @@ class MoveAlongSlit(TranslatorModuleFunction):
         inst = utils.get_inst_name(args, cls.__name__)
         det_angle = utils.config_param(cfg, f'{inst}_parameters', 'det_angle')
 
+        try:
+            det_angle = float()
+        except (ValueError, TypeError):
+            msg = 'ERROR, could not determine detector angle'
+            raise DDOIDetectorAngleUndefined(msg)
+
         dx = slit_offset * math.sin(math.radians(det_angle))
         dy = slit_offset * math.cos(math.radians(det_angle))
 
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
         # run mxy with the calculated offsets
-        OffsetXY.execute({'inst_x_offset': dx, 'inst_y_offset': dy, 'inst': inst})
+        key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
+        key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
+        print(type(cfg), cfg)
+        OffsetXY.execute({key_x_offset: dx, key_y_offset: dy,
+                          'instrument': inst}, cfg=cfg)
 
         return
 

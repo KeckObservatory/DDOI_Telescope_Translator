@@ -1,9 +1,10 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptionsimport DDOIKTLTimeOut
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
+
 
 class PMFM(TranslatorModuleFunction):
     """
@@ -98,9 +99,9 @@ class PMFM(TranslatorModuleFunction):
         :return: None
         """
         serv_name = utils.config_param(cfg, 'ktl_serv', 'acs')
-        kw_pmfm = utils.config_param(cfg, 'ktl_kw_acs', 'pmfm')
+        ktl_pmfm = utils.config_param(cfg, 'ktl_kw_acs', 'pmfm')
         if args.get('print_only', False):
-            current_pmfm = ktl.read(serv_name, kw_pmfm)
+            current_pmfm = ktl.read(serv_name, ktl_pmfm)
             utils.write_msg(f"The current PMFM is {current_pmfm}")
             return
 
@@ -115,7 +116,7 @@ class PMFM(TranslatorModuleFunction):
         try:
             ktl.waitfor(f'pmfm={pmfm_new}', service=serv_name, timeout=timeout)
         except ktl.TimeoutException:
-            msg = f'{cls.__name__} current pmfm {ktl.read(serv_name, kw_pmfm)}' \
+            msg = f'{cls.__name__} current pmfm {ktl.read(serv_name, ktl_pmfm)}' \
                   f',  timeout moving to {pmfm_new}.'
             if logger:
                 logger.error(msg)

@@ -1,8 +1,8 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
-from DDOI_Telescope_Translator.gxy import OffsetGuiderCoordXY
+import tel_utils as utils
+from gxy import OffsetGuiderCoordXY
 
 import ktl
 
@@ -114,8 +114,8 @@ class MoveToGuiderCenter(TranslatorModuleFunction):
         guider_cent_x = utils.config_param(cfg, f'{inst}_parameters', 'guider_cent_x')
         guider_cent_y = utils.config_param(cfg, f'{inst}_parameters', 'guider_cent_y')
 
-        kw_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'guider_pix_scale')
-        guider_pix_scale = ktl.read(serv_name, kw_pixel_scale)
+        ktl_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'guider_pix_scale')
+        guider_pix_scale = ktl.read(serv_name, ktl_pixel_scale)
 
         dx = guider_pix_scale * (cls.current_x - guider_cent_x)
         dy = guider_pix_scale * (guider_cent_y - cls.current_y)

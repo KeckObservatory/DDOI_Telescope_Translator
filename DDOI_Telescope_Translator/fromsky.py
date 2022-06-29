@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 from en import OffsetEastNorth
 
 import ktl
@@ -83,11 +83,11 @@ class OffsetBackFromNod(TranslatorModuleFunction):
             cls.key_north_offset = utils.config_param(cfg, 'ob_keys',
                                                       'tel_north_offset')
 
-        kw_nodded_north = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_north')
-        kw_nodded_east = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_east')
+        ktl_nodded_north = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_north')
+        ktl_nodded_east = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_east')
 
-        nodded_north = ktl.read(serv_name, kw_nodded_north)
-        nodded_east = ktl.read(serv_name, kw_nodded_east)
+        nodded_north = ktl.read(serv_name, ktl_nodded_north)
+        nodded_east = ktl.read(serv_name, ktl_nodded_east)
 
         OffsetEastNorth.execute({cls.key_east_offset: -1.0 * nodded_east,
                                  cls.key_north_offset: -1.0 * nodded_north})

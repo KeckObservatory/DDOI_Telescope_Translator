@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 import ktl
 import math
@@ -11,7 +11,7 @@ class MarkCoords(TranslatorModuleFunction):
     mark - stores current ra and dec offsets
 
     SYNOPSIS
-        MarkCoords.execute({'inst': str of instrument name})
+        MarkCoords.execute({'instrument': str of instrument name})
 
     DESCRIPTION
           stores the current ra and dec offsets for later use.
@@ -93,11 +93,11 @@ class MarkCoords(TranslatorModuleFunction):
         dcs_serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
         # for precision read the raw (binary) versions -- in radians.
-        kw_ra_offset = utils.config_param(cfg, 'ktl_kw_dcs', 'ra_offset')
-        kw_dec_offset = utils.config_param(cfg, 'ktl_kw_dcs', 'dec_offset')
+        ktl_ra_offset = utils.config_param(cfg, 'ktl_kw_dcs', 'ra_offset')
+        ktl_dec_offset = utils.config_param(cfg, 'ktl_kw_dcs', 'dec_offset')
 
-        current_ra_offset = ktl.read(dcs_serv_name, kw_ra_offset, binary=True)
-        current_dec_offset = ktl.read(dcs_serv_name, kw_dec_offset, binary=True)
+        current_ra_offset = ktl.read(dcs_serv_name, ktl_ra_offset, binary=True)
+        current_dec_offset = ktl.read(dcs_serv_name, ktl_dec_offset, binary=True)
 
         current_ra_offset = current_ra_offset * 180.0 * 3600.0 / math.pi
         current_dec_offset = current_dec_offset * 180.0 * 3600.0 / math.pi
@@ -105,8 +105,8 @@ class MarkCoords(TranslatorModuleFunction):
         # There is a bug in DCS where the value of RAOFF read back has been
         # divided by cos(Dec).  That is corrected here.
 
-        kw_dec = utils.config_param(cfg, 'ktl_kw_dcs', 'declination')
-        current_dec = ktl.read(dcs_serv_name, kw_dec, binary=True)
+        ktl_dec = utils.config_param(cfg, 'ktl_kw_dcs', 'declination')
+        current_dec = ktl.read(dcs_serv_name, ktl_dec, binary=True)
         current_ra_offset = current_ra_offset * math.cos(current_dec)
 
         inst_serv_name = utils.config_param(cfg, 'ktl_serv', inst)

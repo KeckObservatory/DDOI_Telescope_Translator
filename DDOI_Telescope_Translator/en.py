@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 
 class OffsetEastNorth(TranslatorModuleFunction):
@@ -99,7 +99,6 @@ class OffsetEastNorth(TranslatorModuleFunction):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
-        cls.auto_resume = utils.read_auto_resume_val(cfg, cls.serv_name)
 
         key_val = {
             'ra_offset': cls.east_off,

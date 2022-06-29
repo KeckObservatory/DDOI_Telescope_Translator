@@ -1,7 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from DDOITranslatorModule.ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 
 class OffsetGuiderCoordXY(TranslatorModuleFunction):
@@ -9,7 +9,7 @@ class OffsetGuiderCoordXY(TranslatorModuleFunction):
     gxy -- move the telescope in GUIDER coordinates
 
     SYNOPSIS
-        OffsetGuiderCoordXY.execute({'guider_x_offset': 0.0, 'guider_y_offset': 1.0})
+        OffsetGuiderCoordXY.execute({'guider_offset_x': 0.0, 'guider_offset_y': 1.0})
 
     Purpose:
         Offset the telescope by the given number of arcseconds in the

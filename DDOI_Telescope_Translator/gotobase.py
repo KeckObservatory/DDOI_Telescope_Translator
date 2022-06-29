@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
-import DDOI_Telescope_Translator.tel_utils as utils
+import tel_utils as utils
 
 
 class GoToBase(TranslatorModuleFunction):
