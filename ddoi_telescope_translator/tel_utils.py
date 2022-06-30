@@ -18,14 +18,11 @@ def config_param(config, section, param_name):
     :param param_name: <str> the 'key' of the parameter within the section.
     :return: <str> the config file value for the parameter.
     """
-    print(f'section {section}, {param_name}')
-
     try:
         param_val = config[section][param_name]
     except KeyError:
         raise DDOIConfigException(section, param_name)
 
-    print(f'section {section}, {param_val}, {param_name}')
     if not param_val:
         raise DDOIConfigException(section, param_name)
 

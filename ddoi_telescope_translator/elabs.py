@@ -93,7 +93,6 @@ class MoveToElevation(TranslatorModuleFunction):
 
         serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
-        print(f'here, logger: {logger}')
         # only print the elevation
         if cls.print_only:
             ktl_elevation = utils.config_param(cfg, 'ktl_kw_dcs', 'elevation')

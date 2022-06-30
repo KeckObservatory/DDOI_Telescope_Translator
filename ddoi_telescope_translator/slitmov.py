@@ -101,7 +101,6 @@ class MoveAlongSlit(TranslatorModuleFunction):
         # run mxy with the calculated offsets
         key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
         key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
-        print(type(cfg), cfg)
         OffsetXY.execute({key_x_offset: dx, key_y_offset: dy,
                           'instrument': inst}, cfg=cfg)
 

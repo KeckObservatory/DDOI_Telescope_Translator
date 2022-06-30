@@ -70,7 +70,6 @@ class OffsetAzEl(TranslatorModuleFunction):
         if not hasattr(cls, 'key_el_offset'):
             cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
 
-        print(f'args {args}')
         cls.az_off = utils.get_arg_value(args, cls.key_az_offset, logger)
         cls.el_off = utils.get_arg_value(args, cls.key_el_offset, logger)
 
