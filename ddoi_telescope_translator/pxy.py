@@ -5,7 +5,6 @@ import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
 
 import ktl
-import argparse
 from collections import OrderedDict
 
 
