@@ -1,6 +1,7 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 
 import ddoi_telescope_translator.tel_utils as utils
+from collections import OrderedDict
 
 
 class GoToBase(TranslatorModuleFunction):

@@ -5,6 +5,7 @@ from ddoi_telescope_translator import tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
 
 import math
+from collections import OrderedDict
 
 
 class MoveAlongSlit(TranslatorModuleFunction):
@@ -30,7 +31,7 @@ class MoveAlongSlit(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -41,14 +42,18 @@ class MoveAlongSlit(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_slit_offset = utils.config_param(cfg, 'ob_keys', 'inst_slit_offset')
 
         parser = utils.add_inst_arg(parser, cfg)
 
-        args_to_add = {
-            cls.key_slit_offset: {'type': float, 'req': True,
-                                  'help': 'The number of arcseconds to offset object along the slit.'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_slit_offset, {'type': float,
+                                  'help': 'The number of arcseconds to offset '
+                                          'object along the slit.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)

@@ -4,6 +4,7 @@ from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionN
 import tel_utils as utils
 
 import ktl
+from collections import OrderedDict
 
 
 class Boiler(TranslatorModuleFunction):
@@ -15,7 +16,7 @@ class Boiler(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -26,6 +27,9 @@ class Boiler(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.xxx = utils.config_param(cfg, 'ob_keys', '...')
 
         args_to_add = {

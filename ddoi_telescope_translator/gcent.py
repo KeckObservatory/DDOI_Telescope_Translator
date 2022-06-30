@@ -5,6 +5,7 @@ import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.gxy import OffsetGuiderCoordXY
 
 import ktl
+from collections import OrderedDict
 
 
 class MoveToGuiderCenter(TranslatorModuleFunction):
@@ -45,7 +46,7 @@ class MoveToGuiderCenter(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -56,16 +57,20 @@ class MoveToGuiderCenter(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_inst_x = utils.config_param(cfg, 'tel_keys', 'inst_x1')
         cls.key_inst_y = utils.config_param(cfg, 'tel_keys', 'inst_y1')
 
         parser = utils.add_inst_arg(parser, cfg)
 
-        args_to_add = {
-            cls.key_inst_x: {'type': float, 'req': True,
-                             'help': 'The X pixel position to move to guider center.'},
-            cls.key_inst_y: {'type': float, 'req': True,
-                             'help': 'The Y pixel position to move to guider center.'}}
+        args_to_add = OrderedDict([
+            (cls.key_inst_x, {'type': float,
+                              'help': 'The X pixel position to move to guider center.'}),
+            (cls.key_inst_y, {'type': float,
+                              'help': 'The Y pixel position to move to guider center.'})
+            ])
         parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)

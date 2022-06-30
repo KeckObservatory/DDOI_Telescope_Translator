@@ -4,6 +4,7 @@ from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionN
 import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
+from collections import OrderedDict
 
 
 class MoveToElevation(TranslatorModuleFunction):
@@ -42,12 +43,15 @@ class MoveToElevation(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'tel_elevation')
 
-        args_to_add = {
-            cls.key_el_offset: {'type': float, 'req': True,
-                                'help': 'The offset in Elevation in degrees.'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_el_offset, {'type': float,
+                                'help': 'The offset in Elevation in degrees.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)

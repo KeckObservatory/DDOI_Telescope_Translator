@@ -4,6 +4,7 @@ from ddoitranslatormodule.ddoiexceptions.DDOIExceptionsimport DDOIKTLTimeOut
 import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
+from collections import OrderedDict
 
 
 class PMFM(TranslatorModuleFunction):
@@ -53,7 +54,7 @@ class PMFM(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -64,10 +65,13 @@ class PMFM(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
-        args_to_add = {
-            'pmfm': {'type': float, 'req': True,
-                     'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'}
-        }
+        # read the config file
+        cfg = cls._load_config(cfg)
+
+        args_to_add = OrderedDict([
+            ('pmfm', {'type': float,
+                     'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)

@@ -3,6 +3,7 @@ from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
+from collections import OrderedDict
 
 
 class GoToMark(TranslatorModuleFunction):
@@ -24,7 +25,7 @@ class GoToMark(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -35,6 +36,9 @@ class GoToMark(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         parser = utils.add_inst_arg(parser, cfg)
 
         return super().add_cmdline_args(parser, cfg)

@@ -3,6 +3,7 @@ from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
+from collections import OrderedDict
 
 
 class SetPointingOriginName(TranslatorModuleFunction):
@@ -44,7 +45,7 @@ class SetPointingOriginName(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -55,14 +56,17 @@ class SetPointingOriginName(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_po_name = utils.config_param(cfg, 'ob_keys', 'pointing_origin_name')
 
         parser = utils.add_inst_arg(parser, cfg)
 
-        args_to_add = {
-            cls.key_po_name: {'type': str, 'req': True,
-                              'help': 'The name of the pointing origin to select'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_po_name, {'type': str,
+                               'help': 'The name of the pointing origin to select'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)

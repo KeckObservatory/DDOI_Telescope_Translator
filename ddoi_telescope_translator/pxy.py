@@ -5,6 +5,8 @@ import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
 
 import ktl
+import argparse
+from collections import OrderedDict
 
 
 class MovePixelXY(TranslatorModuleFunction):
@@ -41,7 +43,7 @@ class MovePixelXY(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -52,15 +54,18 @@ class MovePixelXY(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_xpix')
         cls.key_y_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_ypix')
 
-        args_to_add = {
-            cls.key_x_offset: {'type': float, 'req': True,
-                               'help': 'The Instrument X offset in pixels.'},
-            cls.key_y_offset: {'type': float, 'req': True,
-                               'help': 'The Instrument Y offset in pixels.'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_x_offset, {'type': float,
+                                'help': 'The Instrument X offset in pixels.'}),
+            (cls.key_y_offset, {'type': float,
+                                'help': 'The Instrument Y offset in pixels.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
@@ -131,3 +136,5 @@ class MovePixelXY(TranslatorModuleFunction):
         :return: None
         """
         return
+
+

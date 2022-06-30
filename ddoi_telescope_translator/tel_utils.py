@@ -45,6 +45,20 @@ def get_arg_value(args, key, logger):
 
 
 def add_args(parser, args_to_add, print_only=False):
+    """
+    Add the argparse arguments.
+
+    @param parser: the parser object
+    @param args_to_add: OrderedDict the arguments to add.
+        keywords:
+            'help' - <str> the help string to add, required
+            'type' - <python type>, the argument type,  required
+            'req' - <bool> True if the argument is required,  optional
+            'kw_arg' - <bool> True for keyword arguments, optional
+    @param print_only: <bool> True if add the print_only option
+    @return:
+    """
+    # check to see if print_only is true,  then do not add other arguments.
     if print_only:
         parser.add_argument('--print_only', action='store_true', default=False)
         args = parser.parse_known_args()
@@ -52,8 +66,14 @@ def add_args(parser, args_to_add, print_only=False):
             return parser
 
     for arg_name, arg_info in args_to_add.items():
-        parser.add_argument(f'--{arg_name}', type=arg_info['type'],
-                            required=arg_info['req'], help=arg_info['help'])
+        # add keyword arguments
+        if 'kw_arg' in arg_info and arg_info['kw_arg']:
+            parser.add_argument(f'{--arg_name}', type=arg_info['type'],
+                                required=arg_info['req'], help=arg_info['help'])
+            continue
+
+        # add positional arguments
+        parser.add_argument(arg_name, type=arg_info['type'], help=arg_info['help'])
 
     return parser
 

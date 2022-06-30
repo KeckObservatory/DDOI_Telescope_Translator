@@ -4,6 +4,7 @@ from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
 import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
+from collections import OrderedDict
 
 
 class MoveTelescopeFocus(TranslatorModuleFunction):
@@ -30,7 +31,7 @@ class MoveTelescopeFocus(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -41,14 +42,18 @@ class MoveTelescopeFocus(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_tel_focus = utils.config_param(cfg, 'ob_keys', 'tel_foc')
 
         parser = utils.add_inst_arg(parser, cfg)
 
-        args_to_add = {
-            cls.key_tel_focus: {'type': float, 'req': True,
-                                'help': 'The new value for telescope secondary position.'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_tel_focus, {'type': float,
+                                 'help': 'The new value for telescope '
+                                         'secondary position.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)

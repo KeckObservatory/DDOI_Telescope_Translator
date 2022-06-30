@@ -5,6 +5,7 @@ import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
 
 import ktl
+from collections import OrderedDict
 
 
 class MoveP1ToP2(TranslatorModuleFunction):
@@ -49,7 +50,7 @@ class MoveP1ToP2(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -60,6 +61,9 @@ class MoveP1ToP2(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_inst_x1 = utils.config_param(cfg, 'tel_keys', 'inst_x1')
         cls.key_inst_y1 = utils.config_param(cfg, 'tel_keys', 'inst_y1')
         cls.key_inst_x2 = utils.config_param(cfg, 'tel_keys', 'inst_x2')
@@ -67,16 +71,16 @@ class MoveP1ToP2(TranslatorModuleFunction):
 
         parser = utils.add_inst_arg(parser, cfg)
 
-        args_to_add = {
-            cls.key_inst_x1: {'type': float, 'req': True,
-                              'help': 'The X pixel position of the detector position 1.'},
-            cls.key_inst_y1: {'type': float, 'req': True,
-                              'help': 'The Y pixel position of the detector position 1.'},
-            cls.key_inst_x2: {'type': float, 'req': True,
-                              'help': 'The X pixel position of the detector position 2.'},
-            cls.key_inst_y2: {'type': float, 'req': True,
-                              'help': 'The Y pixel position of the detector position 2.'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_inst_x1, {'type': float,
+                               'help': 'The X pixel position of the detector position 1.'}),
+            (cls.key_inst_y1, {'type': float,
+                               'help': 'The Y pixel position of the detector position 1.'}),
+            (cls.key_inst_x2, {'type': float,
+                               'help': 'The X pixel position of the detector position 2.'}),
+            (cls.key_inst_y2, {'type': float,
+                               'help': 'The Y pixel position of the detector position 2.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)

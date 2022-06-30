@@ -4,6 +4,7 @@ from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
 import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
+from collections import OrderedDict
 
 
 class SetNodEastValue(TranslatorModuleFunction):
@@ -45,7 +46,7 @@ class SetNodEastValue(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -56,14 +57,17 @@ class SetNodEastValue(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_nod_north = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
 
         parser = utils.add_inst_arg(parser, cfg)
 
-        args_to_add = {
-            cls.key_nod_north: {'type': float, 'req': True,
-                                'help': 'Set the North Nod value [arcseconds]'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_nod_north, {'type': float,
+                                 'help': 'Set the North Nod value [arcseconds]'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)

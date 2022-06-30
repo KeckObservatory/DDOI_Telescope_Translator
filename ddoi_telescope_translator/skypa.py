@@ -5,6 +5,7 @@ import ddoi_telescope_translator.tel_utils as utils
 
 from time import sleep
 import ktl
+from collections import OrderedDict
 
 
 class SetRotSkyPA(TranslatorModuleFunction):
@@ -44,7 +45,7 @@ class SetRotSkyPA(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -55,16 +56,19 @@ class SetRotSkyPA(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_sky_angle')
 
         parser = utils.add_inst_arg(parser, cfg)
         parser = utils.add_bool_arg(parser, 'relative',
                                     'Rotate relative to the current position.')
 
-        args_to_add = {
-            cls.key_rot_angle: {'type': float, 'req': True,
-                                'help': 'Set the physical rotator position angle [deg].'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_rot_angle, {'type': float,
+                                'help': 'Set the physical rotator position angle [deg].'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)

@@ -2,6 +2,7 @@ from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
 import ddoi_telescope_translator.tel_utils as utils
+from collections import OrderedDict
 
 
 class OffsetGuiderCoordXY(TranslatorModuleFunction):
@@ -31,7 +32,7 @@ class OffsetGuiderCoordXY(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -42,16 +43,20 @@ class OffsetGuiderCoordXY(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_x_offset = utils.config_param(cfg, 'ob_keys', 'guider_x_offset')
         cls.key_y_offset = utils.config_param(cfg, 'ob_keys', 'guider_y_offset')
 
         parser = utils.add_inst_arg(parser, cfg)
 
-        args_to_add = {
-            cls.key_x_offset: {'type': float, 'req': True,
-                               'help': 'The offset in Guider X offset in pixels.'},
-            cls.key_y_offset: {'type': float, 'req': True,
-                               'help': 'The offset in Guider Y offset in pixels.'}}
+        args_to_add = OrderedDict([
+            (cls.key_x_offset, {'type': float,
+                               'help': 'The offset in Guider X offset in pixels.'}),
+            (cls.key_y_offset, {'type': float,
+                               'help': 'The offset in Guider Y offset in pixels.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)

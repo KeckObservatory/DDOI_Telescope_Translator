@@ -4,6 +4,7 @@ import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.en import OffsetEastNorth
 
 import ktl
+from collections import OrderedDict
 
 
 class OffsetBackFromNod(TranslatorModuleFunction):
@@ -24,7 +25,7 @@ class OffsetBackFromNod(TranslatorModuleFunction):
     adapted from sh script: kss/mosfire/scripts/procs/tel/fromsky
     """
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -35,14 +36,18 @@ class OffsetBackFromNod(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_east_offset = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
         cls.key_north_offset = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
 
-        args_to_add = {
-            cls.key_east_offset: {'type': float, 'req': True,
-                                  'help': 'The offset East in arcseconds.'},
-            cls.key_north_offset: {'type': float, 'req': True,
-                                   'help': 'The offset North in arcseconds.'}}
+        args_to_add = OrderedDict([
+            (cls.key_east_offset, {'type': float,
+                                  'help': 'The offset East in arcseconds.'}),
+            (cls.key_north_offset, {'type': float,
+                                   'help': 'The offset North in arcseconds.'})
+            ])
         parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)

@@ -4,6 +4,7 @@ from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionN
 import ddoi_telescope_translator.tel_utils as utils
 
 from time import sleep
+from collections import OrderedDict
 
 
 class OffsetAzEl(TranslatorModuleFunction):
@@ -29,7 +30,7 @@ class OffsetAzEl(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -40,15 +41,18 @@ class OffsetAzEl(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cfg)
+
         cls.key_az_offset = utils.config_param(cfg, 'ob_keys', 'az_offset')
         cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
 
-        args_to_add = {
-            cls.key_az_offset: {'type': float, 'req': True,
-                                'help': 'The offset in Azimuth in degrees.'},
-            cls.key_el_offset: {'type': float, 'req': True,
-                                'help': 'The offset in Elevation in degrees.'}
-        }
+        args_to_add = OrderedDict([
+            (cls.key_az_offset, {'type': float,
+                                 'help': 'The offset in Azimuth in degrees.'}),
+            (cls.key_el_offset, {'type': float,
+                                 'help': 'The offset in Elevation in degrees.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)

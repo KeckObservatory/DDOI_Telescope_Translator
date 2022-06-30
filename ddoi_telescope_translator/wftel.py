@@ -5,6 +5,7 @@ import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
 from time import sleep
+from collections import OrderedDict
 
 
 class WaitForTel(TranslatorModuleFunction):
@@ -38,7 +39,7 @@ class WaitForTel(TranslatorModuleFunction):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -49,10 +50,10 @@ class WaitForTel(TranslatorModuleFunction):
 
         :return: <ArgumentParser>
         """
-        args_to_add = {
-            'auto_resume': {'type': int, 'req': False,
-                            'help': 'The Auto Resume parameter.'}
-        }
+        args_to_add = OrderedDict([
+            ('auto_resume', {'type': int, 'req': False, 'kw_arg': True,
+                             'help': 'The Auto Resume parameter.'})
+        ])
         parser = utils.add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
