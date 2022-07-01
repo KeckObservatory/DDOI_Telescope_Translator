@@ -1,4 +1,3 @@
-
 from setuptools import setup, find_packages
 
 # Get some values from the setup.cfg
@@ -29,7 +28,7 @@ setup(name=NAME,
       author_email=AUTHOR_EMAIL,
       packages=find_packages(),
       package_dir={"": "."},
-      package_data={'ddoi_telescope_translator.ddoi_configurations': ['*.ini']},
+      package_data={'ddoi_telescope_translator': ['ddoi_configurations/*.ini']},
       scripts=scripts,
       entry_points=entry_points,
       install_requires=[],
