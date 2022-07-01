@@ -17,6 +17,10 @@ class MoveP1ToP2(TranslatorModuleFunction):
                             'inst_x2': float, 'inst_y2': float,
                             'instrument': inst name string, 'print_only': bool})
 
+    RUN
+        from ddoi_telescope_translator import mov
+        mov.MoveP1ToP2.execute({'inst_x1': 1.0, 'inst_y1': 1.0, 'inst_x2': 1.0, 'inst_y2': 1.0,'instrument': 'kpf'})
+
     DESCRIPTION
         Given the starting pixel coordinates of an object on a
         DEIMOS image, and destination coordinates, compute and apply the
@@ -29,14 +33,11 @@ class MoveP1ToP2(TranslatorModuleFunction):
         inst_y2 = ending row location of object [pixels]
         inst = the instrument name (str)
 
-    OPTIONS
-         none
-
     EXAMPLE:
         1) Move a target at pixel (100,200) to pixel (300,400):
 
-            MoveP1ToP2.execute({'inst_x1': 100, 'inst_y1: 200,
-                                'inst_x2': 300, 'inst_y2: 400, 'inst': KPF})
+            MoveP1ToP2.execute({'inst_x1': 100, 'inst_y1': 200,
+                                'inst_x2': 300, 'inst_y2': 400, 'inst': KPF})
 
         2) Display the telescope move required to shift a target at
         pixel (100,200) to the pixel (300,400) without moving the telecope:
@@ -69,7 +70,7 @@ class MoveP1ToP2(TranslatorModuleFunction):
         cls.key_inst_x2 = utils.config_param(cfg, 'tel_keys', 'inst_x2')
         cls.key_inst_y2 = utils.config_param(cfg, 'tel_keys', 'inst_y2')
 
-        parser = utils.add_inst_arg(parser, cfg)
+        parser = utils.add_inst_arg(parser, cfg, is_req=False)
 
         args_to_add = OrderedDict([
             (cls.key_inst_x1, {'type': float,
@@ -97,7 +98,7 @@ class MoveP1ToP2(TranslatorModuleFunction):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cls.__name__)
+        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         tel_key_list = ['inst_x1', 'inst_y1', 'inst_x2', 'inst_y2']
         cls.print_only = args.get('print_only', False)

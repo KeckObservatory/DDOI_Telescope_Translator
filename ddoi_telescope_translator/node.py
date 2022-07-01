@@ -12,22 +12,22 @@ class SetNodEastValue(TranslatorModuleFunction):
     node - set nod parameters for east motions
 
     SYNOPSIS
-        SetNodEastValue.execute({'tel_east_offset': float,
+        SetNodEastValue.execute({'tcs_offset_east': float,
                                  'inst': str of instrument name})
+
+    RUN
+        from ddoi_telescope_translator import nod
+        nod.SetNodValues.execute({'tcs_offset_north': 10.0, 'tcs_offset_east': 5.0, 'instrument': 'KPF'})
 
     DESCRIPTION
         sets the telescope nod parameters to dE arcsec East
 
-    ARGUMENTS
-
-    OPTIONS
-
     EXAMPLES
         1) Set east nod to 5 :
-            SetNodValues.execute({'tel_east_offset': 5.0})
+            SetNodValues.execute({'tcs_offset_east': 5.0})
 
         2) Show current nod params:
-            SetNodValues.execute()
+            SetNodValues.execute({'print_only': True})
 
     ENVIRONMENT VARIABLES
 
@@ -81,7 +81,7 @@ class SetNodEastValue(TranslatorModuleFunction):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cls.__name__)
+        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)

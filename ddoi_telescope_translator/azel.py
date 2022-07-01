@@ -14,6 +14,10 @@ class OffsetAzEl(TranslatorModuleFunction):
     SYNOPSIS
         OffsetAzEl.execute({'tcs_offset_az': 10.0,  'tcs_offset_el': 5.0})
 
+    RUN
+        from ddoi_telescope_translator import azel
+        azel.OffsetAzEl.execute({'tcs_offset_az': 0.0, 'tcs_offset_el': 0.0})
+
     DESCRIPTION
         Move the telescope the given number of arcseconds in the
         azimuth and elevation directions.

@@ -15,6 +15,10 @@ class MoveAlongSlit(TranslatorModuleFunction):
     SYNOPSIS
         MoveAlongSlit.execute({'inst_offset_det': float, 'instrument': INST})
 
+    RUN
+        from ddoi_telescope_translator import slitmov
+        slitmov.MoveAlongSlit.execute({'inst_offset_det': 10.0, 'instrument': 'KPF'})
+
     DESCRIPTION
         Move the telescope the given number of arcseconds along the
         slit.  A positive value will "move" the object "down" (i.e., to
@@ -89,7 +93,8 @@ class MoveAlongSlit(TranslatorModuleFunction):
 
         slit_offset = utils.get_arg_value(args, cls.key_slit_offset, logger)
 
-        inst = utils.get_inst_name(args, cls.__name__)
+        inst = utils.get_inst_name(args, cfg, cls.__name__)
+
         det_angle = utils.config_param(cfg, f'{inst}_parameters', 'det_angle')
 
         try:

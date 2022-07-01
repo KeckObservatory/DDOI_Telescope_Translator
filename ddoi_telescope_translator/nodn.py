@@ -1,5 +1,5 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
-from ddoitranslatormodule.DDOIExceptions import DDOIPreConditionNotRun
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -13,21 +13,21 @@ class SetNodEastValue(TranslatorModuleFunction):
 
     SYNOPSIS
         SetNodEastValue.execute({
-            'tel_north_offset': float,
+            'tcs_offset_north': float,
             'instrument': str of instrument name
             })
+
+    RUN
+        from ddoi_telescope_translator import nod
+        nodn.SetNodValues.execute({'tcs_offset_north': 10.0, 'instrument': 'KPF'})
 
     DESCRIPTION
         sets the telescope nod parameters to dE arcsec East
              and dN arcsec North
 
-    ARGUMENTS
-
-    OPTIONS
-
     EXAMPLES
         1) Set north nod to 5 :
-            SetNodValues.execute({'tel_north_offset': 5.0, 'instrument': INST})
+            SetNodValues.execute({'tcs_offset_north': 5.0, 'instrument': INST})
 
         2) Show current nod params:
             SetNodValues.execute('instrument': INST)
@@ -84,7 +84,7 @@ class SetNodEastValue(TranslatorModuleFunction):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cls.__name__)
+        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)

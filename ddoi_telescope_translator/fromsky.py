@@ -4,7 +4,6 @@ import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.en import OffsetEastNorth
 
 import ktl
-from collections import OrderedDict
 
 
 class OffsetBackFromNod(TranslatorModuleFunction):
@@ -12,7 +11,11 @@ class OffsetBackFromNod(TranslatorModuleFunction):
     fromsky - move the telescope from the sky position
 
     SYNOPSIS
-        OffsetBackFromNod.execute()
+        OffsetBackFromNod.execute({'instrument': 'KPF'})
+
+    RUN
+        from ddoi_telescope_translator import fromsky
+        fromsky.OffsetBackFromNod.execute({'instrument': 'kpf'})
 
     DESCRIPTION
         Move the telescope to the target position from the
@@ -39,16 +42,8 @@ class OffsetBackFromNod(TranslatorModuleFunction):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_east_offset = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
-        cls.key_north_offset = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
-
-        args_to_add = OrderedDict([
-            (cls.key_east_offset, {'type': float,
-                                  'help': 'The offset East in arcseconds.'}),
-            (cls.key_north_offset, {'type': float,
-                                   'help': 'The offset North in arcseconds.'})
-            ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        # add inst parameter as optional
+        parser = utils.add_inst_arg(parser, cfg, is_req=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -78,7 +73,8 @@ class OffsetBackFromNod(TranslatorModuleFunction):
 
         :return: None
         """
-        inst = utils.get_inst_name(args, cls.__name__)
+        inst = utils.get_inst_name(args, cfg, cls.__name__)
+
         serv_name = utils.config_param(cfg, 'ktl_serv', inst)
 
         if not hasattr(cls, 'key_east_offset'):

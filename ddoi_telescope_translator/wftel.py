@@ -15,6 +15,10 @@ class WaitForTel(TranslatorModuleFunction):
     SYNOPSIS
         WaitForTel.execute({"auto_resume": auto_resume})
 
+    RUN
+        from ddoi_telescope_translator import wftel
+        wftel.WaitForTel.execute({"auto_resume": auto_resume})
+
     After issuing the offset request, the keyword AUTPAUSE is monitored
     for an increment in sequence number. Next the keyword AUTGO is monitored
     for a change to RESUMEACK -- which is issued by the guider. The guider
@@ -72,7 +76,7 @@ class WaitForTel(TranslatorModuleFunction):
         :return: bool
         """
         # max guider exposure
-        cls.timeout = utils.config_param(cfg, 'wftl', 'timeout')
+        cls.timeout = utils.config_param(cfg, 'wftel', 'timeout')
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
         ktl_auto_activate = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
 

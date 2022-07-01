@@ -85,7 +85,8 @@ class SetRotSkyPA(TranslatorModuleFunction):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cls.__name__)
+        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
+
         cls.relative = args.get('relative', False)
         cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
@@ -99,12 +100,6 @@ class SetRotSkyPA(TranslatorModuleFunction):
             cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_sky_angle')
 
         cls.rotator_angle = utils.get_arg_value(args, cls.key_rot_angle, logger)
-
-        # confirm INST = the selected instrument
-        ktl_instrument = utils.config_param(cfg, 'ktl_kw_dcs', 'instrument')
-        current_inst = ktl.read(cls.serv_name, ktl_instrument)
-        if current_inst.lower() != cls.inst:
-            raise DDOINotSelectedInstrument(current_inst, cls.inst.upper())
 
         return True
 

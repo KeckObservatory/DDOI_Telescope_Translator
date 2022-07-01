@@ -13,10 +13,14 @@ class SetNodValues(TranslatorModuleFunction):
 
     SYNOPSIS
         SetNodValues.execute({
-            'tel_north_offset': float,
-            'tel_north_offset': float,
+            'tcs_offset_east': float,
+            'tcs_offset_north': float,
             'instrument': str of instrument name
             })
+
+    RUN
+        from ddoi_telescope_translator import nod
+        nod.SetNodValues.execute({'tcs_offset_north': 10.0, 'tcs_offset_east': 5.0, 'instrument': 'KPF'})
 
     DESCRIPTION
         sets the telescope nod parameters to dE arcsec East
@@ -32,8 +36,8 @@ class SetNodValues(TranslatorModuleFunction):
 
 
         1) Set east nod to 5 and north nod to 10:
-            SetNodValues.execute({'tel_north_offset': 10.0,
-                                  'tel_east_offset': 5.0, 'instrument': INST}})
+            SetNodValues.execute({'tcs_offset_north': 10.0,
+                                  'tcs_offset_east': 5.0, 'instrument': INST}})
 
     KTL SERVICE & KEYWORDS
        servers: instrument
@@ -84,7 +88,7 @@ class SetNodValues(TranslatorModuleFunction):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cls.__name__)
+        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)
@@ -94,7 +98,7 @@ class SetNodValues(TranslatorModuleFunction):
 
         if not hasattr(cls, 'key_nod_north'):
             cls.key_nod_north = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
-        if not hasattr(cls, 'key_nod_north'):
+        if not hasattr(cls, 'key_nod_east'):
             cls.key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
 
         cls.nod_north = utils.get_arg_value(args, cls.key_nod_north, logger)

@@ -13,6 +13,10 @@ class GoToMark(TranslatorModuleFunction):
     SYNOPSIS
         GoToMark.execute({'inst': str of instrument name})
 
+    RUN
+        from ddoi_telescope_translator import gomark
+        gomark.GoToMark({})
+
     DESCRIPTION
           moves to the position defined by the keywords "raoffset" and
           "decoffset", which are normally loaded by the command "mark".
@@ -39,7 +43,8 @@ class GoToMark(TranslatorModuleFunction):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        parser = utils.add_inst_arg(parser, cfg)
+        # add inst parameter as optional
+        parser = utils.add_inst_arg(parser, cfg, is_req=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -69,7 +74,7 @@ class GoToMark(TranslatorModuleFunction):
 
         :return: None
         """
-        inst = utils.get_inst_name(args, cls.__name__)
+        inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         inst_serv_name = utils.config_param(cfg, 'ktl_serv', inst)
         ktl_ra_mark = utils.config_param(cfg, f'ktl_kw_{inst}', 'ra_mark')

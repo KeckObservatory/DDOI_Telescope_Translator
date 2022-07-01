@@ -9,10 +9,14 @@ class GoToBase(TranslatorModuleFunction):
     gotobase -- move the telescope to return to the base coordinates
 
     SYNOPSIS
-        GoToBase.execute()
+        GoToBase.execute({})
 
     DESCRIPTION
         Return to the position previously marked as "base".
+
+    RUN
+        from ddoi_telescope_translator import gotobase
+        gotobase.GoToBase.execute({})
 
     EXAMPLES
         1) return to the position marked as base:

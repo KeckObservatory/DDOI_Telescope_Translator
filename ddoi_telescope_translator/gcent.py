@@ -13,8 +13,12 @@ class MoveToGuiderCenter(TranslatorModuleFunction):
     gcent -- move an object to the center of the guider pick off mirror
 
     SYNOPSIS
-        MoveGuiderCenter.execute({'inst_x1': float, 'inst_y1': float,
+        MoveToGuiderCenter.execute({'inst_x1': float, 'inst_y1': float,
                                  'instrument': INST})
+
+    RUN
+        from ddoi_telescope_translator import gcent
+        gcent.MoveToGuiderCenter.execute({'inst_x1': 1.0, 'inst_y1': 2.0, 'instrument': 'kpf'})
 
     DESCRIPTION
         Given the pixel coordinates of an object on a DEIMOS guider image,
@@ -31,13 +35,13 @@ class MoveToGuiderCenter(TranslatorModuleFunction):
 
     EXAMPLES
         1) Move a target at pixel (100,200) to the pickoff mirror center:
-            MoveGuiderCenter.execute({'det_x_pix': 100.0, 'det_y_pix': 200.0,
+            MoveToGuiderCenter.execute({'det_x_pix': 100.0, 'det_y_pix': 200.0,
                                       'instrument': INST})
 
         2) Display the telescope move required to shift a target at
         pixel (100,200) to the pickoff mirror center, without
         actually performing the move:
-            MoveGuiderCenter.execute({'det_x_pix': 100.0, 'det_y_pix': 200.0,
+            MoveToGuiderCenter.execute({'det_x_pix': 100.0, 'det_y_pix': 200.0,
                                       'instrument': INST, 'print_only': 1}
 
     KTL SERVICE & KEYWORDS
@@ -114,12 +118,13 @@ class MoveToGuiderCenter(TranslatorModuleFunction):
 
         serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 
-        inst = utils.get_inst_name(args, cls.__name__)
+        inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         guider_cent_x = utils.config_param(cfg, f'{inst}_parameters', 'guider_cent_x')
         guider_cent_y = utils.config_param(cfg, f'{inst}_parameters', 'guider_cent_y')
 
-        ktl_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'guider_pix_scale')
+        ktl_pixel_scale = utils.config_param(cfg, f"ktl_kw_{args['instrument']}",
+                                             'guider_pix_scale')
         guider_pix_scale = ktl.read(serv_name, ktl_pixel_scale)
 
         dx = guider_pix_scale * (cls.current_x - guider_cent_x)

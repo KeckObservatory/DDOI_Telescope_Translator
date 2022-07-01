@@ -14,6 +14,10 @@ class MoveToElevation(TranslatorModuleFunction):
     SYNOPSIS
         MoveToElevation.execute({'tcs_coord_el': 10.0})
 
+    RUN
+        from ddoi_telescope_translator import elabs
+        elabs.MoveToElevation.execute({'print_only': True})
+
     DESCRIPTION
         With no argument, return the current telescope absolute elevation.
         With one argument, set the telescope elevation to the specified value.

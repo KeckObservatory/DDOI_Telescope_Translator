@@ -12,6 +12,10 @@ class OffsetGuiderCoordXY(TranslatorModuleFunction):
     SYNOPSIS
         OffsetGuiderCoordXY.execute({'guider_offset_x': 0.0, 'guider_offset_y': 1.0})
 
+    RUN
+        from ddoi_telescope_translator import gxy
+        gxy.OffsetGuiderCoordXY.execute({'guider_offset_x': 0.0, 'guider_offset_y': 1.0})
+
     Purpose:
         Offset the telescope by the given number of arcseconds in the
         guider coordinate system, which is rotated 180 degrees relative

@@ -1,7 +1,7 @@
 import sys
 from time import time
 
-from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIInvalidArguments, DDOIKTLTimeOut, DDOINoInstrumentDefined, DDOIConfigException
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIInvalidArguments, DDOIKTLTimeOut, DDOINoInstrumentDefined, DDOIConfigException, DDOINotSelectedInstrument
 
 from ddoi_telescope_translator.wftel import WaitForTel
 
@@ -83,12 +83,12 @@ def add_bool_arg(parser, name, msg):
     return parser
 
 
-def add_inst_arg(parser, cfg):
+def add_inst_arg(parser, cfg, is_req=True):
     insts = config_param(cfg, 'inst_list', 'insts')
     insts = f'{insts}, {insts.lower()}'
     inst_set = set(insts.split(', '))
 
-    parser.add_argument("--instrument", type=str, choices=inst_set, required=True,
+    parser.add_argument("--instrument", type=str, choices=inst_set, required=is_req,
                         help="Name of instrument for the translator module.")
     return parser
 
@@ -158,11 +158,42 @@ def write_msg(logger, msg, print_only=False):
         print(msg)
 
 
-def get_inst_name(args, class_name):
+def get_inst_name(args, cfg, class_name, allow_current=True):
+    """
+    Get the instrument name from the arguments,  if not defined get from
+    DCS current instrument.  If allow_current=False,  raise
+    DDOINoInstrumentDefined if not defined in arguments.
+
+    @param args: <dict> the arguments passed to calling function
+    @param class_name: the name of the calling class for exception
+
+    @return: <str> the instrument name
+    """
     inst = args.get('instrument', None)
+    if inst:
+        # confirm INST = the selected instrument
+        current_inst = read_current_inst(cfg)
+        if current_inst != inst:
+            raise DDOINotSelectedInstrument(current_inst, cls.inst.upper())
+
     if not inst:
-        msg = f'{class_name} requires instrument name to be defined'
-        raise DDOINoInstrumentDefined(msg)
+        if allow_current:
+            inst = read_current_inst(cfg)
+        else:
+            msg = f'{class_name} requires instrument name to be defined'
+            raise DDOINoInstrumentDefined(msg)
+
+    return inst.lower()
+
+
+def read_current_inst(cfg):
+    ktl_instrument = config_param(cfg, 'ktl_kw_dcs', 'instrument')
+    serv_name = config_param(cfg, 'ktl_serv', 'dcs')
+    try:
+        inst = ktl.read(serv_name, ktl_instrument, timeout=2)
+    except ktl.TimeoutException:
+        msg = f'timeout reading,  service {serv_name}, keyword: {ktl_instrument}'
+        raise DDOIKTLTimeOut(msg)
 
     return inst.lower()
 

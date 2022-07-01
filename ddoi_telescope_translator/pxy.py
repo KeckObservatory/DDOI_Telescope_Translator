@@ -81,7 +81,7 @@ class MovePixelXY(TranslatorModuleFunction):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cls.__name__)
+        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         if not hasattr(cls, 'key_x_offset'):
             cls.key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_xpix')

@@ -14,21 +14,14 @@ class MarkCoords(TranslatorModuleFunction):
     SYNOPSIS
         MarkCoords.execute({'instrument': str of instrument name})
 
+    RUN
+        from ddoi_telescope_translator import mark
+        mark.MarkCoords({})
+
     DESCRIPTION
           stores the current ra and dec offsets for later use.
           Values stored in the KPF keywords: ??raoffset?? and ??decoffset??
           See also gomark
-
-    ARGUMENTS
-
-    OPTIONS
-
-    EXAMPLES
-    gomark
-
-    ENVIRONMENT VARIABLES
-
-    FILES
 
     SERVERS & KEYWORDS
        server: instrument, dcs
@@ -38,7 +31,6 @@ class MarkCoords(TranslatorModuleFunction):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/mark
     """
-
     @classmethod
     def add_cmdline_args(cls, parser, cfg=None):
         """
@@ -54,16 +46,8 @@ class MarkCoords(TranslatorModuleFunction):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_az_offset = utils.config_param(cfg, 'ob_keys', 'az_offset')
-        cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
-
-        args_to_add = OrderedDict([
-            (cls.key_az_offset, {'type': float,
-                               'help': 'The offset in Azimuth in degrees.'}),
-            (cls.key_el_offset, {'type': float,
-                               'help': 'The offset in Elevation in degrees.'})
-        ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        # add inst parameter as optional
+        parser = utils.add_inst_arg(parser, cfg, is_req=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -93,7 +77,7 @@ class MarkCoords(TranslatorModuleFunction):
 
         :return: None
         """
-        inst = utils.get_inst_name(args, cls.__name__)
+        inst = utils.get_inst_name(args, cfg, cls.__name__)
 
         dcs_serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
 

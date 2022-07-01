@@ -10,7 +10,11 @@ class OffsetEastNorth(TranslatorModuleFunction):
     en -- move the telescope east and north
 
     SYNOPSIS
-        OffsetEastNorth.execute({key_east_offset: 10.0,  key_north_offset: 5.0})
+        OffsetEastNorth.execute({'tcs_offset_east': 10.0,  'tcs_offset_north': 5.0})
+
+    RUN
+        from ddoi_telescope_translator import en
+        en.OffsetEastNorth.execute({'tcs_offset_east': 10.0,  'tcs_offset_north': 5.0})
 
     DESCRIPTION
         Move the telescope the given number of arcsec EAST & NORTH
@@ -22,9 +26,9 @@ class OffsetEastNorth(TranslatorModuleFunction):
 
      EXAMPLES
         1) Move the telescope east by 10 arcsec:
-            OffsetEastNorth.execute({key_east_offset: 10.0,  key_north_offset: 0.0})
+            OffsetEastNorth.execute({tcs_offset_east: 10.0,  tcs_offset_north: 0.0})
         2) Move the telescope west and north by 10 arcsec:
-            OffsetEastNorth.execute({key_east_offset: 0.0,  key_north_offset: 10.0})
+            OffsetEastNorth.execute({tcs_offset_east: 0.0,  tcs_offset_north: 10.0})
 
      KTL SERVICE & KEYWORDS
           servers: dcs
