@@ -7,19 +7,19 @@ import ktl
 from collections import OrderedDict
 
 
-class SetNodEastValue(TranslatorModuleFunction):
+class SetNodNorthValue(TranslatorModuleFunction):
     """
     node - set nod parameters for north motions
 
     SYNOPSIS
-        SetNodEastValue.execute({
+        SetNodNorthValue.execute({
             'tcs_offset_north': float,
             'instrument': str of instrument name
             })
 
     RUN
         from ddoi_telescope_translator import nod
-        nodn.SetNodValues.execute({'tcs_offset_north': 10.0, 'instrument': 'KPF'})
+        nodn.SetNodNorthValue.execute({'tcs_offset_north': 10.0, 'instrument': 'KPF'})
 
     DESCRIPTION
         sets the telescope nod parameters to dE arcsec East
@@ -27,10 +27,10 @@ class SetNodEastValue(TranslatorModuleFunction):
 
     EXAMPLES
         1) Set north nod to 5 :
-            SetNodValues.execute({'tcs_offset_north': 5.0, 'instrument': INST})
+            SetNodNorthValue.execute({'tcs_offset_north': 5.0, 'instrument': INST})
 
         2) Show current nod params:
-            SetNodValues.execute('instrument': INST)
+            SetNodNorthValue.execute('instrument': INST)
 
     ENVIRONMENT VARIABLES
 

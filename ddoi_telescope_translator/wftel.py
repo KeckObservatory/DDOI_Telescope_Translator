@@ -82,8 +82,13 @@ class WaitForTel(TranslatorModuleFunction):
 
         cls.auto_resume = args.get('auto_resume', None)
 
-        if not ktl.waitfor('axestat=tracking', service=cls.serv_name,
-                           timeout=cls.timeout):
+        try:
+            waited = ktl.waitfor('axestat=tracking', service=cls.serv_name,
+                                 timeout=cls.timeout, )
+        except:
+            waited = False
+
+        if not waited:
             msg = f'tracking was not established in {cls.timeout}'
             utils.write_msg(logger, msg)
             return False

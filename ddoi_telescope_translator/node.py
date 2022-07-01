@@ -17,17 +17,17 @@ class SetNodEastValue(TranslatorModuleFunction):
 
     RUN
         from ddoi_telescope_translator import nod
-        nod.SetNodValues.execute({'tcs_offset_north': 10.0, 'tcs_offset_east': 5.0, 'instrument': 'KPF'})
+        node.SetNodEastValue.execute({'tcs_offset_north': 10.0, 'tcs_offset_east': 5.0, 'instrument': 'KPF'})
 
     DESCRIPTION
         sets the telescope nod parameters to dE arcsec East
 
     EXAMPLES
         1) Set east nod to 5 :
-            SetNodValues.execute({'tcs_offset_east': 5.0})
+            SetNodEastValue.execute({'tcs_offset_east': 5.0})
 
         2) Show current nod params:
-            SetNodValues.execute({'print_only': True})
+            SetNodEastValue.execute({'print_only': True})
 
     ENVIRONMENT VARIABLES
 
