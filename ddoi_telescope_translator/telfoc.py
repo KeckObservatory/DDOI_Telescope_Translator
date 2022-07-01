@@ -1,5 +1,6 @@
 from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -7,7 +8,7 @@ import ktl
 from collections import OrderedDict
 
 
-class MoveTelescopeFocus(TranslatorModuleFunction):
+class MoveTelescopeFocus(TelescopeBase):
     """
     telfoc -- set/show the telescope secondary position
 

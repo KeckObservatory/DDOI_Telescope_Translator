@@ -1,4 +1,4 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -6,7 +6,7 @@ import ktl
 from collections import OrderedDict
 
 
-class SetPointingOriginName(TranslatorModuleFunction):
+class SetPointingOriginName(TelescopeBase):
     """
     poname -- set or show the current pointing origin
 

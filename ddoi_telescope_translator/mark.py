@@ -1,4 +1,4 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -7,7 +7,7 @@ import math
 from collections import OrderedDict
 
 
-class MarkCoords(TranslatorModuleFunction):
+class MarkCoords(TelescopeBase):
     """
     mark - stores current ra and dec offsets
 

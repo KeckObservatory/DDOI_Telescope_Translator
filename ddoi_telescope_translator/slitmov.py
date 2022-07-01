@@ -1,5 +1,5 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIDetectorAngleUndefined
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 from ddoi_telescope_translator import tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
@@ -8,7 +8,7 @@ import math
 from collections import OrderedDict
 
 
-class MoveAlongSlit(TranslatorModuleFunction):
+class MoveAlongSlit(TelescopeBase):
     """
     sltmov -- move object along the slit direction in arcsec
 

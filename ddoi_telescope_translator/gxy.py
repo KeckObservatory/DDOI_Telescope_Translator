@@ -1,11 +1,11 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 from collections import OrderedDict
 
 
-class OffsetGuiderCoordXY(TranslatorModuleFunction):
+class OffsetGuiderCoordXY(TelescopeBase):
     """
     gxy -- move the telescope in GUIDER coordinates
 

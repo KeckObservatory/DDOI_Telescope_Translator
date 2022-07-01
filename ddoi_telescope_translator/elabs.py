@@ -1,5 +1,5 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -7,7 +7,7 @@ import ktl
 from collections import OrderedDict
 
 
-class MoveToElevation(TranslatorModuleFunction):
+class MoveToElevation(TelescopeBase):
     """
     elabs -- set/show telescope elevation
 

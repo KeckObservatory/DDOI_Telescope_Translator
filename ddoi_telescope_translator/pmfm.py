@@ -1,5 +1,5 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptionsimport DDOIKTLTimeOut
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -7,7 +7,7 @@ import ktl
 from collections import OrderedDict
 
 
-class PMFM(TranslatorModuleFunction):
+class PMFM(TelescopeBase):
     """
     pmfm -- set the amount of focus mode in the telescope primary
 

@@ -1,5 +1,5 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -8,7 +8,7 @@ from time import sleep
 from collections import OrderedDict
 
 
-class RotatePhysicalPosAngle(TranslatorModuleFunction):
+class RotatePhysicalPosAngle(TelescopeBase):
     """
     rotpposn -- set or show the instrument Rotator Physical Position angle
 

@@ -1,10 +1,10 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 from collections import OrderedDict
 
 
-class MarkBase(TranslatorModuleFunction):
+class MarkBase(TelescopeBase):
     """
     markbase -- set the base telescope coordinates to the current coordinates
 

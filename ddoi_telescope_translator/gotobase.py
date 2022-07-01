@@ -1,10 +1,9 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
-from collections import OrderedDict
 
 
-class GoToBase(TranslatorModuleFunction):
+class GoToBase(TelescopeBase):
     """
     gotobase -- move the telescope to return to the base coordinates
 

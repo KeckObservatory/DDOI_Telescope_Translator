@@ -1,5 +1,5 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
@@ -8,7 +8,7 @@ import ktl
 from collections import OrderedDict
 
 
-class MovePixelXY(TranslatorModuleFunction):
+class MovePixelXY(TelescopeBase):
     """
     pxy -- move telescope in pixel coordinates of the DEIMOS detector
 

@@ -1,5 +1,5 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun, DDOINotSelectedInstrument
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -8,7 +8,7 @@ import ktl
 from collections import OrderedDict
 
 
-class SetRotSkyPA(TranslatorModuleFunction):
+class SetRotSkyPA(TelescopeBase):
     """
     skypa -- set rotator celestial position angle in position angle mode
 

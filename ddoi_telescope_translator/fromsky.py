@@ -1,4 +1,4 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.en import OffsetEastNorth
@@ -6,7 +6,7 @@ from ddoi_telescope_translator.en import OffsetEastNorth
 import ktl
 
 
-class OffsetBackFromNod(TranslatorModuleFunction):
+class OffsetBackFromNod(TelescopeBase):
     """
     fromsky - move the telescope from the sky position
 

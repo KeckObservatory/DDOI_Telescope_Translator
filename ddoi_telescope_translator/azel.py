@@ -1,5 +1,5 @@
-from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
+from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
@@ -7,7 +7,7 @@ from time import sleep
 from collections import OrderedDict
 
 
-class OffsetAzEl(TranslatorModuleFunction):
+class OffsetAzEl(TelescopeBase):
     """
     azel -- move the telescope x arcsec in azimuth and y arcsec in elevation
 
