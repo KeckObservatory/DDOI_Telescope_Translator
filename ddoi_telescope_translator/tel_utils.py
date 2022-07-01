@@ -174,7 +174,7 @@ def get_inst_name(args, cfg, class_name, allow_current=True):
         # confirm INST = the selected instrument
         current_inst = read_current_inst(cfg)
         if current_inst != inst:
-            raise DDOINotSelectedInstrument(current_inst, cls.inst.upper())
+            raise DDOINotSelectedInstrument(current_inst, inst.upper())
 
     if not inst:
         if allow_current:
