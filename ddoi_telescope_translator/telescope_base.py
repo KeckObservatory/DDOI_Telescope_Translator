@@ -2,6 +2,7 @@ from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIConfigFileException, DDOIConfigException, DDOIInvalidArguments, DDOIKTLTimeOut
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOINotSelectedInstrument, DDOINoInstrumentDefined
 import configparser
+import argparse
 
 import os
 import ktl
@@ -26,10 +27,18 @@ class TelescopeBase(TranslatorModuleFunction):
             config_files = [cfg]
             if args:
                 inst = args.get('instrument', None)
-                if inst:
-                    file_name = f"{inst.lower()}_tel_config.ini"
-                    cfg = f"{cfg_path_base}/ddoi_configurations/{file_name}"
-                    config_files.append(cfg)
+
+            if not inst:
+                try:
+                    inst = ktl.read('dcs', 'instrume', timeout=2)
+                except ktl.TimeoutException:
+                    msg = f'timeout reading,  service dcs, keyword: instrume'
+                    raise DDOIKTLTimeOut(msg)
+
+            file_name = f"{inst.lower()}_tel_config.ini"
+            cfg = f"{cfg_path_base}/ddoi_configurations/{file_name}"
+            if os.path.exists(cfg):
+                config_files.append(cfg)
 
         # return if config object passed
         param_type = type(cfg)
