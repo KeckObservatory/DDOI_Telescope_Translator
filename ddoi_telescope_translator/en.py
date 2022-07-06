@@ -81,10 +81,10 @@ class OffsetEastNorth(TelescopeBase):
             cls.key_north_offset = cls._config_param(cfg, 'ob_keys',
                                                       'tel_north_offset')
 
-        cls.east_off = cls._get_arg_value(args, cls.key_east_offset, logger)
-        cls.north_off = cls._get_arg_value(args, cls.key_north_offset, logger)
+        cls.east_off = cls._get_arg_value(args, cls.key_east_offset)
+        cls.north_off = cls._get_arg_value(args, cls.key_north_offset)
 
-        if utils.check_for_zero_offsets(cls.east_off, cls.north_off, logger):
+        if utils.check_for_zero_offsets(cls.east_off, cls.north_off):
             return False
 
         return True

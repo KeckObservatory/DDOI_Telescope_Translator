@@ -111,7 +111,7 @@ class MoveP1ToP2(TelescopeBase):
             else:
                 key_inst = getattr(cls, tel_key)
 
-            cls.coords[tel_key] = cls._get_arg_value(args, key_inst, logger)
+            cls.coords[tel_key] = cls._get_arg_value(args, key_inst)
 
         return True
 

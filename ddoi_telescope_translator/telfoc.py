@@ -98,7 +98,7 @@ class MoveTelescopeFocus(TelescopeBase):
         if not hasattr(cls, 'key_tel_focus'):
             cls.key_tel_focus = cls._config_param(cfg, 'ob_keys', 'tel_foc')
 
-        focus_move_val = cls._get_arg_value(args, cls.key_tel_focus, logger)
+        focus_move_val = cls._get_arg_value(args, cls.key_tel_focus)
 
         timeout = int(cls._config_param(cfg, 'telfoc', 'timeout'))
 

@@ -20,14 +20,16 @@ class TelescopeBase(TranslatorModuleFunction):
 
         @return: <class 'configparser.ConfigParser'> the config file parser.
         """
-        config_files = [f"default_tel_config.ini"]
-        if not cfg and args:
+        if not cfg:
             cfg_path_base = os.path.dirname(os.path.abspath(__file__))
-            inst = args.get('instrument', None)
-            if inst:
-                file_name = f"{inst.lower()}_tel_config.ini"
-                cfg = f"{cfg_path_base}/ddoi_configurations/{file_name}"
-                config_files.append(cfg)
+            cfg = f"{cfg_path_base}/ddoi_configurations/default_tel_config.ini"
+            config_files = [cfg]
+            if args:
+                inst = args.get('instrument', None)
+                if inst:
+                    file_name = f"{inst.lower()}_tel_config.ini"
+                    cfg = f"{cfg_path_base}/ddoi_configurations/{file_name}"
+                    config_files.append(cfg)
 
         # return if config object passed
         param_type = type(cfg)

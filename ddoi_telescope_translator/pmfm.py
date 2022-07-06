@@ -107,7 +107,7 @@ class PMFM(TelescopeBase):
             cls.write_msg(f"The current PMFM is {current_pmfm}")
             return
 
-        pmfm_new = cls._get_arg_value(args, 'pmfm', logger)
+        pmfm_new = cls._get_arg_value(args, 'pmfm')
 
         key_val = {
             'pmfm': pmfm_new

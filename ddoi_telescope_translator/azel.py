@@ -78,8 +78,8 @@ class OffsetAzEl(TelescopeBase):
         if not hasattr(cls, 'key_el_offset'):
             cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'el_offset')
 
-        cls.az_off = cls._get_arg_value(args, cls.key_az_offset, logger)
-        cls.el_off = cls._get_arg_value(args, cls.key_el_offset, logger)
+        cls.az_off = cls._get_arg_value(args, cls.key_az_offset)
+        cls.el_off = cls._get_arg_value(args, cls.key_el_offset)
 
         return True
 

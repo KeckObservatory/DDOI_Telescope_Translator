@@ -80,8 +80,8 @@ class OffsetGuiderCoordXY(TelescopeBase):
         key_x_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
         key_y_offset = cls._config_param(cfg, 'ob_keys', 'guider_y_offset')
 
-        cls.x_off = cls._get_arg_value(args, key_x_offset, logger)
-        cls.y_off = cls._get_arg_value(args, key_y_offset, logger)
+        cls.x_off = cls._get_arg_value(args, key_x_offset)
+        cls.y_off = cls._get_arg_value(args, key_y_offset)
 
         return True
 

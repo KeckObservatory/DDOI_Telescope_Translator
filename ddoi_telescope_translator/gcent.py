@@ -95,8 +95,8 @@ class MoveToGuiderCenter(TelescopeBase):
         if not hasattr(cls, 'key_inst_y'):
             cls.key_inst_y = cls._config_param(cfg, 'tel_keys', 'inst_y1')
 
-        cls.current_x = cls._get_arg_value(args, cls.key_inst_x, logger)
-        cls.current_y = cls._get_arg_value(args, cls.key_inst_y, logger)
+        cls.current_x = cls._get_arg_value(args, cls.key_inst_x)
+        cls.current_y = cls._get_arg_value(args, cls.key_inst_y)
 
         return True
 

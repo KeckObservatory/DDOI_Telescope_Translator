@@ -78,7 +78,7 @@ class MoveToElevation(TelescopeBase):
         if not hasattr(cls, 'key_el_offset'):
             cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'tel_elevation')
 
-        cls.el_offset = cls._get_arg_value(args, cls.key_el_offset, logger)
+        cls.el_offset = cls._get_arg_value(args, cls.key_el_offset)
 
         return True
 

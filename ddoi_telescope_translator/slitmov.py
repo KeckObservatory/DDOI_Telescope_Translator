@@ -90,7 +90,7 @@ class MoveAlongSlit(TelescopeBase):
         if not hasattr(cls, 'key_slit_offset'):
             cls.key_slit_offset = cls._config_param(cfg, 'ob_keys', 'inst_slit_offset')
 
-        slit_offset = cls._get_arg_value(args, cls.key_slit_offset, logger)
+        slit_offset = cls._get_arg_value(args, cls.key_slit_offset)
 
         inst = cls.get_inst_name(cls, args, cfg)
 

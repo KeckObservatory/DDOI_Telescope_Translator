@@ -88,10 +88,10 @@ class OffsetXY(TelescopeBase):
         if not hasattr(cls, 'key_y_offset'):
             cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
 
-        cls.x_offset = cls._get_arg_value(args, cls.key_x_offset, logger)
-        cls.y_offset = cls._get_arg_value(args, cls.key_y_offset, logger)
+        cls.x_offset = cls._get_arg_value(args, cls.key_x_offset)
+        cls.y_offset = cls._get_arg_value(args, cls.key_y_offset)
 
-        if utils.check_for_zero_offsets(cls.x_offset, cls.y_offset, logger):
+        if utils.check_for_zero_offsets(cls.x_offset, cls.y_offset):
             return False
 
         return True

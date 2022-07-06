@@ -98,7 +98,7 @@ class SetRotSkyPA(TelescopeBase):
         if not hasattr(cls, 'key_rot_angle'):
             cls.key_rot_angle = cls._config_param(cfg, 'ob_keys', 'rot_sky_angle')
 
-        cls.rotator_angle = cls._get_arg_value(args, cls.key_rot_angle, logger)
+        cls.rotator_angle = cls._get_arg_value(args, cls.key_rot_angle)
 
         return True
 

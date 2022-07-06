@@ -106,7 +106,7 @@ class SetPointingOriginName(TelescopeBase):
                             print_only=True)
             return
 
-        po_name = cls._get_arg_value(args, cls.key_po_name, logger)
+        po_name = cls._get_arg_value(args, cls.key_po_name)
 
         key_val = {
             'pointing_origin_name': po_name,

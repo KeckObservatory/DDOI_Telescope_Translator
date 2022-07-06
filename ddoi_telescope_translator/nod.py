@@ -99,8 +99,8 @@ class SetNodValues(TelescopeBase):
         if not hasattr(cls, 'key_nod_east'):
             cls.key_nod_east = cls._config_param(cfg, 'ob_keys', 'tel_east_offset')
 
-        cls.nod_north = cls._get_arg_value(args, cls.key_nod_north, logger)
-        cls.nod_east = cls._get_arg_value(args, cls.key_nod_east, logger)
+        cls.nod_north = cls._get_arg_value(args, cls.key_nod_north)
+        cls.nod_east = cls._get_arg_value(args, cls.key_nod_east)
         
         return True
 
