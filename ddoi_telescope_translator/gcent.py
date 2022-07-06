@@ -1,7 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.gxy import OffsetGuiderCoordXY
 
 import ktl
@@ -64,10 +63,10 @@ class MoveToGuiderCenter(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_inst_x = utils.config_param(cfg, 'tel_keys', 'inst_x1')
-        cls.key_inst_y = utils.config_param(cfg, 'tel_keys', 'inst_y1')
+        cls.key_inst_x = cls._config_param(cfg, 'tel_keys', 'inst_x1')
+        cls.key_inst_y = cls._config_param(cfg, 'tel_keys', 'inst_y1')
 
-        parser = utils.add_inst_arg(parser, cfg)
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
             (cls.key_inst_x, {'type': float,
@@ -75,7 +74,7 @@ class MoveToGuiderCenter(TelescopeBase):
             (cls.key_inst_y, {'type': float,
                               'help': 'The Y pixel position to move to guider center.'})
             ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -92,12 +91,12 @@ class MoveToGuiderCenter(TelescopeBase):
         :return: bool
         """
         if not hasattr(cls, 'key_inst_x'):
-            cls.key_inst_x = utils.config_param(cfg, 'tel_keys', 'inst_x1')
+            cls.key_inst_x = cls._config_param(cfg, 'tel_keys', 'inst_x1')
         if not hasattr(cls, 'key_inst_y'):
-            cls.key_inst_y = utils.config_param(cfg, 'tel_keys', 'inst_y1')
+            cls.key_inst_y = cls._config_param(cfg, 'tel_keys', 'inst_y1')
 
-        cls.current_x = utils.get_arg_value(args, cls.key_inst_x, logger)
-        cls.current_y = utils.get_arg_value(args, cls.key_inst_y, logger)
+        cls.current_x = cls._get_arg_value(args, cls.key_inst_x, logger)
+        cls.current_y = cls._get_arg_value(args, cls.key_inst_y, logger)
 
         return True
 
@@ -116,15 +115,14 @@ class MoveToGuiderCenter(TelescopeBase):
         if not hasattr(cls, 'current_x'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        inst = cls.get_inst_name(cls, args, cfg)
+        serv_name = cls._config_param(cfg, 'ktl_serv', inst)
 
-        inst = utils.get_inst_name(args, cfg, cls.__name__)
+        guider_cent_x = cls._config_param(cfg, f'{inst}_parameters', 'guider_cent_x')
+        guider_cent_y = cls._config_param(cfg, f'{inst}_parameters', 'guider_cent_y')
 
-        guider_cent_x = utils.config_param(cfg, f'{inst}_parameters', 'guider_cent_x')
-        guider_cent_y = utils.config_param(cfg, f'{inst}_parameters', 'guider_cent_y')
-
-        ktl_pixel_scale = utils.config_param(cfg, f"ktl_kw_{args['instrument']}",
-                                             'guider_pix_scale')
+        ktl_pixel_scale = cls._config_param(cfg, f"ktl_kw_{inst}",
+                                            'guider_pix_scale')
         guider_pix_scale = ktl.read(serv_name, ktl_pixel_scale)
 
         dx = guider_pix_scale * (cls.current_x - guider_cent_x)

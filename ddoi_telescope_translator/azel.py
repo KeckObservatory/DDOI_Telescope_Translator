@@ -48,8 +48,8 @@ class OffsetAzEl(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_az_offset = utils.config_param(cfg, 'ob_keys', 'az_offset')
-        cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
+        cls.key_az_offset = cls._config_param(cfg, 'ob_keys', 'az_offset')
+        cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'el_offset')
 
         args_to_add = OrderedDict([
             (cls.key_az_offset, {'type': float,
@@ -57,7 +57,7 @@ class OffsetAzEl(TelescopeBase):
             (cls.key_el_offset, {'type': float,
                                  'help': 'The offset in Elevation in degrees.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -74,12 +74,12 @@ class OffsetAzEl(TelescopeBase):
         :return: bool
         """
         if not hasattr(cls, 'key_az_offset'):
-            cls.key_az_offset = utils.config_param(cfg, 'ob_keys', 'az_offset')
+            cls.key_az_offset = cls._config_param(cfg, 'ob_keys', 'az_offset')
         if not hasattr(cls, 'key_el_offset'):
-            cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'el_offset')
+            cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'el_offset')
 
-        cls.az_off = utils.get_arg_value(args, cls.key_az_offset, logger)
-        cls.el_off = utils.get_arg_value(args, cls.key_el_offset, logger)
+        cls.az_off = cls._get_arg_value(args, cls.key_az_offset, logger)
+        cls.el_off = cls._get_arg_value(args, cls.key_el_offset, logger)
 
         return True
 
@@ -98,14 +98,14 @@ class OffsetAzEl(TelescopeBase):
         if not hasattr(cls, 'az_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'az_offset': cls.az_off,
             'el_offset': cls.el_off,
             'relative_current': 't'
         }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
         sleep(3)
 
@@ -121,4 +121,4 @@ class OffsetAzEl(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls, cfg, cls.serv_name, logger)

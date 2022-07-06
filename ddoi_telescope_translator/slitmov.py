@@ -1,7 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIDetectorAngleUndefined
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-from ddoi_telescope_translator import tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
 
 import math
@@ -49,16 +48,16 @@ class MoveAlongSlit(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_slit_offset = utils.config_param(cfg, 'ob_keys', 'inst_slit_offset')
+        cls.key_slit_offset = cls._config_param(cfg, 'ob_keys', 'inst_slit_offset')
 
-        parser = utils.add_inst_arg(parser, cfg)
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
             (cls.key_slit_offset, {'type': float,
                                   'help': 'The number of arcseconds to offset '
                                           'object along the slit.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -89,13 +88,13 @@ class MoveAlongSlit(TelescopeBase):
         :return: None
         """
         if not hasattr(cls, 'key_slit_offset'):
-            cls.key_slit_offset = utils.config_param(cfg, 'ob_keys', 'inst_slit_offset')
+            cls.key_slit_offset = cls._config_param(cfg, 'ob_keys', 'inst_slit_offset')
 
-        slit_offset = utils.get_arg_value(args, cls.key_slit_offset, logger)
+        slit_offset = cls._get_arg_value(args, cls.key_slit_offset, logger)
 
-        inst = utils.get_inst_name(args, cfg, cls.__name__)
+        inst = cls.get_inst_name(cls, args, cfg)
 
-        det_angle = utils.config_param(cfg, f'{inst}_parameters', 'det_angle')
+        det_angle = cls._config_param(cfg, f'{inst}_parameters', 'det_angle')
 
         try:
             det_angle = float()
@@ -106,11 +105,11 @@ class MoveAlongSlit(TelescopeBase):
         dx = slit_offset * math.sin(math.radians(det_angle))
         dy = slit_offset * math.cos(math.radians(det_angle))
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         # run mxy with the calculated offsets
-        key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
-        key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
+        key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
+        key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
         OffsetXY.execute({key_x_offset: dx, key_y_offset: dy,
                           'instrument': inst}, cfg=cfg)
 

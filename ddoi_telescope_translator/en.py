@@ -49,8 +49,8 @@ class OffsetEastNorth(TelescopeBase):
 
         :return: <ArgumentParser>
         """
-        cls.key_east_offset = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
-        cls.key_north_offset = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+        cls.key_east_offset = cls._config_param(cfg, 'ob_keys', 'tel_east_offset')
+        cls.key_north_offset = cls._config_param(cfg, 'ob_keys', 'tel_north_offset')
 
         args_to_add = OrderedDict([
             (cls.key_east_offset, {'type': float,
@@ -58,7 +58,7 @@ class OffsetEastNorth(TelescopeBase):
             (cls.key_north_offset, {'type': float,
                                     'help': 'The offset North in arcseconds.'})
             ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -75,14 +75,14 @@ class OffsetEastNorth(TelescopeBase):
         :return: bool
         """
         if not hasattr(cls, 'key_east_offset'):
-            cls.key_east_offset = utils.config_param(cfg, 'ob_keys',
+            cls.key_east_offset = cls._config_param(cfg, 'ob_keys',
                                                      'tel_east_offset')
         if not hasattr(cls, 'key_north_offset'):
-            cls.key_north_offset = utils.config_param(cfg, 'ob_keys',
+            cls.key_north_offset = cls._config_param(cfg, 'ob_keys',
                                                       'tel_north_offset')
 
-        cls.east_off = utils.get_arg_value(args, cls.key_east_offset, logger)
-        cls.north_off = utils.get_arg_value(args, cls.key_north_offset, logger)
+        cls.east_off = cls._get_arg_value(args, cls.key_east_offset, logger)
+        cls.north_off = cls._get_arg_value(args, cls.key_north_offset, logger)
 
         if utils.check_for_zero_offsets(cls.east_off, cls.north_off, logger):
             return False
@@ -104,14 +104,14 @@ class OffsetEastNorth(TelescopeBase):
         if not hasattr(cls, 'east_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'ra_offset': cls.east_off,
             'dec_offset': cls.north_off,
             'relative_current': 't'
         }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
         return
 
@@ -127,4 +127,4 @@ class OffsetEastNorth(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)

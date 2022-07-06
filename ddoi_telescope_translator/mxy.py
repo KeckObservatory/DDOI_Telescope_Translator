@@ -3,7 +3,6 @@ from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ddoi_telescope_translator.tel_utils as utils
 
-import math
 from collections import OrderedDict
 
 
@@ -52,10 +51,10 @@ class OffsetXY(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
-        cls.key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
+        cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
+        cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
 
-        parser = utils.add_inst_arg(parser, cfg)
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
             (cls.key_x_offset, {'type': float,
@@ -65,7 +64,7 @@ class OffsetXY(TelescopeBase):
                                 'help': 'The offset in the direction '
                                         'perpendicular to CCD columns [arcsec]'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -82,15 +81,15 @@ class OffsetXY(TelescopeBase):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
+        cls.inst = cls.get_inst_name(cls, args, cfg)
 
         if not hasattr(cls, 'key_x_offset'):
-            cls.key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
+            cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
         if not hasattr(cls, 'key_y_offset'):
-            cls.key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
+            cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
 
-        cls.x_offset = utils.get_arg_value(args, cls.key_x_offset, logger)
-        cls.y_offset = utils.get_arg_value(args, cls.key_y_offset, logger)
+        cls.x_offset = cls._get_arg_value(args, cls.key_x_offset, logger)
+        cls.y_offset = cls._get_arg_value(args, cls.key_y_offset, logger)
 
         if utils.check_for_zero_offsets(cls.x_offset, cls.y_offset, logger):
             return False
@@ -112,16 +111,17 @@ class OffsetXY(TelescopeBase):
         if not hasattr(cls, 'x_offset'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
-        det_u, det_v = cls.transform_detector(cfg, cls.x_offset,
-                                              cls.y_offset, cls.inst)
+        det_u, det_v = utils.transform_detector(cls._config_param, cfg,
+                                                cls.write_msg, cls.x_offset,
+                                                cls.y_offset, cls.inst)
 
         key_val = {
             'inst_x_offset': det_u,
             'inst_y_offset': det_v,
             'relative_current': 't'}
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -135,18 +135,18 @@ class OffsetXY(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)
 
-    @classmethod
-    def transform_detector(cls, cfg, x, y, inst):
-        det_ang = utils.config_param(cfg, f'{inst}_parameters', 'det_angle')
-        try:
-            det_ang = float()
-        except (ValueError, TypeError):
-            msg = 'ERROR, could not determine detector angle'
-            utils.write_msg(cls.logger, msg, print_only=False)
-
-        det_u = x * math.cos(det_ang) + y * math.sin(det_ang)
-        det_v = y * math.cos(det_ang) - x * math.sin(det_ang)
-
-        return det_u, det_v
+    # @classmethod
+    # def transform_detector(cls, cfg, x, y, inst):
+    #     det_ang = cls._config_param(cfg, f'{inst}_parameters', 'det_angle')
+    #     try:
+    #         det_ang = float()
+    #     except (ValueError, TypeError):
+    #         msg = 'ERROR, could not determine detector angle'
+    #         cls.write_msg(cls.logger, msg, print_only=False)
+    #
+    #     det_u = x * math.cos(det_ang) + y * math.sin(det_ang)
+    #     det_v = y * math.cos(det_ang) - x * math.sin(det_ang)
+    #
+    #     return det_u, det_v

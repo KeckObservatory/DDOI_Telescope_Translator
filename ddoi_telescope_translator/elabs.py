@@ -1,8 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
 import ktl
 from collections import OrderedDict
 
@@ -50,13 +48,13 @@ class MoveToElevation(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'tel_elevation')
+        cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'tel_elevation')
 
         args_to_add = OrderedDict([
             (cls.key_el_offset, {'type': float,
                                 'help': 'The offset in Elevation in degrees.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=True)
+        parser = cls._add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -78,9 +76,9 @@ class MoveToElevation(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_el_offset'):
-            cls.key_el_offset = utils.config_param(cfg, 'ob_keys', 'tel_elevation')
+            cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'tel_elevation')
 
-        cls.el_offset = utils.get_arg_value(args, cls.key_el_offset, logger)
+        cls.el_offset = cls._get_arg_value(args, cls.key_el_offset, logger)
 
         return True
 
@@ -99,15 +97,15 @@ class MoveToElevation(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         # only print the elevation
         if cls.print_only:
-            ktl_elevation = utils.config_param(cfg, 'ktl_kw_dcs', 'elevation')
+            ktl_elevation = cls._config_param(cfg, 'ktl_kw_dcs', 'elevation')
             el_value = ktl.read(serv_name, ktl_elevation)
 
             msg = f"Current Elevation = {el_value}"
-            utils.write_msg(logger, msg, print_only=True)
+            cls.write_msg(logger, msg, print_only=True)
 
             return
 
@@ -116,7 +114,7 @@ class MoveToElevation(TelescopeBase):
             'target_frame': 'mount',
             'move_tel': 1
         }
-        utils.write_to_kw(cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
 
     @classmethod

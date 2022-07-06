@@ -1,6 +1,5 @@
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.en import OffsetEastNorth
 
 import ktl
@@ -43,7 +42,7 @@ class OffsetBackFromNod(TelescopeBase):
         cfg = cls._load_config(cfg)
 
         # add inst parameter as optional
-        parser = utils.add_inst_arg(parser, cfg, is_req=False)
+        parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -73,19 +72,19 @@ class OffsetBackFromNod(TelescopeBase):
 
         :return: None
         """
-        inst = utils.get_inst_name(args, cfg, cls.__name__)
+        inst = cls.get_inst_name(cls, args, cfg)
 
-        serv_name = utils.config_param(cfg, 'ktl_serv', inst)
+        serv_name = cls._config_param(cfg, 'ktl_serv', inst)
 
         if not hasattr(cls, 'key_east_offset'):
-            cls.key_east_offset = utils.config_param(cfg, 'ob_keys',
+            cls.key_east_offset = cls._config_param(cfg, 'ob_keys',
                                                      'tel_east_offset')
         if not hasattr(cls, 'key_north_offset'):
-            cls.key_north_offset = utils.config_param(cfg, 'ob_keys',
+            cls.key_north_offset = cls._config_param(cfg, 'ob_keys',
                                                       'tel_north_offset')
 
-        ktl_nodded_north = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_north')
-        ktl_nodded_east = utils.config_param(cfg, f'ktl_kw_{inst}', 'nod_east')
+        ktl_nodded_north = cls._config_param(cfg, f'ktl_kw_{inst}', 'nod_north')
+        ktl_nodded_east = cls._config_param(cfg, f'ktl_kw_{inst}', 'nod_east')
 
         nodded_north = ktl.read(serv_name, ktl_nodded_north)
         nodded_east = ktl.read(serv_name, ktl_nodded_east)

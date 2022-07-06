@@ -1,8 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
 import ktl
 from collections import OrderedDict
 
@@ -61,10 +59,10 @@ class SetNodValues(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_nod_north = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
-        cls.key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+        cls.key_nod_north = cls._config_param(cfg, 'ob_keys', 'tel_north_offset')
+        cls.key_nod_east = cls._config_param(cfg, 'ob_keys', 'tel_east_offset')
 
-        parser = utils.add_inst_arg(parser, cfg)
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
             (cls.key_nod_north, {'type': float,
@@ -72,7 +70,7 @@ class SetNodValues(TelescopeBase):
             (cls.key_nod_east, {'type': float,
                                 'help': 'Set the East Nod value [arcseconds]'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=True)
+        parser = cls._add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -88,7 +86,7 @@ class SetNodValues(TelescopeBase):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
+        cls.inst = cls.get_inst_name(cls, args, cfg)
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)
@@ -97,12 +95,12 @@ class SetNodValues(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_nod_north'):
-            cls.key_nod_north = utils.config_param(cfg, 'ob_keys', 'tel_north_offset')
+            cls.key_nod_north = cls._config_param(cfg, 'ob_keys', 'tel_north_offset')
         if not hasattr(cls, 'key_nod_east'):
-            cls.key_nod_east = utils.config_param(cfg, 'ob_keys', 'tel_east_offset')
+            cls.key_nod_east = cls._config_param(cfg, 'ob_keys', 'tel_east_offset')
 
-        cls.nod_north = utils.get_arg_value(args, cls.key_nod_north, logger)
-        cls.nod_east = utils.get_arg_value(args, cls.key_nod_east, logger)
+        cls.nod_north = cls._get_arg_value(args, cls.key_nod_north, logger)
+        cls.nod_east = cls._get_arg_value(args, cls.key_nod_east, logger)
         
         return True
 
@@ -121,15 +119,15 @@ class SetNodValues(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = utils.config_param(cfg, 'ktl_serv', cls.inst)
+        serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
 
         if cls.print_only:
-            key_nod_north = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'nod_north')
-            key_nod_east = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'nod_east')
+            key_nod_north = cls._config_param(cfg, f'ktl_kw_{cls.inst}', 'nod_north')
+            key_nod_east = cls._config_param(cfg, f'ktl_kw_{cls.inst}', 'nod_east')
 
             msg = f"Current Nod Values N: {ktl.read(serv_name, key_nod_north)}, " \
                   f"E: {ktl.read(serv_name, key_nod_east)}"
-            utils.write_msg(logger, msg, print_only=True)
+            cls.write_msg(logger, msg, print_only=True)
 
             return
 
@@ -137,10 +135,10 @@ class SetNodValues(TelescopeBase):
             'nod_north': cls.nod_north,
             'nod_east': cls.nod_east
         }
-        utils.write_to_kw(cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
         msg = f"New Nod Values N: {cls.nod_north}. E: {cls.nod_east}"
-        utils.write_msg(logger, msg)
+        cls.write_msg(logger, msg)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

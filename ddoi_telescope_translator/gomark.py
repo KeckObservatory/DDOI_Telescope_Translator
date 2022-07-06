@@ -3,7 +3,6 @@ from ddoi_telescope_translator.telescope_base import TelescopeBase
 import ddoi_telescope_translator.tel_utils as utils
 
 import ktl
-from collections import OrderedDict
 
 
 class GoToMark(TelescopeBase):
@@ -44,7 +43,7 @@ class GoToMark(TelescopeBase):
         cfg = cls._load_config(cfg)
 
         # add inst parameter as optional
-        parser = utils.add_inst_arg(parser, cfg, is_req=False)
+        parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -74,23 +73,23 @@ class GoToMark(TelescopeBase):
 
         :return: None
         """
-        inst = utils.get_inst_name(args, cfg, cls.__name__)
+        inst = cls.get_inst_name(cls, args, cfg)
 
-        inst_serv_name = utils.config_param(cfg, 'ktl_serv', inst)
-        ktl_ra_mark = utils.config_param(cfg, f'ktl_kw_{inst}', 'ra_mark')
-        ktl_dec_mark = utils.config_param(cfg, f'ktl_kw_{inst}', 'dec_mark')
+        inst_serv_name = cls._config_param(cfg, 'ktl_serv', inst)
+        ktl_ra_mark = cls._config_param(cfg, f'ktl_kw_{inst}', 'ra_mark')
+        ktl_dec_mark = cls._config_param(cfg, f'ktl_kw_{inst}', 'dec_mark')
 
         ra_mark = ktl.read(inst_serv_name, ktl_ra_mark)
         dec_mark = ktl.read(inst_serv_name, ktl_dec_mark)
 
-        cls.dcs_serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.dcs_serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'ra_offset': ra_mark,
             'dec_offset': dec_mark,
             'relative_base': 't'
         }
-        utils.write_to_kw(cfg, cls.dcs_serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.dcs_serv_name, key_val, logger, cls.__name__)
 
 
     @classmethod
@@ -105,6 +104,6 @@ class GoToMark(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cfg, cls.dcs_serv_name, logger)
+        utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)
 
 

@@ -1,8 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
 import ktl
 from time import sleep
 from collections import OrderedDict
@@ -58,7 +56,7 @@ class WaitForTel(TelescopeBase):
             ('auto_resume', {'type': int, 'req': False, 'kw_arg': True,
                              'help': 'The Auto Resume parameter.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -76,9 +74,9 @@ class WaitForTel(TelescopeBase):
         :return: bool
         """
         # max guider exposure
-        cls.timeout = utils.config_param(cfg, 'wftel', 'timeout')
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
-        ktl_auto_activate = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
+        cls.timeout = cls._config_param(cfg, 'wftel', 'timeout')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        ktl_auto_activate = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
 
         cls.auto_resume = args.get('auto_resume', None)
 
@@ -90,12 +88,12 @@ class WaitForTel(TelescopeBase):
 
         if not waited:
             msg = f'tracking was not established in {cls.timeout}'
-            utils.write_msg(logger, msg)
+            cls.write_msg(logger, msg)
             return False
 
         if ktl.read(cls.serv_name, ktl_auto_activate) == 'no':
             msg = 'guider not currently active'
-            utils.write_msg(logger, msg)
+            cls.write_msg(logger, msg)
             return False
 
         return True
@@ -115,8 +113,8 @@ class WaitForTel(TelescopeBase):
         if not hasattr(cls, 'timeout'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        ktl_auto_resume = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
-        ktl_auto_go = utils.config_param(cfg, 'ktl_kw_dcs', 'auto_go')
+        ktl_auto_resume = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
+        ktl_auto_go = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_go')
 
         serv_auto_resume = ktl.cache(cls.serv_name, ktl_auto_resume)
         serv_auto_go = ktl.cache(cls.serv_name, ktl_auto_go)
@@ -127,13 +125,13 @@ class WaitForTel(TelescopeBase):
 
         if not cls.waited_for_val(cls.timeout, serv_auto_resume, cls.autresum):
             msg = 'timeout waiting for dcs keyword AUTRESUM to increment'
-            utils.write_msg(logger, msg)
+            cls.write_msg(logger, msg)
 
         if not cls.waited_for_val(cls.timeout, serv_auto_go, "RESUMEACK",
                                   val2="GUIDE"):
             msg = 'timeout waiting for dcs keyword AUTGO ' \
                   'to go to RESUMEACK or GUIDE'
-            utils.write_msg(logger, msg)
+            cls.write_msg(logger, msg)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

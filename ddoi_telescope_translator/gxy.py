@@ -50,10 +50,10 @@ class OffsetGuiderCoordXY(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_x_offset = utils.config_param(cfg, 'ob_keys', 'guider_x_offset')
-        cls.key_y_offset = utils.config_param(cfg, 'ob_keys', 'guider_y_offset')
+        cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
+        cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'guider_y_offset')
 
-        parser = utils.add_inst_arg(parser, cfg)
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
             (cls.key_x_offset, {'type': float,
@@ -61,7 +61,7 @@ class OffsetGuiderCoordXY(TelescopeBase):
             (cls.key_y_offset, {'type': float,
                                'help': 'The offset in Guider Y offset in pixels.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -77,11 +77,11 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :return: bool
         """
-        key_x_offset = utils.config_param(cfg, 'ob_keys', 'guider_x_offset')
-        key_y_offset = utils.config_param(cfg, 'ob_keys', 'guider_y_offset')
+        key_x_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
+        key_y_offset = cls._config_param(cfg, 'ob_keys', 'guider_y_offset')
 
-        cls.x_off = utils.get_arg_value(args, key_x_offset, logger)
-        cls.y_off = utils.get_arg_value(args, key_y_offset, logger)
+        cls.x_off = cls._get_arg_value(args, key_x_offset, logger)
+        cls.y_off = cls._get_arg_value(args, key_y_offset, logger)
 
         return True
 
@@ -100,14 +100,14 @@ class OffsetGuiderCoordXY(TelescopeBase):
         if not hasattr(cls, 'x_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'guider_x_offset': cls.x_off,
             'guider_y_offset': cls.y_off,
             'relative_current': 't'
         }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
 
     @classmethod
@@ -122,5 +122,5 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)
 

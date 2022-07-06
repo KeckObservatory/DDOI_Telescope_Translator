@@ -30,16 +30,16 @@ class Boiler(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.xxx = utils.config_param(cfg, 'ob_keys', '...')
+        cls.xxx = cls._config_param(cfg, 'ob_keys', '...')
 
         args_to_add = {
             cls.xxx: {'type': float, 'req': True,
                       'help': 'The offset in Azimuth in degrees.'},
             cls.xxx: {'type': float, 'req': True,
                       'help': 'The offset in Elevation in degrees.'}}
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
-        parser = utils.add_inst_arg(parser)
+        parser = cls._add_inst_arg(cls, parser)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -56,7 +56,7 @@ class Boiler(TelescopeBase):
         :return: bool
         """
         if not hasattr(cls, '...'):
-            cls.xxx = utils.config_param(cfg, 'ob_keys', '...')
+            cls.xxx = cls._config_param(cfg, 'ob_keys', '...')
 
         return True
 
@@ -75,14 +75,14 @@ class Boiler(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             '': ,
             '': ,
             '':
         }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
 
         return

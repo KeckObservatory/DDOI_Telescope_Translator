@@ -1,8 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
 import ktl
 from time import sleep
 from collections import OrderedDict
@@ -53,13 +51,13 @@ class RotatePhysicalPosAngle(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_physical_angle')
+        cls.key_rot_angle = cls._config_param(cfg, 'ob_keys', 'rot_physical_angle')
 
         args_to_add = OrderedDict([
             (cls.key_rot_angle, {'type': float,
                                 'help': 'Set the physical rotator position angle [deg].'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=True)
+        parser = cls._add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -82,9 +80,9 @@ class RotatePhysicalPosAngle(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_rot_angle'):
-            cls.key_rot_angle = utils.config_param(cfg, 'ob_keys', 'rot_physical_angle')
+            cls.key_rot_angle = cls._config_param(cfg, 'ob_keys', 'rot_physical_angle')
 
-        cls.rotator_angle = utils.get_arg_value(args, cls.key_rot_angle, logger)
+        cls.rotator_angle = cls._get_arg_value(args, cls.key_rot_angle, logger)
 
         return True
 
@@ -103,11 +101,11 @@ class RotatePhysicalPosAngle(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         if cls.print_only:
-            ktl_rotator_pos = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
-            utils.write_msg(logger, ktl.read(cls.serv_name, ktl_rotator_pos),
+            ktl_rotator_pos = cls._config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
+            cls.write_msg(logger, ktl.read(cls.serv_name, ktl_rotator_pos),
                             print_only=True)
             return
 
@@ -115,7 +113,7 @@ class RotatePhysicalPosAngle(TelescopeBase):
             'rotator_destination': cls.rotator_angle,
             'rotator_mode': 'stationary'
         }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
         sleep(1)
 
@@ -131,8 +129,8 @@ class RotatePhysicalPosAngle(TelescopeBase):
 
         :return: None
         """
-        timeout = utils.config_param(cfg, 'rotpposn', 'timeout')
-        ktl_rotator_status = utils.config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
+        timeout = cls._config_param(cfg, 'rotpposn', 'timeout')
+        ktl_rotator_status = cls._config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
         ktl.waitfor(f'{ktl_rotator_status}=tracking', cls.serv_name, timeout=timeout)
 
         return

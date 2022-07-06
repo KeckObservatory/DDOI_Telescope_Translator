@@ -1,9 +1,5 @@
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-from collections import OrderedDict
-
-
 class MarkBase(TelescopeBase):
     """
     markbase -- set the base telescope coordinates to the current coordinates
@@ -59,12 +55,12 @@ class MarkBase(TelescopeBase):
 
         :return: None
         """
-        serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'mark_base': 'true'
         }
-        utils.write_to_kw(cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

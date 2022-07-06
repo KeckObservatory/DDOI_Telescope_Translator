@@ -1,7 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
 
 import ktl
@@ -56,8 +55,10 @@ class MovePixelXY(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_xpix')
-        cls.key_y_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_ypix')
+        parser = cls._add_inst_arg(cls, parser, cfg)
+
+        cls.key_x_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_xpix')
+        cls.key_y_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_ypix')
 
         args_to_add = OrderedDict([
             (cls.key_x_offset, {'type': float,
@@ -65,7 +66,7 @@ class MovePixelXY(TelescopeBase):
             (cls.key_y_offset, {'type': float,
                                 'help': 'The Instrument Y offset in pixels.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=False)
+        parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -81,15 +82,15 @@ class MovePixelXY(TelescopeBase):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
+        cls.inst = cls.get_inst_name(cls, args, cfg)
 
         if not hasattr(cls, 'key_x_offset'):
-            cls.key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_xpix')
+            cls.key_x_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_xpix')
         if not hasattr(cls, 'key_y_offset'):
-            cls.key_y_offset = utils.config_param(cfg, 'tel_keys', 'inst_offset_ypix')
+            cls.key_y_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_ypix')
 
-        cls.x_offset = utils.get_arg_value(args, cls.key_x_offset, logger)
-        cls.y_offset = utils.get_arg_value(args, cls.key_y_offset, logger)
+        cls.x_offset = cls._get_arg_value(args, cls.key_x_offset, logger)
+        cls.y_offset = cls._get_arg_value(args, cls.key_y_offset, logger)
 
         return True
 
@@ -108,16 +109,16 @@ class MovePixelXY(TelescopeBase):
         if not hasattr(cls, 'x_offset'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = utils.config_param(cfg, 'ktl_serv', cls.inst)
-        ktl_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}',
+        serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
+        ktl_pixel_scale = cls._config_param(cfg, f'ktl_kw_{cls.inst}',
                                             'pixel_scale')
         pixel_scale = ktl.read(serv_name, ktl_pixel_scale)
 
         dx = pixel_scale * cls.x_offset
         dy = pixel_scale * cls.y_offset
 
-        key_x_offset = utils.config_param(cfg, 'ob_keys', 'inst_x_offset')
-        key_y_offset = utils.config_param(cfg, 'ob_keys', 'inst_y_offset')
+        key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
+        key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
 
         OffsetXY.execute({key_x_offset: dx, key_y_offset: dy}, cfg=cfg)
 

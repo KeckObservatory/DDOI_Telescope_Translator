@@ -1,7 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
 from ddoi_telescope_translator.mxy import OffsetXY
 
 import ktl
@@ -65,12 +64,12 @@ class MoveP1ToP2(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_inst_x1 = utils.config_param(cfg, 'tel_keys', 'inst_x1')
-        cls.key_inst_y1 = utils.config_param(cfg, 'tel_keys', 'inst_y1')
-        cls.key_inst_x2 = utils.config_param(cfg, 'tel_keys', 'inst_x2')
-        cls.key_inst_y2 = utils.config_param(cfg, 'tel_keys', 'inst_y2')
+        cls.key_inst_x1 = cls._config_param(cfg, 'tel_keys', 'inst_x1')
+        cls.key_inst_y1 = cls._config_param(cfg, 'tel_keys', 'inst_y1')
+        cls.key_inst_x2 = cls._config_param(cfg, 'tel_keys', 'inst_x2')
+        cls.key_inst_y2 = cls._config_param(cfg, 'tel_keys', 'inst_y2')
 
-        parser = utils.add_inst_arg(parser, cfg, is_req=False)
+        parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
 
         args_to_add = OrderedDict([
             (cls.key_inst_x1, {'type': float,
@@ -82,7 +81,7 @@ class MoveP1ToP2(TelescopeBase):
             (cls.key_inst_y2, {'type': float,
                                'help': 'The Y pixel position of the detector position 2.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=True)
+        parser = cls._add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -98,7 +97,7 @@ class MoveP1ToP2(TelescopeBase):
 
         :return: bool
         """
-        cls.inst = utils.get_inst_name(args, cfg, cls.__name__)
+        cls.inst = cls.get_inst_name(cls, args, cfg)
 
         tel_key_list = ['inst_x1', 'inst_y1', 'inst_x2', 'inst_y2']
         cls.print_only = args.get('print_only', False)
@@ -108,11 +107,11 @@ class MoveP1ToP2(TelescopeBase):
         cls.coords = {}
         for tel_key in tel_key_list:
             if not hasattr(cls, tel_key):
-                key_inst = utils.config_param(cfg, 'tel_keys', tel_key)
+                key_inst = cls._config_param(cfg, 'tel_keys', tel_key)
             else:
                 key_inst = getattr(cls, tel_key)
 
-            cls.coords[tel_key] = utils.get_arg_value(args, key_inst, logger)
+            cls.coords[tel_key] = cls._get_arg_value(args, key_inst, logger)
 
         return True
 
@@ -131,8 +130,8 @@ class MoveP1ToP2(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.inst_serv_name = utils.config_param(cfg, 'ktl_serv', cls.inst)
-        ktl_pixel_scale = utils.config_param(cfg, f'ktl_kw_{cls.inst}', 'pixel_scale')
+        cls.inst_serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
+        ktl_pixel_scale = cls._config_param(cfg, f'ktl_kw_{cls.inst}', 'pixel_scale')
 
         pixel_scale = ktl.read(cls.inst_serv_name, ktl_pixel_scale)
 
@@ -141,18 +140,18 @@ class MoveP1ToP2(TelescopeBase):
 
         if cls.print_only:
             msg = f"Required shift is X: {dx} Y: {dy}"
-            utils.write_msg(logger, msg, print_only=True)
+            cls.write_msg(logger, msg, print_only=True)
             return
 
-        key_x_offset = utils.config_param(cfg, 'tel_keys', 'inst_x_offset')
-        key_y_offset = utils.config_param(cfg, 'tel_keys', 'inst_y_offset')
+        key_x_offset = cls._config_param(cfg, 'tel_keys', 'inst_x_offset')
+        key_y_offset = cls._config_param(cfg, 'tel_keys', 'inst_y_offset')
         OffsetXY.execute({key_x_offset: dx, key_y_offset: dy})
 
         msg = f"Moving target from pixel: ({cls.coords['inst_x1']}," \
               f"{cls.coords['inst_y1']}) to ({cls.coords['inst_x1']}," \
               f"{cls.coords['inst_y1']}),  magnitude X: {dx} Y: {dy}"
 
-        utils.write_msg(logger, msg)
+        cls.write_msg(logger, msg)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

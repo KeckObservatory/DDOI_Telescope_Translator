@@ -1,8 +1,6 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptionsimport DDOIKTLTimeOut
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
 import ktl
 from collections import OrderedDict
 
@@ -72,7 +70,7 @@ class PMFM(TelescopeBase):
             ('pmfm', {'type': float,
                      'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=True)
+        parser = cls._add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -102,21 +100,21 @@ class PMFM(TelescopeBase):
 
         :return: None
         """
-        serv_name = utils.config_param(cfg, 'ktl_serv', 'acs')
-        ktl_pmfm = utils.config_param(cfg, 'ktl_kw_acs', 'pmfm')
+        serv_name = cls._config_param(cfg, 'ktl_serv', 'acs')
+        ktl_pmfm = cls._config_param(cfg, 'ktl_kw_acs', 'pmfm')
         if args.get('print_only', False):
             current_pmfm = ktl.read(serv_name, ktl_pmfm)
-            utils.write_msg(f"The current PMFM is {current_pmfm}")
+            cls.write_msg(f"The current PMFM is {current_pmfm}")
             return
 
-        pmfm_new = utils.get_arg_value(args, 'pmfm', logger)
+        pmfm_new = cls._get_arg_value(args, 'pmfm', logger)
 
         key_val = {
             'pmfm': pmfm_new
         }
-        utils.write_to_kw(cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
-        timeout = utils.config_param(cfg, 'pmfm', 'timeout')
+        timeout = cls._config_param(cfg, 'pmfm', 'timeout')
         try:
             ktl.waitfor(f'pmfm={pmfm_new}', service=serv_name, timeout=timeout)
         except ktl.TimeoutException:

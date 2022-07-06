@@ -1,7 +1,5 @@
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
 
 class GoToBase(TelescopeBase):
     """
@@ -54,14 +52,14 @@ class GoToBase(TelescopeBase):
 
         :return: None
         """
-        cls.serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'ra_offset': 0.0,
             'dec_offset': 0.0,
             'relative_base': 't'
         }
-        utils.write_to_kw(cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
 
     @classmethod

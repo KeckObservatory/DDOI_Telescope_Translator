@@ -1,7 +1,5 @@
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
 import ktl
 from collections import OrderedDict
 
@@ -59,15 +57,15 @@ class SetPointingOriginName(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cfg)
 
-        cls.key_po_name = utils.config_param(cfg, 'ob_keys', 'pointing_origin_name')
+        cls.key_po_name = cls._config_param(cfg, 'ob_keys', 'pointing_origin_name')
 
-        parser = utils.add_inst_arg(parser, cfg)
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
             (cls.key_po_name, {'type': str,
                                'help': 'The name of the pointing origin to select'})
         ])
-        parser = utils.add_args(parser, args_to_add, print_only=True)
+        parser = cls._add_args(parser, args_to_add, print_only=True)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -97,24 +95,24 @@ class SetPointingOriginName(TelescopeBase):
 
         :return: None
         """
-        serv_name = utils.config_param(cfg, 'ktl_serv', 'dcs')
+        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
         if not hasattr(cls, 'key_po_name'):
-            cls.key_po_name = utils.config_param(cfg, 'ob_keys', 'pointing_origin_name')
+            cls.key_po_name = cls._config_param(cfg, 'ob_keys', 'pointing_origin_name')
 
         # check if it is only set to print the current values
         if args.get('print_only', False):
-            ktl_po_name = utils.config_param(cfg, 'ktl_kw_dcs', 'pointing_origin_name')
-            utils.write_msg(logger, ktl.read(serv_name, ktl_po_name),
+            ktl_po_name = cls._config_param(cfg, 'ktl_kw_dcs', 'pointing_origin_name')
+            cls.write_msg(logger, ktl.read(serv_name, ktl_po_name),
                             print_only=True)
             return
 
-        po_name = utils.get_arg_value(args, cls.key_po_name, logger)
+        po_name = cls._get_arg_value(args, cls.key_po_name, logger)
 
         key_val = {
             'pointing_origin_name': po_name,
             'pointing_origin_select': 1
         }
-        utils.write_to_kw(cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
