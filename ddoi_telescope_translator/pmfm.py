@@ -1,4 +1,4 @@
-from ddoitranslatormodule.ddoiexceptions.DDOIExceptionsimport DDOIKTLTimeOut
+from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
 from ddoi_telescope_translator.telescope_base import TelescopeBase
 
 import ktl
