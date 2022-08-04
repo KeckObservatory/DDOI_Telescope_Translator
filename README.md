@@ -1,4 +1,4 @@
-# DDOI_Translators
+# DDOI_Telescope_Translators
 
 to install:
 
