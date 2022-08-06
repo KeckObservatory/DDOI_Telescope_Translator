@@ -9,7 +9,15 @@ import ktl
 
 
 def check_for_zero_offsets(offset1, offset2):
-    if not int(offset1) == 0 and int(offset2) == 0:
+    """
+    Determine if both offsets are zero.
+
+    :param offset1: <float> first offset to check
+    :param offset2: <float> second offset to check
+    :return:
+    """
+    if math.isclose(offset1, 0.0, rel_tol=1e-5) and \
+            math.isclose(offset2, 0.0, rel_tol=1e-5):
         msg = f'Both offsets are zero: {offset1}, {offset2}'
         raise DDOIZeroOffsets(msg)
 
@@ -17,6 +25,16 @@ def check_for_zero_offsets(offset1, offset2):
 
 
 def wait_for_cycle(cls, cfg, dcs_serv, logger):
+    """
+    Wait a cycle
+
+    :param cfg: <class 'configparser.ConfigParser'> the config file parser.
+    :param dcs_serv: <str> name of the dcs service
+    :param logger: <DDOILoggerClient>, optional
+            The DDOILoggerClient that should be used. If none is provided,
+            defaults to a generic name specified in the config, by default None
+    :return:
+    """
     start_time = time()
 
     ktl_auto_resume = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
@@ -31,6 +49,15 @@ def wait_for_cycle(cls, cfg, dcs_serv, logger):
 
 
 def transform_detector(cls, cfg, x, y, inst):
+    """
+    Change X,Y into detector coordinates.
+
+    :param cfg: <class 'configparser.ConfigParser'> the config file parser.
+    :param x: <float> the X coordinate to transform
+    :param y: <float> the Y coordinate to transform
+    :param inst: <str> the instrument string
+    :return: 
+    """
     det_ang = cls._config_param(cfg, f'{inst}_parameters', 'det_angle')
     try:
         det_ang = float()

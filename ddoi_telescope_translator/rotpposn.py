@@ -43,19 +43,21 @@ class RotatePhysicalPosAngle(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
-        cls.key_rot_angle = cls._config_param(cfg, 'ob_keys', 'rot_physical_angle')
+        cls.key_rot_angle = cls._config_param(cfg, 'ob_keys',
+                                              'rot_physical_angle')
 
         args_to_add = OrderedDict([
-            (cls.key_rot_angle, {'type': float,
-                                'help': 'Set the physical rotator position angle [deg].'})
+            (cls.key_rot_angle, {
+                'type': float,
+                'help': 'Set the physical rotator position angle [deg].'
+            })
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
 
@@ -68,8 +70,7 @@ class RotatePhysicalPosAngle(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -80,7 +81,8 @@ class RotatePhysicalPosAngle(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_rot_angle'):
-            cls.key_rot_angle = cls._config_param(cfg, 'ob_keys', 'rot_physical_angle')
+            cls.key_rot_angle = cls._config_param(cfg, 'ob_keys',
+                                                  'rot_physical_angle')
 
         cls.rotator_angle = cls._get_arg_value(args, cls.key_rot_angle)
 
@@ -93,8 +95,7 @@ class RotatePhysicalPosAngle(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -104,7 +105,8 @@ class RotatePhysicalPosAngle(TelescopeBase):
         cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
 
         if cls.print_only:
-            ktl_rotator_pos = cls._config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
+            ktl_rotator_pos = cls._config_param(cfg, 'ktl_kw_dcs',
+                                                'rotator_position')
             cls.write_msg(logger, ktl.read(cls.serv_name, ktl_rotator_pos),
                             print_only=True)
             return
@@ -124,13 +126,14 @@ class RotatePhysicalPosAngle(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
         timeout = cls._config_param(cfg, 'rotpposn', 'timeout')
-        ktl_rotator_status = cls._config_param(cfg, 'ktl_kw_dcs', 'rotator_position')
-        ktl.waitfor(f'{ktl_rotator_status}=tracking', cls.serv_name, timeout=timeout)
+        ktl_rotator_status = cls._config_param(cfg, 'ktl_kw_dcs',
+                                               'rotator_position')
+        ktl.waitfor(f'{ktl_rotator_status}=tracking', cls.serv_name,
+                    timeout=timeout)
 
         return

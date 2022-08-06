@@ -18,7 +18,8 @@ class MoveP1ToP2(TelescopeBase):
 
     RUN
         from ddoi_telescope_translator import mov
-        mov.MoveP1ToP2.execute({'inst_x1': 1.0, 'inst_y1': 1.0, 'inst_x2': 1.0, 'inst_y2': 1.0,'instrument': 'kpf'})
+        mov.MoveP1ToP2.execute({'inst_x1': 1.0, 'inst_y1': 1.0, 'inst_x2': 1.0,
+                                'inst_y2': 1.0,'instrument': 'kpf'})
 
     DESCRIPTION
         Given the starting pixel coordinates of an object on a
@@ -56,13 +57,12 @@ class MoveP1ToP2(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         cls.key_inst_x1 = cls._config_param(cfg, 'tel_keys', 'inst_x1')
         cls.key_inst_y1 = cls._config_param(cfg, 'tel_keys', 'inst_y1')
@@ -72,14 +72,22 @@ class MoveP1ToP2(TelescopeBase):
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
 
         args_to_add = OrderedDict([
-            (cls.key_inst_x1, {'type': float,
-                               'help': 'The X pixel position of the detector position 1.'}),
-            (cls.key_inst_y1, {'type': float,
-                               'help': 'The Y pixel position of the detector position 1.'}),
-            (cls.key_inst_x2, {'type': float,
-                               'help': 'The X pixel position of the detector position 2.'}),
-            (cls.key_inst_y2, {'type': float,
-                               'help': 'The Y pixel position of the detector position 2.'})
+            (cls.key_inst_x1, {
+                'type': float,
+                'help': 'The X pixel position of the detector position 1.'
+            }),
+            (cls.key_inst_y1, {
+                'type': float,
+                'help': 'The Y pixel position of the detector position 1.'
+            }),
+            (cls.key_inst_x2, {
+                'type': float,
+                'help': 'The X pixel position of the detector position 2.'
+            }),
+            (cls.key_inst_y2, {
+                'type': float,
+                'help': 'The Y pixel position of the detector position 2.'
+            })
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
 
@@ -92,8 +100,7 @@ class MoveP1ToP2(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -122,8 +129,7 @@ class MoveP1ToP2(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -131,7 +137,8 @@ class MoveP1ToP2(TelescopeBase):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         cls.inst_serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
-        ktl_pixel_scale = cls._config_param(cfg, f'ktl_kw_{cls.inst}', 'pixel_scale')
+        ktl_pixel_scale = cls._config_param(cfg, f'ktl_kw_{cls.inst}',
+                                            'pixel_scale')
 
         pixel_scale = ktl.read(cls.inst_serv_name, ktl_pixel_scale)
 
@@ -160,8 +167,7 @@ class MoveP1ToP2(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

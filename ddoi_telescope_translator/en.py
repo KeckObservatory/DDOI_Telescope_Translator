@@ -44,8 +44,7 @@ class OffsetEastNorth(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
@@ -69,17 +68,16 @@ class OffsetEastNorth(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
         if not hasattr(cls, 'key_east_offset'):
             cls.key_east_offset = cls._config_param(cfg, 'ob_keys',
-                                                     'tel_east_offset')
+                                                    'tel_east_offset')
         if not hasattr(cls, 'key_north_offset'):
             cls.key_north_offset = cls._config_param(cfg, 'ob_keys',
-                                                      'tel_north_offset')
+                                                     'tel_north_offset')
 
         cls.east_off = cls._get_arg_value(args, cls.key_east_offset)
         cls.north_off = cls._get_arg_value(args, cls.key_north_offset)
@@ -96,8 +94,7 @@ class OffsetEastNorth(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -122,8 +119,7 @@ class OffsetEastNorth(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

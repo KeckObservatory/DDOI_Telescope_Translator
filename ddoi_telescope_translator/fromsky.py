@@ -33,13 +33,12 @@ class OffsetBackFromNod(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         # add inst parameter as optional
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
@@ -53,8 +52,7 @@ class OffsetBackFromNod(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -67,8 +65,7 @@ class OffsetBackFromNod(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -99,8 +96,7 @@ class OffsetBackFromNod(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

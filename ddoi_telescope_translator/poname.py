@@ -49,13 +49,12 @@ class SetPointingOriginName(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         cls.key_po_name = cls._config_param(cfg, 'ob_keys', 'pointing_origin_name')
 
@@ -76,8 +75,7 @@ class SetPointingOriginName(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -90,18 +88,19 @@ class SetPointingOriginName(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
         serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
         if not hasattr(cls, 'key_po_name'):
-            cls.key_po_name = cls._config_param(cfg, 'ob_keys', 'pointing_origin_name')
+            cls.key_po_name = cls._config_param(cfg, 'ob_keys',
+                                                'pointing_origin_name')
 
         # check if it is only set to print the current values
         if args.get('print_only', False):
-            ktl_po_name = cls._config_param(cfg, 'ktl_kw_dcs', 'pointing_origin_name')
+            ktl_po_name = cls._config_param(cfg, 'ktl_kw_dcs',
+                                            'pointing_origin_name')
             cls.write_msg(logger, ktl.read(serv_name, ktl_po_name),
                             print_only=True)
             return
@@ -121,8 +120,7 @@ class SetPointingOriginName(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

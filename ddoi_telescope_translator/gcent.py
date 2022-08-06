@@ -17,7 +17,8 @@ class MoveToGuiderCenter(TelescopeBase):
 
     RUN
         from ddoi_telescope_translator import gcent
-        gcent.MoveToGuiderCenter.execute({'inst_x1': 1.0, 'inst_y1': 2.0, 'instrument': 'kpf'})
+        gcent.MoveToGuiderCenter.execute({'inst_x1': 1.0, 'inst_y1': 2.0,
+                                          'instrument': 'kpf'})
 
     DESCRIPTION
         Given the pixel coordinates of an object on a DEIMOS guider image,
@@ -55,13 +56,12 @@ class MoveToGuiderCenter(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         cls.key_inst_x = cls._config_param(cfg, 'tel_keys', 'inst_x1')
         cls.key_inst_y = cls._config_param(cfg, 'tel_keys', 'inst_y1')
@@ -69,11 +69,15 @@ class MoveToGuiderCenter(TelescopeBase):
         parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
-            (cls.key_inst_x, {'type': float,
-                              'help': 'The X pixel position to move to guider center.'}),
-            (cls.key_inst_y, {'type': float,
-                              'help': 'The Y pixel position to move to guider center.'})
-            ])
+            (cls.key_inst_x, {
+                'type': float,
+                'help': 'The X pixel position to move to guider center.'
+            }),
+            (cls.key_inst_y, {
+                'type': float,
+                'help': 'The Y pixel position to move to guider center.'
+            })
+        ])
         parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
@@ -85,8 +89,7 @@ class MoveToGuiderCenter(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -107,8 +110,7 @@ class MoveToGuiderCenter(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -118,8 +120,10 @@ class MoveToGuiderCenter(TelescopeBase):
         inst = cls.get_inst_name(cls, args, cfg)
         serv_name = cls._config_param(cfg, 'ktl_serv', inst)
 
-        guider_cent_x = cls._config_param(cfg, f'{inst}_parameters', 'guider_cent_x')
-        guider_cent_y = cls._config_param(cfg, f'{inst}_parameters', 'guider_cent_y')
+        guider_cent_x = cls._config_param(cfg, f'{inst}_parameters',
+                                          'guider_cent_x')
+        guider_cent_y = cls._config_param(cfg, f'{inst}_parameters',
+                                          'guider_cent_y')
 
         ktl_pixel_scale = cls._config_param(cfg, f"ktl_kw_{inst}",
                                             'guider_pix_scale')
@@ -128,7 +132,8 @@ class MoveToGuiderCenter(TelescopeBase):
         dx = guider_pix_scale * (cls.current_x - guider_cent_x)
         dy = guider_pix_scale * (guider_cent_y - cls.current_y)
 
-        OffsetGuiderCoordXY.execute({'guider_x_offset': dx, 'guider_y_offset': dy})
+        OffsetGuiderCoordXY.execute({'guider_x_offset': dx,
+                                     'guider_y_offset': dy})
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -137,8 +142,7 @@ class MoveToGuiderCenter(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

@@ -43,13 +43,12 @@ class OffsetXY(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
         cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
@@ -57,12 +56,14 @@ class OffsetXY(TelescopeBase):
         parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
-            (cls.key_x_offset, {'type': float,
-                                'help': 'The offset in the direction parallel '
-                                        'to CCD rows [arcsec]'}),
-            (cls.key_y_offset, {'type': float,
-                                'help': 'The offset in the direction '
-                                        'perpendicular to CCD columns [arcsec]'})
+            (cls.key_x_offset, {
+                'type': float,
+                'help': 'The offset in the direction parallel to CCD rows [arcsec]'
+            }),
+            (cls.key_y_offset, {
+                'type': float,
+                'help': 'The offset in the direction perpendicular to CCD columns [arcsec]'
+            })
         ])
         parser = cls._add_args(parser, args_to_add, print_only=False)
 
@@ -76,8 +77,7 @@ class OffsetXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -103,8 +103,7 @@ class OffsetXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -120,7 +119,8 @@ class OffsetXY(TelescopeBase):
         key_val = {
             'inst_x_offset': det_u,
             'inst_y_offset': det_v,
-            'relative_current': 't'}
+            'relative_current': 't'
+        }
         cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
     @classmethod
@@ -130,23 +130,8 @@ class OffsetXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
         utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)
-
-    # @classmethod
-    # def transform_detector(cls, cfg, x, y, inst):
-    #     det_ang = cls._config_param(cfg, f'{inst}_parameters', 'det_angle')
-    #     try:
-    #         det_ang = float()
-    #     except (ValueError, TypeError):
-    #         msg = 'ERROR, could not determine detector angle'
-    #         cls.write_msg(cls.logger, msg, print_only=False)
-    #
-    #     det_u = x * math.cos(det_ang) + y * math.sin(det_ang)
-    #     det_v = y * math.cos(det_ang) - x * math.sin(det_ang)
-    #
-    #     return det_u, det_v

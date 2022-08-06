@@ -42,13 +42,12 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
         cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'guider_y_offset')
@@ -56,10 +55,14 @@ class OffsetGuiderCoordXY(TelescopeBase):
         parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
-            (cls.key_x_offset, {'type': float,
-                               'help': 'The offset in Guider X offset in pixels.'}),
-            (cls.key_y_offset, {'type': float,
-                               'help': 'The offset in Guider Y offset in pixels.'})
+            (cls.key_x_offset, {
+                'type': float,
+                'help': 'The offset in Guider X offset in pixels.'
+            }),
+            (cls.key_y_offset, {
+                'type': float,
+                'help': 'The offset in Guider Y offset in pixels.'
+            })
         ])
         parser = cls._add_args(parser, args_to_add, print_only=False)
 
@@ -72,8 +75,7 @@ class OffsetGuiderCoordXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -92,8 +94,7 @@ class OffsetGuiderCoordXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -117,8 +118,7 @@ class OffsetGuiderCoordXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

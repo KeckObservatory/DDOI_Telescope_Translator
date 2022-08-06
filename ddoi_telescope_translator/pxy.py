@@ -47,13 +47,12 @@ class MovePixelXY(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -77,17 +76,18 @@ class MovePixelXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
         if not hasattr(cls, 'key_x_offset'):
-            cls.key_x_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_xpix')
+            cls.key_x_offset = cls._config_param(cfg, 'tel_keys',
+                                                 'inst_offset_xpix')
         if not hasattr(cls, 'key_y_offset'):
-            cls.key_y_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_ypix')
+            cls.key_y_offset = cls._config_param(cfg, 'tel_keys',
+                                                 'inst_offset_ypix')
 
         cls.x_offset = cls._get_arg_value(args, cls.key_x_offset)
         cls.y_offset = cls._get_arg_value(args, cls.key_y_offset)
@@ -101,8 +101,7 @@ class MovePixelXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -130,8 +129,7 @@ class MovePixelXY(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

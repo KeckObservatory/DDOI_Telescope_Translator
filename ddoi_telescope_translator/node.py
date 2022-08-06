@@ -15,7 +15,9 @@ class SetNodEastValue(TelescopeBase):
 
     RUN
         from ddoi_telescope_translator import nod
-        node.SetNodEastValue.execute({'tcs_offset_north': 10.0, 'tcs_offset_east': 5.0, 'instrument': 'KPF'})
+        node.SetNodEastValue.execute({'tcs_offset_north': 10.0,
+                                      'tcs_offset_east': 5.0,
+                                      'instrument': 'KPF'})
 
     DESCRIPTION
         sets the telescope nod parameters to dE arcsec East
@@ -47,13 +49,12 @@ class SetNodEastValue(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
         # read the config file
-        cfg = cls._load_config(cfg)
+        cfg = cls._load_config(cls, cfg)
 
         cls.key_nod_east = cls._config_param(cfg, 'ob_keys', 'tel_east_offset')
 
@@ -74,8 +75,7 @@ class SetNodEastValue(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -88,7 +88,8 @@ class SetNodEastValue(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_nod_east'):
-            cls.key_nod_east = cls._config_param(cfg, 'ob_keys', 'tel_east_offset')
+            cls.key_nod_east = cls._config_param(cfg, 'ob_keys',
+                                                 'tel_east_offset')
 
         cls.nod_east = cls._get_arg_value(args, cls.key_nod_east)
         
@@ -101,8 +102,7 @@ class SetNodEastValue(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -112,7 +112,8 @@ class SetNodEastValue(TelescopeBase):
         serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
 
         if cls.print_only:
-            key_nod_east = cls._config_param(cfg, f'ktl_kw_{cls.inst}', 'nod_east')
+            key_nod_east = cls._config_param(cfg, f'ktl_kw_{cls.inst}',
+                                             'nod_east')
 
             msg = f"Current Nod Values E: {ktl.read(serv_name, key_nod_east)}"
             cls.write_msg(logger, msg, print_only=True)
@@ -132,8 +133,7 @@ class SetNodEastValue(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """

@@ -47,8 +47,7 @@ class WaitForTel(TelescopeBase):
 
         :param parser: <ArgumentParser>
             the instance of the parser to add the arguments to .
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: <ArgumentParser>
         """
@@ -68,8 +67,7 @@ class WaitForTel(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: bool
         """
@@ -105,8 +103,7 @@ class WaitForTel(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -140,8 +137,7 @@ class WaitForTel(TelescopeBase):
         :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
-        :param cfg: <str> filepath, optional
-            File path to the config that should be used, by default None
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
         :return: None
         """
@@ -150,6 +146,17 @@ class WaitForTel(TelescopeBase):
 
     @staticmethod
     def waited_for_val(timeout, ktl_cache, val1, val2=None):
+        """
+        Wait for ktl keyword value to change to specified value(s)
+
+        @param timeout: <int> the length in seconds to wait
+        @param ktl_cache: <ktl cache> the ktl cached connection
+        @param val1: <> the value to wait for.
+        @param val2: <> optionally specify a second value to wait for.
+
+        @return: <bool> True if the keyword became the awaited value,  False on
+                        timeout.
+        """
         for cnt in range(0, timeout):
             chk_val = ktl_cache.read()
             if not val2:

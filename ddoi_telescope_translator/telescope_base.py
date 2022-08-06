@@ -2,17 +2,14 @@ from ddoitranslatormodule.BaseFunction import TranslatorModuleFunction
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIConfigFileException, DDOIConfigException, DDOIInvalidArguments, DDOIKTLTimeOut
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOINotSelectedInstrument, DDOINoInstrumentDefined
 import configparser
-import argparse
 
 import os
 import ktl
-# import ddoi_telescope_translator.tel_utils as utils
 
 
 class TelescopeBase(TranslatorModuleFunction):
 
-    @staticmethod
-    def _load_config(cfg, args=None):
+    def _load_config(cls, cfg, args=None):
         """
         Load the configuration file for reading
 
@@ -31,11 +28,7 @@ class TelescopeBase(TranslatorModuleFunction):
                 inst = None
 
             if not inst:
-                try:
-                    inst = ktl.read('dcs', 'instrume', timeout=2)
-                except ktl.TimeoutException:
-                    msg = f'timeout reading,  service dcs, keyword: instrume'
-                    raise DDOIKTLTimeOut(msg)
+                inst = cls.read_current_inst(None)
 
             file_name = f"{inst.lower()}_tel_config.ini"
             cfg = f"{cfg_path_base}/ddoi_configurations/{file_name}"
@@ -55,18 +48,18 @@ class TelescopeBase(TranslatorModuleFunction):
         return config
 
     @staticmethod
-    def _config_param(config, section, param_name):
+    def _config_param(cfg, section, param_name):
         """
         Function used to read the config file,  and exit if key or value
         does not exist.
 
-        @param config: <class 'configparser.ConfigParser'> the config file parser.
+        @param cfg: <class 'configparser.ConfigParser'> the config file parser.
         @param section: <str> the section name in the config file.
         @param param_name: <str> the 'key' of the parameter within the section.
         @return: <str> the config file value for the parameter.
         """
         try:
-            param_val = config[section][param_name]
+            param_val = cfg[section][param_name]
         except KeyError:
             raise DDOIConfigException(section, param_name)
 
@@ -170,8 +163,9 @@ class TelescopeBase(TranslatorModuleFunction):
         @param key_val: <dict> {cfg_key_name: new value}
             cfg_key_name = the ktl_keyword_name in the config
         @param logger: <DDOILoggerClient>, optional
-                The DDOILoggerClient that should be used. If none is provided, defaults to
-                a generic name specified in the config, by default None
+                The DDOILoggerClient that should be used. If none is provided,
+                defaults to a generic name specified in the config, by
+                default None
         @param cls_name: The name of the calling class
 
         :return: None
@@ -219,8 +213,18 @@ class TelescopeBase(TranslatorModuleFunction):
         return inst.lower()
 
     def read_current_inst(cls, cfg):
-        ktl_instrument = cls._config_param(cfg, 'ktl_kw_dcs', 'instrument')
-        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        """
+        Determine the current selected instrument 
+        @param cfg:
+        @return:
+        """
+        if cfg:
+            ktl_instrument = cls._config_param(cfg, 'ktl_kw_dcs', 'instrument')
+            serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        else:
+            ktl_instrument = 'instrume'
+            serv_name = 'dcs'
+
         try:
             inst = ktl.read(serv_name, ktl_instrument, timeout=2)
         except ktl.TimeoutException:
@@ -232,6 +236,17 @@ class TelescopeBase(TranslatorModuleFunction):
 
     @staticmethod
     def write_msg(logger, msg, print_only=False):
+        """
+        Write a message to logger if defined,  or to stdout if print_only
+        or logger is not defined.
+
+        @param logger: <DDOILoggerClient>, optional
+                The DDOILoggerClient that should be used. If none is provided,
+                defaults to a generic name specified in the config, by
+                default None
+        @param msg: <str> the message to write
+        @param print_only: <bool> True if it is meant to be printed to stdout
+        """
         if logger and not print_only:
             logger.info(msg)
         else:
