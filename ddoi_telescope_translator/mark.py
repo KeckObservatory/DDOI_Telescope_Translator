@@ -1,4 +1,4 @@
-from ddoi_telescope_translator.telescope_base import TelescopeBase
+from ddoitranslatormodule.BaseTelescope import TelescopeBase
 
 import ktl
 import math

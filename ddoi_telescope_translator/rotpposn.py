@@ -1,5 +1,5 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
-from ddoi_telescope_translator.telescope_base import TelescopeBase
+from ddoitranslatormodule.BaseTelescope import TelescopeBase
 
 import ktl
 from time import sleep
