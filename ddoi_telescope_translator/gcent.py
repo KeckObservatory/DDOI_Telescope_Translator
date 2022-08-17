@@ -120,6 +120,7 @@ class MoveToGuiderCenter(TelescopeBase):
         inst = cls.get_inst_name(cls, args, cfg)
         serv_name = cls._config_param(cfg, 'ktl_serv', inst)
 
+        # these are values that later will be KTL keywords
         guider_cent_x = cls._config_param(cfg, f'{inst}_parameters',
                                           'guider_cent_x')
         guider_cent_y = cls._config_param(cfg, f'{inst}_parameters',
@@ -132,8 +133,11 @@ class MoveToGuiderCenter(TelescopeBase):
         dx = guider_pix_scale * (cls.current_x - guider_cent_x)
         dy = guider_pix_scale * (guider_cent_y - cls.current_y)
 
-        OffsetGuiderCoordXY.execute({'guider_x_offset': dx,
-                                     'guider_y_offset': dy})
+        # get the OB keywords
+        key_gx_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
+        key_gy_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
+
+        OffsetGuiderCoordXY.execute({key_gx_offset: dx, key_gy_offset: dy})
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

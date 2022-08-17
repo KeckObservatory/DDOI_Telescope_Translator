@@ -75,10 +75,10 @@ class OffsetBackFromNod(TelescopeBase):
 
         if not hasattr(cls, 'key_east_offset'):
             cls.key_east_offset = cls._config_param(cfg, 'ob_keys',
-                                                     'tel_east_offset')
+                                                    'tel_east_offset')
         if not hasattr(cls, 'key_north_offset'):
             cls.key_north_offset = cls._config_param(cfg, 'ob_keys',
-                                                      'tel_north_offset')
+                                                     'tel_north_offset')
 
         ktl_nodded_north = cls._config_param(cfg, f'ktl_kw_{inst}', 'nod_north')
         ktl_nodded_east = cls._config_param(cfg, f'ktl_kw_{inst}', 'nod_east')
