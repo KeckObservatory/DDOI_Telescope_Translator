@@ -50,7 +50,7 @@ class GoToBase(TelescopeBase):
 
         :return: None
         """
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'ra_offset': 0.0,

@@ -63,8 +63,8 @@ class MoveToGuiderCenter(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_inst_x = cls._config_param(cfg, 'tel_keys', 'inst_x1')
-        cls.key_inst_y = cls._config_param(cfg, 'tel_keys', 'inst_y1')
+        cls.key_inst_x = cls._cfg_val(cfg, 'tel_keys', 'inst_x1')
+        cls.key_inst_y = cls._cfg_val(cfg, 'tel_keys', 'inst_y1')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -94,9 +94,9 @@ class MoveToGuiderCenter(TelescopeBase):
         :return: bool
         """
         if not hasattr(cls, 'key_inst_x'):
-            cls.key_inst_x = cls._config_param(cfg, 'tel_keys', 'inst_x1')
+            cls.key_inst_x = cls._cfg_val(cfg, 'tel_keys', 'inst_x1')
         if not hasattr(cls, 'key_inst_y'):
-            cls.key_inst_y = cls._config_param(cfg, 'tel_keys', 'inst_y1')
+            cls.key_inst_y = cls._cfg_val(cfg, 'tel_keys', 'inst_y1')
 
         cls.current_x = cls._get_arg_value(args, cls.key_inst_x)
         cls.current_y = cls._get_arg_value(args, cls.key_inst_y)
@@ -118,15 +118,15 @@ class MoveToGuiderCenter(TelescopeBase):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         inst = cls.get_inst_name(cls, args, cfg)
-        serv_name = cls._config_param(cfg, 'ktl_serv', inst)
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', inst)
 
         # these are values that later will be KTL keywords
-        guider_cent_x = cls._config_param(cfg, f'{inst}_parameters',
+        guider_cent_x = cls._cfg_val(cfg, f'{inst}_parameters',
                                           'guider_cent_x')
-        guider_cent_y = cls._config_param(cfg, f'{inst}_parameters',
+        guider_cent_y = cls._cfg_val(cfg, f'{inst}_parameters',
                                           'guider_cent_y')
 
-        ktl_pixel_scale = cls._config_param(cfg, f"ktl_kw_{inst}",
+        ktl_pixel_scale = cls._cfg_val(cfg, f"ktl_kw_{inst}",
                                             'guider_pix_scale')
         guider_pix_scale = ktl.read(serv_name, ktl_pixel_scale)
 
@@ -134,8 +134,8 @@ class MoveToGuiderCenter(TelescopeBase):
         dy = guider_pix_scale * (guider_cent_y - cls.current_y)
 
         # get the OB keywords
-        key_gx_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
-        key_gy_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
+        key_gx_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
+        key_gy_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
 
         OffsetGuiderCoordXY.execute({key_gx_offset: dx, key_gy_offset: dy})
 

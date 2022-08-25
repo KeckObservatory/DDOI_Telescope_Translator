@@ -47,8 +47,8 @@ class OffsetAzEl(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_az_offset = cls._config_param(cfg, 'ob_keys', 'az_offset')
-        cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'el_offset')
+        cls.key_az_offset = cls._cfg_val(cfg, 'ob_keys', 'az_offset')
+        cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'el_offset')
 
         args_to_add = OrderedDict([
             (cls.key_az_offset, {'type': float,
@@ -72,9 +72,9 @@ class OffsetAzEl(TelescopeBase):
         :return: bool
         """
         if not hasattr(cls, 'key_az_offset'):
-            cls.key_az_offset = cls._config_param(cfg, 'ob_keys', 'az_offset')
+            cls.key_az_offset = cls._cfg_val(cfg, 'ob_keys', 'az_offset')
         if not hasattr(cls, 'key_el_offset'):
-            cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'el_offset')
+            cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'el_offset')
 
         cls.az_off = cls._get_arg_value(args, cls.key_az_offset)
         cls.el_off = cls._get_arg_value(args, cls.key_el_offset)
@@ -95,7 +95,7 @@ class OffsetAzEl(TelescopeBase):
         if not hasattr(cls, 'az_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'az_offset': cls.az_off,

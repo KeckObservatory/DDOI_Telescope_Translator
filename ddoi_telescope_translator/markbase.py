@@ -54,7 +54,7 @@ class MarkBase(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'mark_base': 'true'

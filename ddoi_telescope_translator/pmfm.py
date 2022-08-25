@@ -97,8 +97,8 @@ class PMFM(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._config_param(cfg, 'ktl_serv', 'acs')
-        ktl_pmfm = cls._config_param(cfg, 'ktl_kw_acs', 'pmfm')
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'acs')
+        ktl_pmfm = cls._cfg_val(cfg, 'ktl_kw_acs', 'pmfm')
         if args.get('print_only', False):
             current_pmfm = ktl.read(serv_name, ktl_pmfm)
             cls.write_msg(f"The current PMFM is {current_pmfm}")
@@ -111,7 +111,7 @@ class PMFM(TelescopeBase):
         }
         cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
-        timeout = cls._config_param(cfg, 'pmfm', 'timeout')
+        timeout = cls._cfg_val(cfg, 'pmfm', 'timeout')
         try:
             ktl.waitfor(f'pmfm={pmfm_new}', service=serv_name, timeout=timeout)
         except ktl.TimeoutException:

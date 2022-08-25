@@ -37,7 +37,7 @@ def wait_for_cycle(cls, cfg, dcs_serv, logger):
     """
     start_time = time()
 
-    ktl_auto_resume = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
+    ktl_auto_resume = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_resume')
     auto_resume = ktl.read(dcs_serv, ktl_auto_resume)
 
     WaitForTel.execute({"auto_resume": auto_resume})
@@ -58,7 +58,7 @@ def transform_detector(cls, cfg, x, y, inst):
     :param inst: <str> the instrument string
     :return: 
     """
-    det_ang = cls._config_param(cfg, f'{inst}_parameters', 'det_angle')
+    det_ang = cls._cfg_val(cfg, f'{inst}_parameters', 'det_angle')
     try:
         det_ang = float()
     except (ValueError, TypeError):

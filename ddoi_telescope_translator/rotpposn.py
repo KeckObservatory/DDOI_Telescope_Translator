@@ -50,7 +50,7 @@ class RotatePhysicalPosAngle(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_rot_angle = cls._config_param(cfg, 'ob_keys',
+        cls.key_rot_angle = cls._cfg_val(cfg, 'ob_keys',
                                               'rot_physical_angle')
 
         args_to_add = OrderedDict([
@@ -81,7 +81,7 @@ class RotatePhysicalPosAngle(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_rot_angle'):
-            cls.key_rot_angle = cls._config_param(cfg, 'ob_keys',
+            cls.key_rot_angle = cls._cfg_val(cfg, 'ob_keys',
                                                   'rot_physical_angle')
 
         cls.rotator_angle = cls._get_arg_value(args, cls.key_rot_angle)
@@ -102,10 +102,10 @@ class RotatePhysicalPosAngle(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         if cls.print_only:
-            ktl_rotator_pos = cls._config_param(cfg, 'ktl_kw_dcs',
+            ktl_rotator_pos = cls._cfg_val(cfg, 'ktl_kw_dcs',
                                                 'rotator_position')
             cls.write_msg(logger, ktl.read(cls.serv_name, ktl_rotator_pos),
                             print_only=True)
@@ -130,8 +130,8 @@ class RotatePhysicalPosAngle(TelescopeBase):
 
         :return: None
         """
-        timeout = cls._config_param(cfg, 'rotpposn', 'timeout')
-        ktl_rotator_status = cls._config_param(cfg, 'ktl_kw_dcs',
+        timeout = cls._cfg_val(cfg, 'rotpposn', 'timeout')
+        ktl_rotator_status = cls._cfg_val(cfg, 'ktl_kw_dcs',
                                                'rotator_position')
         ktl.waitfor(f'{ktl_rotator_status}=tracking', cls.serv_name,
                     timeout=timeout)

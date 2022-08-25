@@ -42,7 +42,7 @@ class MoveTelescopeFocus(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_tel_focus = cls._config_param(cfg, 'ob_keys', 'tel_foc')
+        cls.key_tel_focus = cls._cfg_val(cfg, 'ob_keys', 'tel_foc')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -79,8 +79,8 @@ class MoveTelescopeFocus(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
-        ktl_tel_foc = cls._config_param(cfg, 'ktl_kw_dcs', 'telescope_focus')
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
+        ktl_tel_foc = cls._cfg_val(cfg, 'ktl_kw_dcs', 'telescope_focus')
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)
@@ -93,11 +93,11 @@ class MoveTelescopeFocus(TelescopeBase):
             return
 
         if not hasattr(cls, 'key_tel_focus'):
-            cls.key_tel_focus = cls._config_param(cfg, 'ob_keys', 'tel_foc')
+            cls.key_tel_focus = cls._cfg_val(cfg, 'ob_keys', 'tel_foc')
 
         focus_move_val = cls._get_arg_value(args, cls.key_tel_focus)
 
-        timeout = int(cls._config_param(cfg, 'telfoc', 'timeout'))
+        timeout = int(cls._cfg_val(cfg, 'telfoc', 'timeout'))
 
         key_val = {
             'telescope_focus': focus_move_val,

@@ -72,9 +72,9 @@ class WaitForTel(TelescopeBase):
         :return: bool
         """
         # max guider exposure
-        cls.timeout = cls._config_param(cfg, 'wftel', 'timeout')
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
-        ktl_auto_activate = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_activate')
+        cls.timeout = cls._cfg_val(cfg, 'wftel', 'timeout')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
+        ktl_auto_activate = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_activate')
 
         cls.auto_resume = args.get('auto_resume', None)
 
@@ -110,8 +110,8 @@ class WaitForTel(TelescopeBase):
         if not hasattr(cls, 'timeout'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        ktl_auto_resume = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_resume')
-        ktl_auto_go = cls._config_param(cfg, 'ktl_kw_dcs', 'auto_go')
+        ktl_auto_resume = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_resume')
+        ktl_auto_go = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_go')
 
         serv_auto_resume = ktl.cache(cls.serv_name, ktl_auto_resume)
         serv_auto_go = ktl.cache(cls.serv_name, ktl_auto_go)

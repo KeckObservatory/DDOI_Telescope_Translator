@@ -73,11 +73,11 @@ class MarkCoords(TelescopeBase):
         """
         inst = cls.get_inst_name(cls, args, cfg)
 
-        dcs_serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        dcs_serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         # for precision read the raw (binary) versions -- in radians.
-        ktl_ra_offset = cls._config_param(cfg, 'ktl_kw_dcs', 'ra_offset')
-        ktl_dec_offset = cls._config_param(cfg, 'ktl_kw_dcs', 'dec_offset')
+        ktl_ra_offset = cls._cfg_val(cfg, 'ktl_kw_dcs', 'ra_offset')
+        ktl_dec_offset = cls._cfg_val(cfg, 'ktl_kw_dcs', 'dec_offset')
 
         current_ra_offset = ktl.read(dcs_serv_name, ktl_ra_offset, binary=True)
         current_dec_offset = ktl.read(dcs_serv_name, ktl_dec_offset, binary=True)
@@ -88,11 +88,11 @@ class MarkCoords(TelescopeBase):
         # There is a bug in DCS where the value of RAOFF read back has been
         # divided by cos(Dec).  That is corrected here.
 
-        ktl_dec = cls._config_param(cfg, 'ktl_kw_dcs', 'declination')
+        ktl_dec = cls._cfg_val(cfg, 'ktl_kw_dcs', 'declination')
         current_dec = ktl.read(dcs_serv_name, ktl_dec, binary=True)
         current_ra_offset = current_ra_offset * math.cos(current_dec)
 
-        inst_serv_name = cls._config_param(cfg, 'ktl_serv', inst)
+        inst_serv_name = cls._cfg_val(cfg, 'ktl_serv', inst)
 
         key_val = {
             'ra_mark': current_ra_offset,

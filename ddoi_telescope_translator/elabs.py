@@ -47,7 +47,7 @@ class MoveToElevation(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'tel_elevation')
+        cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_elevation')
 
         args_to_add = OrderedDict([
             (cls.key_el_offset, {'type': float,
@@ -74,7 +74,7 @@ class MoveToElevation(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_el_offset'):
-            cls.key_el_offset = cls._config_param(cfg, 'ob_keys', 'tel_elevation')
+            cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_elevation')
 
         cls.el_offset = cls._get_arg_value(args, cls.key_el_offset)
 
@@ -94,11 +94,11 @@ class MoveToElevation(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         # only print the elevation
         if cls.print_only:
-            ktl_elevation = cls._config_param(cfg, 'ktl_kw_dcs', 'elevation')
+            ktl_elevation = cls._cfg_val(cfg, 'ktl_kw_dcs', 'elevation')
             el_value = ktl.read(serv_name, ktl_elevation)
 
             msg = f"Current Elevation = {el_value}"

@@ -56,7 +56,7 @@ class SetNodEastValue(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_nod_east = cls._config_param(cfg, 'ob_keys', 'tel_east_offset')
+        cls.key_nod_east = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -88,7 +88,7 @@ class SetNodEastValue(TelescopeBase):
             return True
 
         if not hasattr(cls, 'key_nod_east'):
-            cls.key_nod_east = cls._config_param(cfg, 'ob_keys',
+            cls.key_nod_east = cls._cfg_val(cfg, 'ob_keys',
                                                  'tel_east_offset')
 
         cls.nod_east = cls._get_arg_value(args, cls.key_nod_east)
@@ -109,10 +109,10 @@ class SetNodEastValue(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', cls.inst)
 
         if cls.print_only:
-            key_nod_east = cls._config_param(cfg, f'ktl_kw_{cls.inst}',
+            key_nod_east = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}',
                                              'nod_east')
 
             msg = f"Current Nod Values E: {ktl.read(serv_name, key_nod_east)}"

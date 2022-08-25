@@ -49,8 +49,8 @@ class OffsetGuiderCoordXY(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
-        cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'guider_y_offset')
+        cls.key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
+        cls.key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -79,8 +79,8 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :return: bool
         """
-        key_x_offset = cls._config_param(cfg, 'ob_keys', 'guider_x_offset')
-        key_y_offset = cls._config_param(cfg, 'ob_keys', 'guider_y_offset')
+        key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
+        key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
 
         cls.x_off = cls._get_arg_value(args, key_x_offset)
         cls.y_off = cls._get_arg_value(args, key_y_offset)
@@ -101,7 +101,7 @@ class OffsetGuiderCoordXY(TelescopeBase):
         if not hasattr(cls, 'x_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'guider_x_offset': cls.x_off,
@@ -122,5 +122,5 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls._cfg_val, cfg, cls.serv_name, logger)
 

@@ -73,14 +73,14 @@ class GoToMark(TelescopeBase):
         """
         inst = cls.get_inst_name(cls, args, cfg)
 
-        inst_serv_name = cls._config_param(cfg, 'ktl_serv', inst)
-        ktl_ra_mark = cls._config_param(cfg, f'ktl_kw_{inst}', 'ra_mark')
-        ktl_dec_mark = cls._config_param(cfg, f'ktl_kw_{inst}', 'dec_mark')
+        inst_serv_name = cls._cfg_val(cfg, 'ktl_serv', inst)
+        ktl_ra_mark = cls._cfg_val(cfg, f'ktl_kw_{inst}', 'ra_mark')
+        ktl_dec_mark = cls._cfg_val(cfg, f'ktl_kw_{inst}', 'dec_mark')
 
         ra_mark = ktl.read(inst_serv_name, ktl_ra_mark)
         dec_mark = ktl.read(inst_serv_name, ktl_dec_mark)
 
-        cls.dcs_serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.dcs_serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'ra_offset': ra_mark,
@@ -102,6 +102,6 @@ class GoToMark(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls._cfg_val, cfg, cls.serv_name, logger)
 
 

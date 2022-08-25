@@ -29,7 +29,7 @@ class Boiler(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.xxx = cls._config_param(cfg, 'ob_keys', '...')
+        cls.xxx = cls._cfg_val(cfg, 'ob_keys', '...')
 
         args_to_add = {
             cls.xxx: {'type': float, 'req': True,
@@ -54,7 +54,7 @@ class Boiler(TelescopeBase):
         :return: bool
         """
         if not hasattr(cls, '...'):
-            cls.xxx = cls._config_param(cfg, 'ob_keys', '...')
+            cls.xxx = cls._cfg_val(cfg, 'ob_keys', '...')
 
         return True
 
@@ -72,7 +72,7 @@ class Boiler(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             '': ,

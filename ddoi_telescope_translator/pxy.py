@@ -56,8 +56,8 @@ class MovePixelXY(TelescopeBase):
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
-        cls.key_x_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_xpix')
-        cls.key_y_offset = cls._config_param(cfg, 'tel_keys', 'inst_offset_ypix')
+        cls.key_x_offset = cls._cfg_val(cfg, 'tel_keys', 'inst_offset_xpix')
+        cls.key_y_offset = cls._cfg_val(cfg, 'tel_keys', 'inst_offset_ypix')
 
         args_to_add = OrderedDict([
             (cls.key_x_offset, {'type': float,
@@ -83,10 +83,10 @@ class MovePixelXY(TelescopeBase):
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
         if not hasattr(cls, 'key_x_offset'):
-            cls.key_x_offset = cls._config_param(cfg, 'tel_keys',
+            cls.key_x_offset = cls._cfg_val(cfg, 'tel_keys',
                                                  'inst_offset_xpix')
         if not hasattr(cls, 'key_y_offset'):
-            cls.key_y_offset = cls._config_param(cfg, 'tel_keys',
+            cls.key_y_offset = cls._cfg_val(cfg, 'tel_keys',
                                                  'inst_offset_ypix')
 
         cls.x_offset = cls._get_arg_value(args, cls.key_x_offset)
@@ -108,16 +108,16 @@ class MovePixelXY(TelescopeBase):
         if not hasattr(cls, 'x_offset'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
-        ktl_pixel_scale = cls._config_param(cfg, f'ktl_kw_{cls.inst}',
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', cls.inst)
+        ktl_pixel_scale = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}',
                                             'pixel_scale')
         pixel_scale = ktl.read(serv_name, ktl_pixel_scale)
 
         dx = pixel_scale * cls.x_offset
         dy = pixel_scale * cls.y_offset
 
-        key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
-        key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
+        key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_x_offset')
+        key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_y_offset')
 
         OffsetXY.execute({key_x_offset: dx, key_y_offset: dy}, cfg=cfg)
 

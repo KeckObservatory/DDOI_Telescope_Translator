@@ -64,10 +64,10 @@ class MoveP1ToP2(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_inst_x1 = cls._config_param(cfg, 'tel_keys', 'inst_x1')
-        cls.key_inst_y1 = cls._config_param(cfg, 'tel_keys', 'inst_y1')
-        cls.key_inst_x2 = cls._config_param(cfg, 'tel_keys', 'inst_x2')
-        cls.key_inst_y2 = cls._config_param(cfg, 'tel_keys', 'inst_y2')
+        cls.key_inst_x1 = cls._cfg_val(cfg, 'tel_keys', 'inst_x1')
+        cls.key_inst_y1 = cls._cfg_val(cfg, 'tel_keys', 'inst_y1')
+        cls.key_inst_x2 = cls._cfg_val(cfg, 'tel_keys', 'inst_x2')
+        cls.key_inst_y2 = cls._cfg_val(cfg, 'tel_keys', 'inst_y2')
 
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
 
@@ -114,7 +114,7 @@ class MoveP1ToP2(TelescopeBase):
         cls.coords = {}
         for tel_key in tel_key_list:
             if not hasattr(cls, tel_key):
-                key_inst = cls._config_param(cfg, 'tel_keys', tel_key)
+                key_inst = cls._cfg_val(cfg, 'tel_keys', tel_key)
             else:
                 key_inst = getattr(cls, tel_key)
 
@@ -136,8 +136,8 @@ class MoveP1ToP2(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.inst_serv_name = cls._config_param(cfg, 'ktl_serv', cls.inst)
-        ktl_pixel_scale = cls._config_param(cfg, f'ktl_kw_{cls.inst}',
+        cls.inst_serv_name = cls._cfg_val(cfg, 'ktl_serv', cls.inst)
+        ktl_pixel_scale = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}',
                                             'pixel_scale')
 
         pixel_scale = ktl.read(cls.inst_serv_name, ktl_pixel_scale)
@@ -150,8 +150,8 @@ class MoveP1ToP2(TelescopeBase):
             cls.write_msg(logger, msg, print_only=True)
             return
 
-        key_x_offset = cls._config_param(cfg, 'tel_keys', 'inst_x_offset')
-        key_y_offset = cls._config_param(cfg, 'tel_keys', 'inst_y_offset')
+        key_x_offset = cls._cfg_val(cfg, 'tel_keys', 'inst_x_offset')
+        key_y_offset = cls._cfg_val(cfg, 'tel_keys', 'inst_y_offset')
         OffsetXY.execute({key_x_offset: dx, key_y_offset: dy})
 
         msg = f"Moving target from pixel: ({cls.coords['inst_x1']}," \

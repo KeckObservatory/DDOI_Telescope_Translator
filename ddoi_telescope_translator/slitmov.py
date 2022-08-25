@@ -47,7 +47,7 @@ class MoveAlongSlit(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_slit_offset = cls._config_param(cfg, 'ob_keys',
+        cls.key_slit_offset = cls._cfg_val(cfg, 'ob_keys',
                                                 'inst_slit_offset')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
@@ -87,7 +87,7 @@ class MoveAlongSlit(TelescopeBase):
         :return: None
         """
         if not hasattr(cls, 'key_slit_offset'):
-            cls.key_slit_offset = cls._config_param(cfg, 'ob_keys',
+            cls.key_slit_offset = cls._cfg_val(cfg, 'ob_keys',
                                                     'inst_slit_offset')
 
         slit_offset = cls._get_arg_value(args, cls.key_slit_offset)
@@ -95,7 +95,7 @@ class MoveAlongSlit(TelescopeBase):
         inst = cls.get_inst_name(cls, args, cfg)
 
         # TODO
-        det_angle = cls._config_param(cfg, f'{inst}_parameters', 'det_angle')
+        det_angle = cls._cfg_val(cfg, f'{inst}_parameters', 'det_angle')
 
         try:
             det_angle = float()
@@ -106,11 +106,11 @@ class MoveAlongSlit(TelescopeBase):
         dx = slit_offset * math.sin(math.radians(det_angle))
         dy = slit_offset * math.cos(math.radians(det_angle))
 
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         # run mxy with the calculated offsets
-        key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
-        key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
+        key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_x_offset')
+        key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_y_offset')
         OffsetXY.execute({key_x_offset: dx, key_y_offset: dy,
                           'instrument': inst}, cfg=cfg)
 

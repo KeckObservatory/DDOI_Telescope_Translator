@@ -71,17 +71,17 @@ class OffsetBackFromNod(TelescopeBase):
         """
         inst = cls.get_inst_name(cls, args, cfg)
 
-        serv_name = cls._config_param(cfg, 'ktl_serv', inst)
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', inst)
 
         if not hasattr(cls, 'key_east_offset'):
-            cls.key_east_offset = cls._config_param(cfg, 'ob_keys',
+            cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys',
                                                     'tel_east_offset')
         if not hasattr(cls, 'key_north_offset'):
-            cls.key_north_offset = cls._config_param(cfg, 'ob_keys',
+            cls.key_north_offset = cls._cfg_val(cfg, 'ob_keys',
                                                      'tel_north_offset')
 
-        ktl_nodded_north = cls._config_param(cfg, f'ktl_kw_{inst}', 'nod_north')
-        ktl_nodded_east = cls._config_param(cfg, f'ktl_kw_{inst}', 'nod_east')
+        ktl_nodded_north = cls._cfg_val(cfg, f'ktl_kw_{inst}', 'nod_north')
+        ktl_nodded_east = cls._cfg_val(cfg, f'ktl_kw_{inst}', 'nod_east')
 
         nodded_north = ktl.read(serv_name, ktl_nodded_north)
         nodded_east = ktl.read(serv_name, ktl_nodded_east)

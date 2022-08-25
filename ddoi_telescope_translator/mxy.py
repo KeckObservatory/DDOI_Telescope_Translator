@@ -50,8 +50,8 @@ class OffsetXY(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
-        cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
+        cls.key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_x_offset')
+        cls.key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_y_offset')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -84,9 +84,9 @@ class OffsetXY(TelescopeBase):
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
         if not hasattr(cls, 'key_x_offset'):
-            cls.key_x_offset = cls._config_param(cfg, 'ob_keys', 'inst_x_offset')
+            cls.key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_x_offset')
         if not hasattr(cls, 'key_y_offset'):
-            cls.key_y_offset = cls._config_param(cfg, 'ob_keys', 'inst_y_offset')
+            cls.key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_y_offset')
 
         cls.x_offset = cls._get_arg_value(args, cls.key_x_offset)
         cls.y_offset = cls._get_arg_value(args, cls.key_y_offset)
@@ -110,9 +110,9 @@ class OffsetXY(TelescopeBase):
         if not hasattr(cls, 'x_offset'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
-        det_u, det_v = utils.transform_detector(cls._config_param, cfg,
+        det_u, det_v = utils.transform_detector(cls._cfg_val, cfg,
                                                 cls.write_msg, cls.x_offset,
                                                 cls.y_offset, cls.inst)
 
@@ -134,4 +134,4 @@ class OffsetXY(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls._config_param, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls._cfg_val, cfg, cls.serv_name, logger)

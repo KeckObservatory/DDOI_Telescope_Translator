@@ -56,7 +56,7 @@ class SetPointingOriginName(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_po_name = cls._config_param(cfg, 'ob_keys', 'pointing_origin_name')
+        cls.key_po_name = cls._cfg_val(cfg, 'ob_keys', 'pointing_origin_name')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -92,14 +92,14 @@ class SetPointingOriginName(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._config_param(cfg, 'ktl_serv', 'dcs')
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
         if not hasattr(cls, 'key_po_name'):
-            cls.key_po_name = cls._config_param(cfg, 'ob_keys',
+            cls.key_po_name = cls._cfg_val(cfg, 'ob_keys',
                                                 'pointing_origin_name')
 
         # check if it is only set to print the current values
         if args.get('print_only', False):
-            ktl_po_name = cls._config_param(cfg, 'ktl_kw_dcs',
+            ktl_po_name = cls._cfg_val(cfg, 'ktl_kw_dcs',
                                             'pointing_origin_name')
             cls.write_msg(logger, ktl.read(serv_name, ktl_po_name),
                             print_only=True)
