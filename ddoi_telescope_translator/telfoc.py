@@ -97,7 +97,7 @@ class MoveTelescopeFocus(TelescopeBase):
 
         focus_move_val = cls._get_arg_value(args, cls.key_tel_focus)
 
-        timeout = int(cls._cfg_val(cfg, 'telfoc', 'timeout'))
+        timeout = int(cls._cfg_val(cfg, 'ktl_timeout', 'default'))
 
         key_val = {
             'telescope_focus': focus_move_val,

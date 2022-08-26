@@ -67,7 +67,7 @@ class PMFM(TelescopeBase):
 
         args_to_add = OrderedDict([
             ('pmfm', {'type': float,
-                     'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'})
+                      'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
 
@@ -111,7 +111,7 @@ class PMFM(TelescopeBase):
         }
         cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
-        timeout = cls._cfg_val(cfg, 'pmfm', 'timeout')
+        timeout = cls._cfg_val(cfg, 'ktl_timeout', 'default')
         try:
             ktl.waitfor(f'pmfm={pmfm_new}', service=serv_name, timeout=timeout)
         except ktl.TimeoutException:

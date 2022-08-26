@@ -130,7 +130,7 @@ class RotatePhysicalPosAngle(TelescopeBase):
 
         :return: None
         """
-        timeout = cls._cfg_val(cfg, 'rotpposn', 'timeout')
+        timeout = cls._cfg_val(cfg, 'ktl_timeout', 'rotpposn')
         ktl_rotator_status = cls._cfg_val(cfg, 'ktl_kw_dcs',
                                                'rotator_position')
         ktl.waitfor(f'{ktl_rotator_status}=tracking', cls.serv_name,

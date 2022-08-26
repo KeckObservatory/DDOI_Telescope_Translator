@@ -72,7 +72,7 @@ class WaitForTel(TelescopeBase):
         :return: bool
         """
         # max guider exposure
-        cls.timeout = cls._cfg_val(cfg, 'wftel', 'timeout')
+        cls.timeout = cls._cfg_val(cfg, 'ktl_timeout', 'default')
         cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
         ktl_auto_activate = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_activate')
 

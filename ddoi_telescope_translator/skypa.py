@@ -149,7 +149,7 @@ class SetRotSkyPA(TelescopeBase):
 
         :return: None
         """
-        timeout = cls._cfg_val(cfg, 'skypa', 'timeout')
+        timeout = cls._cfg_val(cfg, 'ktl_timeout', 'skypa')
         ktl_rot_stat = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_status')
         ktl.waitfor(f'{ktl_rot_stat}=8', cls.serv_name, timeout=timeout)
 
