@@ -66,8 +66,8 @@ class PMFM(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         args_to_add = OrderedDict([
-            ('pmfm', {'type': float,
-                      'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'})
+            ('pmfm_nm', {'type': float,
+                         'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
 
@@ -98,22 +98,22 @@ class PMFM(TelescopeBase):
         :return: None
         """
         serv_name = cls._cfg_val(cfg, 'ktl_serv', 'acs')
-        ktl_pmfm = cls._cfg_val(cfg, 'ktl_kw_acs', 'pmfm')
+        ktl_pmfm = cls._cfg_val(cfg, 'ktl_kw_acs', 'pmfm_nm')
         if args.get('print_only', False):
             current_pmfm = ktl.read(serv_name, ktl_pmfm)
             cls.write_msg(f"The current PMFM is {current_pmfm}")
             return
 
-        pmfm_new = cls._get_arg_value(args, 'pmfm')
+        pmfm_new = cls._get_arg_value(args, 'pmfm_nm')
 
         key_val = {
-            'pmfm': pmfm_new
+            'pmfm_nm': pmfm_new
         }
         cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
 
-        timeout = cls._cfg_val(cfg, 'ktl_timeout', 'default')
+        timeout = float(cls._cfg_val(cfg, 'ktl_timeout', 'default'))
         try:
-            ktl.waitfor(f'pmfm={pmfm_new}', service=serv_name, timeout=timeout)
+            ktl.waitfor(f'{ktl_pmfm}={pmfm_new}', service=serv_name, timeout=timeout)
         except ktl.TimeoutException:
             msg = f'{cls.__name__} current pmfm {ktl.read(serv_name, ktl_pmfm)}' \
                   f',  timeout moving to {pmfm_new}.'
