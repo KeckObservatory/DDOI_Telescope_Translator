@@ -15,7 +15,7 @@ scripts = []
 # Define entry points for command-line scripts
 entry_points = {
     'console_scripts': [
-        "translator = ddoitranslatormodule.cli_interface:main",
+        "teltranslator = ddoi_telescope_translator.cli_interface:main",
     ]
     }
 
