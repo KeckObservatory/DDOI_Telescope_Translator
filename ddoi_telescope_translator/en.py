@@ -38,7 +38,7 @@ class OffsetEastNorth(TelescopeBase):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg):
+    def add_cmdline_args(cls, parser, cfg=None):
         """
         The arguments to add to the command line interface.
 
@@ -48,6 +48,9 @@ class OffsetEastNorth(TelescopeBase):
 
         :return: <ArgumentParser>
         """
+        # read the config file
+        cfg = cls._load_config(cls, cfg)
+
         cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset')
         cls.key_north_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_north_offset')
 
@@ -57,6 +60,7 @@ class OffsetEastNorth(TelescopeBase):
             (cls.key_north_offset, {'type': float,
                                     'help': 'The offset North in arcseconds.'})
             ])
+
         parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
