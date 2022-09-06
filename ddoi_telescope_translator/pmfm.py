@@ -101,7 +101,7 @@ class PMFM(TelescopeBase):
         ktl_pmfm = cls._cfg_val(cfg, 'ktl_kw_acs', 'pmfm_nm')
         if args.get('print_only', False):
             current_pmfm = ktl.read(serv_name, ktl_pmfm)
-            cls.write_msg(f"The current PMFM is {current_pmfm}")
+            cls.write_msg(logger, f"The current PMFM is {current_pmfm}")
             return
 
         pmfm_new = cls._get_arg_value(args, 'pmfm_nm')
