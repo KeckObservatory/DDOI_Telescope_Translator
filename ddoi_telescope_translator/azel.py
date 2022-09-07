@@ -52,9 +52,9 @@ class OffsetAzEl(TelescopeBase):
 
         args_to_add = OrderedDict([
             (cls.key_az_offset, {'type': float,
-                                 'help': 'The offset in Azimuth in degrees.'}),
+                                 'help': 'The offset in Azimuth in arcseconds.'}),
             (cls.key_el_offset, {'type': float,
-                                 'help': 'The offset in Elevation in degrees.'})
+                                 'help': 'The offset in Elevation in arcseconds.'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=False)
 
