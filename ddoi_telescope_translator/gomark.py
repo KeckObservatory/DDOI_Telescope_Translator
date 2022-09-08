@@ -102,6 +102,6 @@ class GoToMark(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls._cfg_val, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls, cfg, cls.serv_name, logger)
 
 
