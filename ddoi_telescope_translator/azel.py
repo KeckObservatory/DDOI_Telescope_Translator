@@ -54,7 +54,9 @@ class OffsetAzEl(TelescopeBase):
             (cls.key_az_offset, {'type': float,
                                  'help': 'The offset in Azimuth in arcseconds.'}),
             (cls.key_el_offset, {'type': float,
-                                 'help': 'The offset in Elevation in arcseconds.'})
+                                 'help': 'The offset in Elevation in arcseconds.'}),
+            ('rel_current', {'type': bool, 'kw_arg': True,
+                             'help': 'True if offset is relative to current position.'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=False)
 

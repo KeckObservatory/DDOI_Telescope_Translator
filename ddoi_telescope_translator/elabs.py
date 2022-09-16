@@ -102,7 +102,7 @@ class MoveToElevation(TelescopeBase):
             el_value = ktl.read(serv_name, ktl_elevation)
 
             msg = f"Current Elevation = {el_value}"
-            cls.write_msg(logger, msg, print_only=True)
+            cls.write_msg(logger, msg, val=el_value, print_only=True)
 
             return
 
