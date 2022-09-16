@@ -48,7 +48,8 @@ class OffsetAzEl(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         parser = cls._add_bool_arg(
-            parser, 'relative', 'True if offset is relative to current position.')
+            parser, 'relative',
+            'True if offset is relative to current position.', default=True)
 
         cls.key_az_offset = cls._cfg_val(cfg, 'ob_keys', 'az_offset')
         cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'el_offset')
@@ -98,12 +99,17 @@ class OffsetAzEl(TelescopeBase):
         if not hasattr(cls, 'az_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
+        if args.get('relative', True):
+            relative = 'relative_current'
+        else:
+            relative = 'relative_base'
+
         cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         key_val = {
             'az_offset': cls.az_off,
             'el_offset': cls.el_off,
-            'relative_current': 't'
+            relative: 't'
         }
         cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
 
