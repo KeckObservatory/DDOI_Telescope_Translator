@@ -1,0 +1,40 @@
+common:
+  prefix: ddoi_telescope_translator
+  suffix: null
+
+links:
+  azel:
+    cmd: azel.OffsetAzEl
+  
+  en:
+    cmd: en.OffsetEastNorth
+  
+  gotobase:
+    cmd: gotobase.GoToBase
+  
+  gxy:
+    cmd: gxy.OffsetGuiderCoordXY
+  
+  markbase:
+    cmd: markbase.MarkBase
+  
+  mov:
+    cmd: mov.MoveP1ToP2
+  
+  mxy:
+    cmd: mxy.OffsetXY
+  
+  pmfm:
+    cmd: pmfm.PMFM
+  
+  poname:
+    cmd: poname.SetPointingOriginName
+  
+  pxy:
+    cmd: pxy.MovePixelXY
+  
+  telfoc:
+    cmd: telfoc.MoveTelescopeFocus
+  
+  wftel:
+    cmd: wftel.WaitForTel
