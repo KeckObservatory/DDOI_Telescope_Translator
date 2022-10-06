@@ -9,6 +9,11 @@ links:
   en:
     cmd: en.OffsetEastNorth
   
+  e:
+    cmd: en.OffsetEastNorth
+    args:
+      arg_1: 0
+
   gotobase:
     cmd: gotobase.GoToBase
   
