@@ -48,8 +48,8 @@ class OffsetAzEl(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         parser = cls._add_bool_arg(
-            parser, 'relative',
-            'True if offset is relative to current position.', default=True)
+            parser, 'absolute',
+            'True if offset is relative to current position.', default=False)
 
         cls.key_az_offset = cls._cfg_val(cfg, 'ob_keys', 'az_offset')
         cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'el_offset')
