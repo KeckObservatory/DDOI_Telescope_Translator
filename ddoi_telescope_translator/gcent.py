@@ -63,6 +63,14 @@ class MoveToGuiderCenter(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        key_ktl_gx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'guider_x_offset').upper()
+        key_ktl_gy = cls._cfg_val(cfg, 'ktl_kw_dcs', 'guider_y_offset').upper()
+
+        parser.description = f'Moves telescope X,Y Instrument Guider ' \
+                             f'Coordinates.  Modifies KTL DCS keywords: ' \
+                             f'{key_ktl_gx},  {key_ktl_gy}.'
+
         cls.key_inst_x = cls._cfg_val(cfg, 'tel_keys', 'inst_x1')
         cls.key_inst_y = cls._cfg_val(cfg, 'tel_keys', 'inst_y1')
 

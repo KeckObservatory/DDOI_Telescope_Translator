@@ -50,6 +50,15 @@ class RotatePhysicalPosAngle(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        key_ktl_rotd = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_destination').upper()
+        key_ktl_rotm = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_mode').upper()
+
+        parser.description = f'Set or show the instrument Rotator Physical ' \
+                             f'Position angle.  Modifies DCS KTL keywords: ' \
+                             f'{key_ktl_rotd} and El: {key_ktl_rotm}.'
+
+
         cls.key_rot_angle = cls._cfg_val(cfg, 'ob_keys',
                                               'rot_physical_angle')
 
@@ -131,9 +140,10 @@ class RotatePhysicalPosAngle(TelescopeBase):
         :return: None
         """
         timeout = cls._cfg_val(cfg, 'ktl_timeout', 'rotpposn')
-        ktl_rotator_status = cls._cfg_val(cfg, 'ktl_kw_dcs',
-                                               'rotator_position')
-        ktl.waitfor(f'{ktl_rotator_status}=tracking', cls.serv_name,
-                    timeout=timeout)
+        ktl_rotator_status = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_position')
+
+        if not cls.print_only:
+            ktl.waitfor(f'{ktl_rotator_status}=tracking', service=cls.serv_name,
+                        timeout=float(timeout))
 
         return

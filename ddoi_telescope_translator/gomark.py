@@ -39,7 +39,17 @@ class GoToMark(TelescopeBase):
         :return: <ArgumentParser>
         """
         # read the config file
+
         cfg = cls._load_config(cls, cfg)
+
+        # add the command line description
+        key_ktl_1 = cls._cfg_val(cfg, 'ktl_kw_dcs', 'ra_offset').upper()
+        key_ktl_2 = cls._cfg_val(cfg, 'ktl_kw_dcs', 'dec_offset').upper()
+        key_ktl_3 = cls._cfg_val(cfg, 'ktl_kw_dcs', 'relative_base').upper()
+
+        parser.description = f'Moves telescope X,Y Instrument Guider ' \
+                             f'Coordinates.  Modifies KTL DCS keywords: ' \
+                             f'{key_ktl_1}, {key_ktl_2}, {key_ktl_3}.'
 
         # add inst parameter as optional
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)

@@ -42,6 +42,15 @@ class MoveTelescopeFocus(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        key_ktl_foc = cls._cfg_val(cfg, 'ktl_kw_dcs', 'telescope_focus').upper()
+        key_ktl_sec = cls._cfg_val(cfg, 'ktl_kw_dcs', 'secondary_move').upper()
+
+        parser.description = f'Set/show the telescope secondary position.' \
+                             f'Modifies DCS KTL keywords: {key_ktl_foc}, ' \
+                             f'{key_ktl_sec}.'
+
+
         cls.key_tel_focus = cls._cfg_val(cfg, 'ob_keys', 'tel_foc')
 
         parser = cls._add_inst_arg(cls, parser, cfg)

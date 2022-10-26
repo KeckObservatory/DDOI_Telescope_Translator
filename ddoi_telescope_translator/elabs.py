@@ -47,6 +47,15 @@ class MoveToElevation(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        key_ktl_el = cls._cfg_val(cfg, 'ktl_kw_dcs', 'target_el').upper()
+        key_ktl_tf = cls._cfg_val(cfg, 'ktl_kw_dcs', 'target_frame').upper()
+        key_ktl_mv = cls._cfg_val(cfg, 'ktl_kw_dcs', 'move_tel').upper()
+
+        parser.description = f'Moves telescope to Elevation in degrees.  ' \
+                             f'Modifies KTL DCS keyword: {key_ktl_el}, ' \
+                             f'{key_ktl_mv}, {key_ktl_tf}.'
+
         cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_elevation')
 
         args_to_add = OrderedDict([

@@ -56,15 +56,23 @@ class SetPointingOriginName(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        cls.key_po_name = cls._cfg_val(cfg, 'ob_keys', 'pointing_origin_name')
+        # add the command line description
+        key_ktl_po = cls._cfg_val(cfg, 'ktl_kw_dcs', 'pointing_origin_name').upper()
+        key_ktl_pos = cls._cfg_val(cfg, 'ktl_kw_dcs', 'pointing_origin_select').upper()
 
-        parser = cls._add_inst_arg(cls, parser, cfg)
+        parser.description = f'Set or show the current pointing origin. ' \
+                             f'Modifies DCS KTL Keyword: {key_ktl_po},  {key_ktl_pos}.'
+
+        cls.key_po_name = cls._cfg_val(cfg, 'ob_keys', 'pointing_origin_name')
 
         args_to_add = OrderedDict([
             (cls.key_po_name, {'type': str,
                                'help': 'The name of the pointing origin to select'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
+
+        # add the required instrument
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         return super().add_cmdline_args(parser, cfg)
 

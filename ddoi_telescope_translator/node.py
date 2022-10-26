@@ -56,6 +56,10 @@ class SetNodEastValue(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        parser.description = f'Set the nod parameters.  Modifies Instrument ' \
+                             f'Specific parameters for nodding East.'
+
         cls.key_nod_east = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset')
 
         parser = cls._add_inst_arg(cls, parser, cfg)

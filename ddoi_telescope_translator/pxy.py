@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 class MovePixelXY(TelescopeBase):
     """
-    pxy -- move telescope in pixel coordinates of the DEIMOS detector
+    pxy -- move telescope in pixel coordinates of the Instrument detector
 
     SYNOPSIS
         MovePixelXY.execute({'inst_offset_xpix': float,
@@ -18,7 +18,7 @@ class MovePixelXY(TelescopeBase):
 
     DESCRIPTION
         Move the telescope a given number of pixels in the "x" and "y"
-        directions as defined by the DEIMOS detector.
+        directions as defined by the Instrument detector.
 
     Arguments:
         inst_offset_xpix = offset in the direction parallel with CCD rows [pixels]
@@ -53,6 +53,14 @@ class MovePixelXY(TelescopeBase):
         """
         # read the config file
         cfg = cls._load_config(cls, cfg)
+
+        # add the command line description
+        key_ktl_instx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_x_offset').upper()
+        key_ktl_insty = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_y_offset').upper()
+
+        parser.description = f'move telescope in pixel coordinates of the ' \
+                             f'Instrument detector. Modifies DCS KTL Keyword: ' \
+                             f'{key_ktl_instx} and Y: {key_ktl_insty}.'
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 

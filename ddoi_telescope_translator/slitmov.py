@@ -47,6 +47,14 @@ class MoveAlongSlit(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        key_ktl_instx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_x_offset').upper()
+        key_ktl_insty = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_y_offset').upper()
+
+        parser.description = f'Move object along the slit direction in arcsec.' \
+                             f' Modifies DCS KTL Keywords: ' \
+                             f'{key_ktl_instx}, {key_ktl_insty}.'
+
         cls.key_slit_offset = cls._cfg_val(cfg, 'ob_keys',
                                                 'inst_slit_offset')
 

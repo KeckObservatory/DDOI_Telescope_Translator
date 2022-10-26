@@ -1,4 +1,3 @@
-from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
 from ddoitranslatormodule.BaseTelescope import TelescopeBase
 
 import ktl
@@ -52,7 +51,7 @@ class PMFM(TelescopeBase):
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg=None):
+    def add_cmdline_args(cls, parser, cfg=None, descrip=None):
         """
         The arguments to add to the command line interface.
 
@@ -64,6 +63,12 @@ class PMFM(TelescopeBase):
         """
         # read the config file
         cfg = cls._load_config(cls, cfg)
+
+        # add the command line description
+        key_ktl_pmfm = cls._cfg_val(cfg, 'ktl_kw_acs', 'pmfm_nm').upper()
+
+        parser.description = f'Set the amount of focus mode in the telescope ' \
+                             f'primary. Modifies ACS KTL Keyword: {key_ktl_pmfm}.'
 
         args_to_add = OrderedDict([
             ('pmfm_nm', {'type': float,
@@ -115,12 +120,12 @@ class PMFM(TelescopeBase):
         timeout = float(cls._cfg_val(cfg, 'ktl_timeout', 'default'))
         try:
             ktl.waitfor(f'{ktl_pmfm}={pmfm_new}', service=serv_name, timeout=timeout)
-        except ktl.TimeoutException:
+        except ktl.TimeoutException as err:
             msg = f'{cls.__name__} current pmfm {ktl.read(serv_name, ktl_pmfm)}' \
-                  f',  timeout moving to {pmfm_new}.'
+                  f',  timeout moving to {pmfm_new}. KTL Error: {err}'
             if logger:
                 logger.error(msg)
-            raise DDOIKTLTimeOut(msg)
+            raise ktl.TimeoutException(msg)
 
         return
 

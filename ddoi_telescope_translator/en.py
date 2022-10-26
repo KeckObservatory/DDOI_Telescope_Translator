@@ -51,6 +51,13 @@ class OffsetEastNorth(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        key_ktl_east = cls._cfg_val(cfg, 'ktl_kw_dcs', 'ra_offset').upper()
+        key_ktl_north = cls._cfg_val(cfg, 'ktl_kw_dcs', 'dec_offset').upper()
+
+        parser.description = f'Moves telescope X,Y arcseconds East and North. ' \
+                             f'Modifies KTL DCS Keyword: {key_ktl_east}, ' \
+                             f'{key_ktl_north}.'
+
         cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset')
         cls.key_north_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_north_offset')
 

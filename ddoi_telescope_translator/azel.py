@@ -47,6 +47,16 @@ class OffsetAzEl(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        key_ktl_az = cls._cfg_val(cfg, 'ktl_kw_dcs', 'az_offset').upper()
+        key_ktl_el = cls._cfg_val(cfg, 'ktl_kw_dcs', 'el_offset').upper()
+        key_ktl_rel = cls._cfg_val(cfg, 'ktl_kw_dcs', 'relative_base').upper()
+        key_ktl_cur = cls._cfg_val(cfg, 'ktl_kw_dcs', 'relative_current').upper()
+
+        parser.description = f'Moves telescope X,Y arcseconds in Az and El.  ' \
+                             f'Modifies KTL DCS Keyword: {key_ktl_az}, ' \
+                             f'{key_ktl_el}, {key_ktl_rel}, {key_ktl_cur}.'
+
         parser = cls._add_bool_arg(
             parser, 'absolute',
             'True if offset is relative to current position.', default=False)
@@ -106,6 +116,7 @@ class OffsetAzEl(TelescopeBase):
 
         cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
+        # the ktl key name to modify and the value
         key_val = {
             'az_offset': cls.az_off,
             'el_offset': cls.el_off,

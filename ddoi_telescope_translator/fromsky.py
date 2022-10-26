@@ -40,6 +40,11 @@ class OffsetBackFromNod(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        parser.description = f'Moves the telescope to Base from the Sky ' \
+                             f'position. Modifies Instrument specific KTL ' \
+                             f'keywords for Nod North and Nod East.'
+
         # add inst parameter as optional
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
 

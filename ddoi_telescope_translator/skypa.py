@@ -56,6 +56,14 @@ class SetRotSkyPA(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        # add the command line description
+        key_ktl_rotd = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_destination').upper()
+        key_ktl_rotm = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_mode').upper()
+
+        parser.description = f'Set rotator celestial position angle in ' \
+                             f'position angle mode.  Modifies DCS KTL keywords: ' \
+                             f'{key_ktl_rotd} and El: {key_ktl_rotm}.'
+
         cls.key_rot_angle = cls._cfg_val(cfg, 'ob_keys', 'rot_sky_angle')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
@@ -151,5 +159,7 @@ class SetRotSkyPA(TelescopeBase):
         """
         timeout = cls._cfg_val(cfg, 'ktl_timeout', 'skypa')
         ktl_rot_stat = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_status')
-        ktl.waitfor(f'{ktl_rot_stat}=8', cls.serv_name, timeout=timeout)
+        if not cls.print_only:
+            ktl.waitfor(f'{ktl_rot_stat}=8', service=cls.serv_name,
+                        timeout=timeout)
 

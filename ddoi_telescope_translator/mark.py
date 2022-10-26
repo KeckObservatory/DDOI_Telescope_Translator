@@ -42,6 +42,9 @@ class MarkCoords(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
+        parser.description = f'Stores current ra and dec offsets.  Modifies ' \
+                             f'Instrument Specific keywords for RA/Dec mark.'
+
         # add inst parameter as optional
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
 

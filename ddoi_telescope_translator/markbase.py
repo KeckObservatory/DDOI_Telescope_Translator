@@ -29,6 +29,27 @@ class MarkBase(TelescopeBase):
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/markbase
     """
+    @classmethod
+    def add_cmdline_args(cls, parser, cfg=None):
+        """
+        The arguments to add to the command line interface.
+
+        :param parser: <ArgumentParser>
+            the instance of the parser to add the arguments to .
+        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
+
+        :return: <ArgumentParser>
+        """
+        # read the config file
+        cfg = cls._load_config(cls, cfg)
+
+        key_ktl_base = cls._cfg_val(cfg, 'ktl_kw_dcs', 'mark_base').upper()
+
+        parser.description = f'Set the base telescope coordinates to the ' \
+                             f'current coordinates.  Modifies KTL DCS ' \
+                             f'Keyword: {key_ktl_base}.'
+
+        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
