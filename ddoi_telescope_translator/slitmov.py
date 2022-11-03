@@ -48,12 +48,9 @@ class MoveAlongSlit(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_instx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_x_offset').upper()
-        key_ktl_insty = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_y_offset').upper()
-
         parser.description = f'Move object along the slit direction in arcsec.' \
                              f' Modifies DCS KTL Keywords: ' \
-                             f'{key_ktl_instx}, {key_ktl_insty}.'
+                             f'INSTXOFF, INSTYOFF.'
 
         cls.key_slit_offset = cls._cfg_val(cfg, 'ob_keys',
                                                 'inst_slit_offset')
@@ -113,8 +110,6 @@ class MoveAlongSlit(TelescopeBase):
 
         dx = slit_offset * math.sin(math.radians(det_angle))
         dy = slit_offset * math.cos(math.radians(det_angle))
-
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         # run mxy with the calculated offsets
         key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_x_offset')

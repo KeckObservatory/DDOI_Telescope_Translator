@@ -65,10 +65,8 @@ class PMFM(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_pmfm = cls._cfg_val(cfg, 'ktl_kw_acs', 'pmfm_nm').upper()
-
         parser.description = f'Set the amount of focus mode in the telescope ' \
-                             f'primary. Modifies ACS KTL Keyword: {key_ktl_pmfm}.'
+                             f'primary. Modifies ACS KTL Keyword: PMFM.'
 
         args_to_add = OrderedDict([
             ('pmfm_nm', {'type': float,
@@ -102,27 +100,26 @@ class PMFM(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'acs')
-        ktl_pmfm = cls._cfg_val(cfg, 'ktl_kw_acs', 'pmfm_nm')
         if args.get('print_only', False):
-            current_pmfm = ktl.read(serv_name, ktl_pmfm)
+            current_pmfm = ktl.read('acs', 'pmfm')
             cls.write_msg(logger, f"The current PMFM is {current_pmfm}",
                           val=current_pmfm, print_only=True)
             return
 
         pmfm_new = cls._get_arg_value(args, 'pmfm_nm')
 
+        # the ktl key name to modify and the value
         key_val = {
-            'pmfm_nm': pmfm_new
+            'pmfm': pmfm_new
         }
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'acs', key_val, logger, cls.__name__)
 
         timeout = float(cls._cfg_val(cfg, 'ktl_timeout', 'default'))
         try:
-            ktl.waitfor(f'{ktl_pmfm}={pmfm_new}', service=serv_name, timeout=timeout)
+            ktl.waitfor(f"{'pmfm'}={pmfm_new}", service='acs', timeout=timeout)
         except ktl.TimeoutException as err:
-            msg = f'{cls.__name__} current pmfm {ktl.read(serv_name, ktl_pmfm)}' \
-                  f',  timeout moving to {pmfm_new}. KTL Error: {err}'
+            msg = f"{cls.__name__} current pmfm {ktl.read('acs', 'pmfm')}" \
+                  f",  timeout moving to {pmfm_new}. KTL Error: {err}"
             if logger:
                 logger.error(msg)
             raise ktl.TimeoutException(msg)

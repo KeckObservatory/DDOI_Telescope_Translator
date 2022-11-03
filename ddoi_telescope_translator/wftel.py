@@ -71,15 +71,11 @@ class WaitForTel(TelescopeBase):
 
         :return: bool
         """
-        # max guider exposure
         cls.timeout = cls._cfg_val(cfg, 'ktl_timeout', 'default')
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-        ktl_auto_activate = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_activate')
-
         cls.auto_resume = args.get('auto_resume', None)
 
         try:
-            waited = ktl.waitfor('axestat=tracking', service=cls.serv_name,
+            waited = ktl.waitfor('axestat=tracking', service='dcs',
                                  timeout=cls.timeout, )
         except:
             waited = False
@@ -89,7 +85,7 @@ class WaitForTel(TelescopeBase):
             cls.write_msg(logger, msg)
             return False
 
-        if ktl.read(cls.serv_name, ktl_auto_activate) == 'no':
+        if ktl.read('dcs', 'autactiv') == 'no':
             msg = 'guider not currently active'
             cls.write_msg(logger, msg)
             return False
@@ -110,11 +106,8 @@ class WaitForTel(TelescopeBase):
         if not hasattr(cls, 'timeout'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        ktl_auto_resume = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_resume')
-        ktl_auto_go = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_go')
-
-        serv_auto_resume = ktl.cache(cls.serv_name, ktl_auto_resume)
-        serv_auto_go = ktl.cache(cls.serv_name, ktl_auto_go)
+        serv_auto_resume = ktl.cache('dcs', 'autresum')
+        serv_auto_go = ktl.cache('dcs', 'autgo')
 
         # set the value for the current autpause
         if not cls.auto_resume:

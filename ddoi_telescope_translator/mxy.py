@@ -51,12 +51,9 @@ class OffsetXY(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_instx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_x_offset').upper()
-        key_ktl_insty = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_y_offset').upper()
-
         parser.description = f'Offset telescope in instrument (detector) ' \
                              f'coordinates. Modifies KTL DCS Keywords: ' \
-                             f'{key_ktl_instx},  {key_ktl_insty}.'
+                             f'INSTXOFF,  INSTYOFF.'
 
         cls.key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_x_offset')
         cls.key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'inst_y_offset')
@@ -118,18 +115,17 @@ class OffsetXY(TelescopeBase):
         if not hasattr(cls, 'x_offset'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
         det_u, det_v = utils.transform_detector(cls._cfg_val, cfg,
                                                 cls.write_msg, cls.x_offset,
                                                 cls.y_offset, cls.inst)
 
+        # the ktl key name to modify and the value
         key_val = {
-            'inst_x_offset': det_u,
-            'inst_y_offset': det_v,
-            'relative_current': 't'
+            'instxoff': det_u,
+            'instyoff': det_v,
+            'rel2curr': 't'
         }
-        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -142,4 +138,4 @@ class OffsetXY(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls, cfg, 'dcs', logger)

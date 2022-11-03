@@ -47,8 +47,7 @@ class MoveTelescopeFocus(TelescopeBase):
         key_ktl_sec = cls._cfg_val(cfg, 'ktl_kw_dcs', 'secondary_move').upper()
 
         parser.description = f'Set/show the telescope secondary position.' \
-                             f'Modifies DCS KTL keywords: {key_ktl_foc}, ' \
-                             f'{key_ktl_sec}.'
+                             f'Modifies DCS KTL keywords: TELFOCUS, SECMOVE.'
 
 
         cls.key_tel_focus = cls._cfg_val(cfg, 'ob_keys', 'tel_foc')
@@ -88,14 +87,12 @@ class MoveTelescopeFocus(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-        ktl_tel_foc = cls._cfg_val(cfg, 'ktl_kw_dcs', 'telescope_focus')
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)
 
         if cls.print_only:
-            current_focus = ktl.read(serv_name, ktl_tel_foc)
+            current_focus = ktl.read('dcs', 'telfocus')
             msg = f"Current Focus = {current_focus}"
             cls.write_msg(logger, msg, print_only=True)
 
@@ -108,14 +105,15 @@ class MoveTelescopeFocus(TelescopeBase):
 
         timeout = int(cls._cfg_val(cfg, 'ktl_timeout', 'default'))
 
+        # the ktl key name to modify and the value
         key_val = {
             'telescope_focus': focus_move_val,
             'secondary_move': 1,
         }
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
         try:
-            ktl.waitfor('secmove=0', service=serv_name, timeout=timeout)
+            ktl.waitfor('secmove=0', service='dcs', timeout=timeout)
         except ktl.TimeoutException:
             msg = f'{cls.__name__} timeout for secondary move.'
             if logger:

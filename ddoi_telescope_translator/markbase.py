@@ -43,11 +43,9 @@ class MarkBase(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        key_ktl_base = cls._cfg_val(cfg, 'ktl_kw_dcs', 'mark_base').upper()
-
         parser.description = f'Set the base telescope coordinates to the ' \
                              f'current coordinates.  Modifies KTL DCS ' \
-                             f'Keyword: {key_ktl_base}.'
+                             f'Keyword: MARK.'
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -75,12 +73,11 @@ class MarkBase(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
+        # the ktl key name to modify and the value
         key_val = {
-            'mark_base': 'true'
+            'mark': 'true'
         }
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

@@ -55,12 +55,9 @@ class MovePixelXY(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_instx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_x_offset').upper()
-        key_ktl_insty = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_y_offset').upper()
-
         parser.description = f'move telescope in pixel coordinates of the ' \
                              f'Instrument detector. Modifies DCS KTL Keyword: ' \
-                             f'{key_ktl_instx} and Y: {key_ktl_insty}.'
+                             f'INSTXOFF and Y: INSTYOFF.'
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
@@ -117,8 +114,7 @@ class MovePixelXY(TelescopeBase):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         serv_name = cls._cfg_val(cfg, 'ktl_serv', cls.inst)
-        ktl_pixel_scale = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}',
-                                            'pixel_scale')
+        ktl_pixel_scale = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}', 'pixel_scale')
         pixel_scale = ktl.read(serv_name, ktl_pixel_scale)
 
         dx = pixel_scale * cls.x_offset

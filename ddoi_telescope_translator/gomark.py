@@ -43,13 +43,9 @@ class GoToMark(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_1 = cls._cfg_val(cfg, 'ktl_kw_dcs', 'ra_offset').upper()
-        key_ktl_2 = cls._cfg_val(cfg, 'ktl_kw_dcs', 'dec_offset').upper()
-        key_ktl_3 = cls._cfg_val(cfg, 'ktl_kw_dcs', 'relative_base').upper()
-
         parser.description = f'Moves telescope X,Y Instrument Guider ' \
                              f'Coordinates.  Modifies KTL DCS keywords: ' \
-                             f'{key_ktl_1}, {key_ktl_2}, {key_ktl_3}.'
+                             f'RAOFF, DECOFF, REL2BASE.'
 
         # add inst parameter as optional
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
@@ -90,14 +86,13 @@ class GoToMark(TelescopeBase):
         ra_mark = ktl.read(inst_serv_name, ktl_ra_mark)
         dec_mark = ktl.read(inst_serv_name, ktl_dec_mark)
 
-        cls.dcs_serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
+        # the ktl key name to modify and the value
         key_val = {
-            'ra_offset': ra_mark,
-            'dec_offset': dec_mark,
-            'relative_base': 't'
+            'raoff': ra_mark,
+            'decoff': dec_mark,
+            'rel2base': 't'
         }
-        cls._write_to_kw(cls, cfg, cls.dcs_serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
 
     @classmethod

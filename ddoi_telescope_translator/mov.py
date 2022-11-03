@@ -64,12 +64,10 @@ class MoveP1ToP2(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        key_ktl_instx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_x_offset').upper()
-        key_ktl_insty = cls._cfg_val(cfg, 'ktl_kw_dcs', 'inst_y_offset').upper()
-
+        # add the command line description
         parser.description = f'Move an object to from a given position on ' \
                              f'the detector to another.  Modifies KTL DCS ' \
-                             f'Keywords: {key_ktl_instx} and Y: {key_ktl_insty}.'
+                             f'Keywords: INSTXOFF and Y: INSTYOFF.'
 
         cls.key_inst_x1 = cls._cfg_val(cfg, 'tel_keys', 'inst_x1')
         cls.key_inst_y1 = cls._cfg_val(cfg, 'tel_keys', 'inst_y1')

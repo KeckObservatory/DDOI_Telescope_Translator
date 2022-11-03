@@ -48,13 +48,9 @@ class MoveToElevation(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_el = cls._cfg_val(cfg, 'ktl_kw_dcs', 'target_el').upper()
-        key_ktl_tf = cls._cfg_val(cfg, 'ktl_kw_dcs', 'target_frame').upper()
-        key_ktl_mv = cls._cfg_val(cfg, 'ktl_kw_dcs', 'move_tel').upper()
-
         parser.description = f'Moves telescope to Elevation in degrees.  ' \
-                             f'Modifies KTL DCS keyword: {key_ktl_el}, ' \
-                             f'{key_ktl_mv}, {key_ktl_tf}.'
+                             f'Modifies KTL DCS keyword: TARGEL, TARGFRAM,' \
+                             f' MOVETEL.'
 
         cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_elevation')
 
@@ -103,24 +99,21 @@ class MoveToElevation(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
         # only print the elevation
         if cls.print_only:
-            ktl_elevation = cls._cfg_val(cfg, 'ktl_kw_dcs', 'elevation')
-            el_value = ktl.read(serv_name, ktl_elevation)
-
+            el_value = ktl.read('dcs', 'el')
             msg = f"Current Elevation = {el_value}"
             cls.write_msg(logger, msg, val=el_value, print_only=True)
 
             return
 
+        # the ktl key name to modify and the value
         key_val = {
-            'target_el': cls.el_offset,
-            'target_frame': 'mount',
-            'move_tel': 1
+            'targel': cls.el_offset,
+            'targfram': 'mount',
+            'movetel': 1
         }
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
 
     @classmethod

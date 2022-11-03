@@ -123,8 +123,10 @@ class SetNodNorthValue(TelescopeBase):
             cls.write_msg(logger, msg)
             return
 
+        # write to instrument keywords,  keys are cfg keys not ktl keys
         key_val = {'nod_north': cls.nod_north}
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__,
+                         cfg_key=True)
 
         msg = f"New Nod East Value: {cls.nod_north}"
         cls.write_msg(logger, msg)
