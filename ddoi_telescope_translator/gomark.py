@@ -39,7 +39,6 @@ class GoToMark(TelescopeBase):
         :return: <ArgumentParser>
         """
         # read the config file
-
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description

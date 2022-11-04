@@ -88,11 +88,9 @@ class MovePixelXY(TelescopeBase):
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
         if not hasattr(cls, 'key_x_offset'):
-            cls.key_x_offset = cls._cfg_val(cfg, 'tel_keys',
-                                                 'inst_offset_xpix')
+            cls.key_x_offset = cls._cfg_val(cfg, 'tel_keys', 'inst_offset_xpix')
         if not hasattr(cls, 'key_y_offset'):
-            cls.key_y_offset = cls._cfg_val(cfg, 'tel_keys',
-                                                 'inst_offset_ypix')
+            cls.key_y_offset = cls._cfg_val(cfg, 'tel_keys', 'inst_offset_ypix')
 
         cls.x_offset = cls._get_arg_value(args, cls.key_x_offset)
         cls.y_offset = cls._get_arg_value(args, cls.key_y_offset)
