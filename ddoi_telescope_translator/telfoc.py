@@ -104,7 +104,7 @@ class MoveTelescopeFocus(TelescopeBase):
 
         # the ktl key name to modify and the value
         key_val = {
-            'telfoc': focus_move_val,
+            'telfocus': focus_move_val,
             'secmove': 1,
         }
         cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
