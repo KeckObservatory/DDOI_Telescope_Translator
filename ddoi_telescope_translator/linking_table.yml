@@ -6,13 +6,20 @@ links:
   azel:
     cmd: azel.OffsetAzEl
   
+  elabs:
+    cmd: elabs.MoveToElevation
+
   en:
     cmd: en.OffsetEastNorth
   
-  e:
-    cmd: en.OffsetEastNorth
-    args:
-      arg_1: 0
+  fromsky:
+    cmd: fromsky.OffsetBackFromNod
+
+  gcent:
+    cmd: gcent.MoveToGuiderCenter
+
+  gmomark:
+    cmd: gmomark.GoToMark
 
   gotobase:
     cmd: gotobase.GoToBase
@@ -28,6 +35,15 @@ links:
   
   mxy:
     cmd: mxy.OffsetXY
+
+  nod:
+    cmd: nod.SetNodValues
+  
+  node:
+    cmd: node.SetNodEastValue
+  
+  nodn:
+    cmd: nodn.SetNodNorthValue
   
   pmfm:
     cmd: pmfm.PMFM
@@ -38,6 +54,15 @@ links:
   pxy:
     cmd: pxy.MovePixelXY
   
+  rotpposn:
+    cmd: rotpposn.RotatePhysicalPosAngle
+  
+  skypa:
+    cmd: skypa.SetRotSkyPA
+  
+  slitmov:
+    cmd: slitmov.MoveAlongSlit
+
   telfoc:
     cmd: telfoc.MoveTelescopeFocus
   
