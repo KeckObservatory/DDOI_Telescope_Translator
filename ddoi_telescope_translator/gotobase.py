@@ -50,14 +50,13 @@ class GoToBase(TelescopeBase):
 
         :return: None
         """
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
+        # the ktl key name to modify and the value
         key_val = {
-            'ra_offset': 0.0,
-            'dec_offset': 0.0,
-            'relative_base': 't'
+            'raoff': 0.0,
+            'decoff': 0.0,
+            'rel2base': 't'
         }
-        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
 
     @classmethod

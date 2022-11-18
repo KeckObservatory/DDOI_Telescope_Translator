@@ -57,11 +57,8 @@ class SetPointingOriginName(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_po = cls._cfg_val(cfg, 'ktl_kw_dcs', 'pointing_origin_name').upper()
-        key_ktl_pos = cls._cfg_val(cfg, 'ktl_kw_dcs', 'pointing_origin_select').upper()
-
         parser.description = f'Set or show the current pointing origin. ' \
-                             f'Modifies DCS KTL Keyword: {key_ktl_po},  {key_ktl_pos}.'
+                             f'Modifies DCS KTL Keyword: PONAME,  POSELECT.'
 
         cls.key_po_name = cls._cfg_val(cfg, 'ob_keys', 'pointing_origin_name')
 
@@ -100,26 +97,24 @@ class SetPointingOriginName(TelescopeBase):
 
         :return: None
         """
-        serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
         if not hasattr(cls, 'key_po_name'):
             cls.key_po_name = cls._cfg_val(cfg, 'ob_keys',
                                                 'pointing_origin_name')
 
         # check if it is only set to print the current values
         if args.get('print_only', False):
-            ktl_po_name = cls._cfg_val(cfg, 'ktl_kw_dcs',
-                                            'pointing_origin_name')
-            cls.write_msg(logger, ktl.read(serv_name, ktl_po_name),
-                            print_only=True)
+            cls.write_msg(logger, ktl.read('dcs', 'poname'),
+                          print_only=True)
             return
 
         po_name = cls._get_arg_value(args, cls.key_po_name)
 
+        # the ktl key name to modify and the value
         key_val = {
-            'pointing_origin_name': po_name,
-            'pointing_origin_select': 1
+            'poname': po_name,
+            'poselect': 1
         }
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

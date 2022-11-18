@@ -51,12 +51,9 @@ class OffsetEastNorth(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        key_ktl_east = cls._cfg_val(cfg, 'ktl_kw_dcs', 'ra_offset').upper()
-        key_ktl_north = cls._cfg_val(cfg, 'ktl_kw_dcs', 'dec_offset').upper()
-
-        parser.description = f'Moves telescope X,Y arcseconds East and North. ' \
-                             f'Modifies KTL DCS Keyword: {key_ktl_east}, ' \
-                             f'{key_ktl_north}.'
+        # add the command line description
+        parser.description = f'Moves telescope X,Y arcseconds East and North.' \
+                             f' Modifies KTL DCS Keyword: RAOFF, DECOFF.'
 
         cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset')
         cls.key_north_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_north_offset')
@@ -112,14 +109,13 @@ class OffsetEastNorth(TelescopeBase):
         if not hasattr(cls, 'east_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
+        # the ktl key name to modify and the value
         key_val = {
-            'ra_offset': cls.east_off,
-            'dec_offset': cls.north_off,
-            'relative_current': 't'
+            'raoff': cls.east_off,
+            'decoff': cls.north_off,
+            'rel2curr': 't'
         }
-        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
         return
 
@@ -134,4 +130,4 @@ class OffsetEastNorth(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls, cfg, 'dcs', logger)

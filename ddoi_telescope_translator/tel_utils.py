@@ -24,12 +24,12 @@ def check_for_zero_offsets(offset1, offset2):
     return False
 
 
-def wait_for_cycle(cls, cfg, dcs_serv, logger):
+def wait_for_cycle(cls, cfg, ktl_serv, logger):
     """
     Wait a cycle
 
     :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-    :param dcs_serv: <str> name of the dcs service
+    :param ktl_serv: <str> name of the dcs service
     :param logger: <DDOILoggerClient>, optional
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
@@ -37,8 +37,7 @@ def wait_for_cycle(cls, cfg, dcs_serv, logger):
     """
     start_time = time()
 
-    ktl_auto_resume = cls._cfg_val(cfg, 'ktl_kw_dcs', 'auto_resume')
-    auto_resume = ktl.read(dcs_serv, ktl_auto_resume)
+    auto_resume = ktl.read(ktl_serv, 'autresum')
 
     WaitForTel.execute({"auto_resume": auto_resume})
 

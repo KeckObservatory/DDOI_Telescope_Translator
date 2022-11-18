@@ -57,12 +57,9 @@ class SetRotSkyPA(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_rotd = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_destination').upper()
-        key_ktl_rotm = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_mode').upper()
-
         parser.description = f'Set rotator celestial position angle in ' \
-                             f'position angle mode.  Modifies DCS KTL keywords: ' \
-                             f'{key_ktl_rotd} and El: {key_ktl_rotm}.'
+                             f'position angle mode.  Modifies DCS KTL ' \
+                             f'keywords: ROTDEST, ROTMODE.'
 
         cls.key_rot_angle = cls._cfg_val(cfg, 'ob_keys', 'rot_sky_angle')
 
@@ -95,7 +92,6 @@ class SetRotSkyPA(TelescopeBase):
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
         cls.relative = args.get('relative', False)
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
 
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)
@@ -126,9 +122,7 @@ class SetRotSkyPA(TelescopeBase):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         if cls.print_only or cls.relative:
-            ktl_rot_dest = cls._cfg_val(cfg, 'ktl_kw_dcs',
-                                              'rotator_destination')
-            rot_angle = ktl.read(cls.serv_name, ktl_rot_dest)
+            rot_angle = ktl.read('dcs', 'rotpposn')
 
         if cls.print_only:
             msg = f"Current Rotator Angle = {rot_angle}"
@@ -139,11 +133,12 @@ class SetRotSkyPA(TelescopeBase):
         if cls.relative:
             rot_dest += rot_angle
 
+        # the ktl key name to modify and the value
         key_val = {
-            'rotator_destination': rot_dest,
-            'rotator_mode': 1
+            'rotdest': rot_dest,
+            'rotmode': 1
         }
-        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
         sleep(3)
 
     @classmethod
@@ -158,8 +153,8 @@ class SetRotSkyPA(TelescopeBase):
         :return: None
         """
         timeout = cls._cfg_val(cfg, 'ktl_timeout', 'skypa')
-        ktl_rot_stat = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_status')
+
         if not cls.print_only:
-            ktl.waitfor(f'{ktl_rot_stat}=8', service=cls.serv_name,
+            ktl.waitfor(f'rotstat=8', service='dcs',
                         timeout=timeout)
 

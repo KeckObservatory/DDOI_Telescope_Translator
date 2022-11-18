@@ -51,12 +51,9 @@ class RotatePhysicalPosAngle(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_rotd = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_destination').upper()
-        key_ktl_rotm = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_mode').upper()
-
         parser.description = f'Set or show the instrument Rotator Physical ' \
                              f'Position angle.  Modifies DCS KTL keywords: ' \
-                             f'{key_ktl_rotd} and El: {key_ktl_rotm}.'
+                             f'ROTDEST, ROTMODE.'
 
 
         cls.key_rot_angle = cls._cfg_val(cfg, 'ob_keys',
@@ -111,20 +108,17 @@ class RotatePhysicalPosAngle(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
         if cls.print_only:
-            ktl_rotator_pos = cls._cfg_val(cfg, 'ktl_kw_dcs',
-                                                'rotator_position')
-            cls.write_msg(logger, ktl.read(cls.serv_name, ktl_rotator_pos),
+            cls.write_msg(logger, ktl.read('dcs', 'rotpposn'),
                             print_only=True)
             return
 
+        # the ktl key name to modify and the value
         key_val = {
-            'rotator_destination': cls.rotator_angle,
-            'rotator_mode': 'stationary'
+            'rotdest': cls.rotator_angle,
+            'rotmode': 'stationary'
         }
-        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
         sleep(1)
 
@@ -140,10 +134,9 @@ class RotatePhysicalPosAngle(TelescopeBase):
         :return: None
         """
         timeout = cls._cfg_val(cfg, 'ktl_timeout', 'rotpposn')
-        ktl_rotator_status = cls._cfg_val(cfg, 'ktl_kw_dcs', 'rotator_position')
 
         if not cls.print_only:
-            ktl.waitfor(f'{ktl_rotator_status}=tracking', service=cls.serv_name,
+            ktl.waitfor(f'rotstat=tracking', service='dcs',
                         timeout=float(timeout))
 
         return

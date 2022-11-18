@@ -48,14 +48,9 @@ class OffsetAzEl(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        key_ktl_az = cls._cfg_val(cfg, 'ktl_kw_dcs', 'az_offset').upper()
-        key_ktl_el = cls._cfg_val(cfg, 'ktl_kw_dcs', 'el_offset').upper()
-        key_ktl_rel = cls._cfg_val(cfg, 'ktl_kw_dcs', 'relative_base').upper()
-        key_ktl_cur = cls._cfg_val(cfg, 'ktl_kw_dcs', 'relative_current').upper()
-
         parser.description = f'Moves telescope X,Y arcseconds in Az and El.  ' \
-                             f'Modifies KTL DCS Keyword: {key_ktl_az}, ' \
-                             f'{key_ktl_el}, {key_ktl_rel}, {key_ktl_cur}.'
+                             f'Modifies KTL DCS Keyword: AZOFF, ELOFF, ' \
+                             f'REL2BASE, REL2CURR.'
 
         parser = cls._add_bool_arg(
             parser, 'absolute',
@@ -110,19 +105,17 @@ class OffsetAzEl(TelescopeBase):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         if args.get('relative', True):
-            relative = 'relative_current'
+            relative = 'rel2curr'
         else:
-            relative = 'relative_base'
-
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
+            relative = 'rel2base'
 
         # the ktl key name to modify and the value
         key_val = {
-            'az_offset': cls.az_off,
-            'el_offset': cls.el_off,
+            'azoff': cls.az_off,
+            'eloff': cls.el_off,
             relative: 't'
         }
-        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
         sleep(3)
 
@@ -137,4 +130,4 @@ class OffsetAzEl(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls, cfg, 'dcs', logger)

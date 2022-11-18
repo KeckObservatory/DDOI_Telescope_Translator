@@ -49,12 +49,10 @@ class OffsetGuiderCoordXY(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        key_ktl_gx = cls._cfg_val(cfg, 'ktl_kw_dcs', 'guider_x_offset').upper()
-        key_ktl_gy = cls._cfg_val(cfg, 'ktl_kw_dcs', 'guider_y_offset').upper()
-
+        # add the command line description
         parser.description = f'Moves telescope X,Y Instrument Guider ' \
                              f'Coordinates.  Modifies KTL DCS Keywords: ' \
-                             f'{key_ktl_gx}, {key_ktl_gy}.'
+                             f'TVXOFF, TVYOFF.'
 
         cls.key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
         cls.key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
@@ -108,14 +106,13 @@ class OffsetGuiderCoordXY(TelescopeBase):
         if not hasattr(cls, 'x_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        cls.serv_name = cls._cfg_val(cfg, 'ktl_serv', 'dcs')
-
+        # the ktl key name to modify and the value
         key_val = {
-            'guider_x_offset': cls.x_off,
-            'guider_y_offset': cls.y_off,
-            'relative_current': 't'
+            'tvxoff': cls.x_off,
+            'tvyoff': cls.y_off,
+            'rel2curr': 't'
         }
-        cls._write_to_kw(cls, cfg, cls.serv_name, key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
 
     @classmethod
@@ -129,5 +126,5 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :return: None
         """
-        utils.wait_for_cycle(cls, cfg, cls.serv_name, logger)
+        utils.wait_for_cycle(cls, cfg, 'dcs', logger)
 
