@@ -1,38 +1,40 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoitranslatormodule.BaseTelescope import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
+import telescopetranslator.tel_utils as utils
 from collections import OrderedDict
 
 
-class OffsetGuiderCoordXY(TelescopeBase):
+class OffsetEastNorth(TelescopeBase):
     """
-    gxy -- move the telescope in GUIDER coordinates
+    en -- move the telescope east and north
 
     SYNOPSIS
-        OffsetGuiderCoordXY.execute({'guider_offset_x': 0.0, 'guider_offset_y': 1.0})
+        OffsetEastNorth.execute({'tcs_offset_east': 10.0,  'tcs_offset_north': 5.0})
 
     RUN
-        from ddoi_telescope_translator import gxy
-        gxy.OffsetGuiderCoordXY.execute({'guider_offset_x': 0.0, 'guider_offset_y': 1.0})
+        from ddoi_telescope_translator import en
+        en.OffsetEastNorth.execute({'tcs_offset_east': 10.0,  'tcs_offset_north': 5.0})
 
-    Purpose:
-        Offset the telescope by the given number of arcseconds in the
-        guider coordinate system, which is rotated 180 degrees relative
-        to the DEIMOS coordinate system.
+    DESCRIPTION
+        Move the telescope the given number of arcsec EAST & NORTH
+        relative to its current position
 
     ARGUMENTS
-        guider_x_offset = offset in the direction parallel with guider rows [arcsec]
-        guider_y_offset = offset in the direction parallel with guider columns [arcsec]
+        offset = number of arcseconds to move EAST/NORTH; negative
+        values indicate WEST/SOUTH movement
 
-    OPTIONS
+     EXAMPLES
+        1) Move the telescope east by 10 arcsec:
+            OffsetEastNorth.execute({tcs_offset_east: 10.0,  tcs_offset_north: 0.0})
+        2) Move the telescope west and north by 10 arcsec:
+            OffsetEastNorth.execute({tcs_offset_east: 0.0,  tcs_offset_north: 10.0})
 
-    KTL SERVICE & KEYWORDS
-        servers: dcs
-          keywords: tvxoff, tvyoff
+     KTL SERVICE & KEYWORDS
+          servers: dcs
+             keywords: raoff, decoff
 
-    adapted from sh script: kss/mosfire/scripts/procs/tel/telfoc
-
+    adapted from sh script: kss/mosfire/scripts/procs/tel/en
     """
 
     @classmethod
@@ -50,25 +52,19 @@ class OffsetGuiderCoordXY(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        parser.description = f'Moves telescope X,Y Instrument Guider ' \
-                             f'Coordinates.  Modifies KTL DCS Keywords: ' \
-                             f'TVXOFF, TVYOFF.'
+        parser.description = f'Moves telescope X,Y arcseconds East and North.' \
+                             f' Modifies KTL DCS Keyword: RAOFF, DECOFF.'
 
-        cls.key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
-        cls.key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
-
-        parser = cls._add_inst_arg(cls, parser, cfg)
+        cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset')
+        cls.key_north_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_north_offset')
 
         args_to_add = OrderedDict([
-            (cls.key_x_offset, {
-                'type': float,
-                'help': 'The offset in Guider X offset in pixels.'
-            }),
-            (cls.key_y_offset, {
-                'type': float,
-                'help': 'The offset in Guider Y offset in pixels.'
-            })
-        ])
+            (cls.key_east_offset, {'type': float,
+                                   'help': 'The offset East in arcseconds.'}),
+            (cls.key_north_offset, {'type': float,
+                                    'help': 'The offset North in arcseconds.'})
+            ])
+
         parser = cls._add_args(parser, args_to_add, print_only=False)
 
         return super().add_cmdline_args(parser, cfg)
@@ -84,11 +80,18 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :return: bool
         """
-        key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
-        key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
+        if not hasattr(cls, 'key_east_offset'):
+            cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys',
+                                                    'tel_east_offset')
+        if not hasattr(cls, 'key_north_offset'):
+            cls.key_north_offset = cls._cfg_val(cfg, 'ob_keys',
+                                                     'tel_north_offset')
 
-        cls.x_off = cls._get_arg_value(args, key_x_offset)
-        cls.y_off = cls._get_arg_value(args, key_y_offset)
+        cls.east_off = cls._get_arg_value(args, cls.key_east_offset)
+        cls.north_off = cls._get_arg_value(args, cls.key_north_offset)
+
+        if utils.check_for_zero_offsets(cls.east_off, cls.north_off):
+            return False
 
         return True
 
@@ -103,17 +106,18 @@ class OffsetGuiderCoordXY(TelescopeBase):
 
         :return: None
         """
-        if not hasattr(cls, 'x_off'):
+        if not hasattr(cls, 'east_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
         # the ktl key name to modify and the value
         key_val = {
-            'tvxoff': cls.x_off,
-            'tvyoff': cls.y_off,
+            'raoff': cls.east_off,
+            'decoff': cls.north_off,
             'rel2curr': 't'
         }
         cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
+        return
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -127,4 +131,3 @@ class OffsetGuiderCoordXY(TelescopeBase):
         :return: None
         """
         utils.wait_for_cycle(cls, cfg, 'dcs', logger)
-

@@ -1,7 +1,7 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
 from ddoitranslatormodule.BaseTelescope import TelescopeBase
 
-from ddoi_telescope_translator.mxy import OffsetXY
+from telescopetranslator.mxy import OffsetXY
 
 import ktl
 from collections import OrderedDict

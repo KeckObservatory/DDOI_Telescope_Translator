@@ -1,6 +1,6 @@
 from ddoitranslatormodule.BaseTelescope import TelescopeBase
 
-from ddoi_telescope_translator.en import OffsetEastNorth
+from telescopetranslator.en import OffsetEastNorth
 
 import ktl
 

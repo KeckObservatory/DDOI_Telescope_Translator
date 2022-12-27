@@ -2,7 +2,7 @@ from time import time
 
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOINoInstrumentDefined, DDOIConfigException, DDOIZeroOffsets
 
-from ddoi_telescope_translator.wftel import WaitForTel
+from telescopetranslator.wftel import WaitForTel
 
 import math
 import ktl
