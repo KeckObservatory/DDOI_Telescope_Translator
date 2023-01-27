@@ -1,5 +1,5 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIDetectorAngleUndefined
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
 
 from telescopetranslator.mxy import OffsetXY
 

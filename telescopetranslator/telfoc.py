@@ -1,5 +1,5 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIKTLTimeOut
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
 
 import ktl
 from collections import OrderedDict
