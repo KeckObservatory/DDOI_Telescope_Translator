@@ -1,32 +1,30 @@
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
+
+from telescopetranslator.en import OffsetEastNorth
 
 import ktl
-import math
 
 
-class MarkCoords(TelescopeBase):
+class OffsetBackFromNod(TelescopeBase):
     """
-    mark - stores current ra and dec offsets
+    fromsky - move the telescope from the sky position
 
     SYNOPSIS
-        MarkCoords.execute({'instrument': str of instrument name})
+        OffsetBackFromNod.execute({'instrument': 'KPF'})
 
     RUN
-        from ddoi_telescope_translator import mark
-        mark.MarkCoords({})
+        from ddoi_telescope_translator import fromsky
+        fromsky.OffsetBackFromNod.execute({'instrument': 'kpf'})
 
     DESCRIPTION
-          stores the current ra and dec offsets for later use.
-          Values stored in the KPF keywords: ??raoffset?? and ??decoffset??
-          See also gomark
-
-    SERVERS & KEYWORDS
-       server: instrument, dcs
-         keywords: raoffset, decoffset, raoff, decoff
+        Move the telescope to the target position from the
+            "sky" position designated by the nod parameters.
+           Offset the telescope by minus the nod params.
 
     KTL SERVICE & KEYWORDS
+        nodn, node
 
-    adapted from sh script: kss/mosfire/scripts/procs/tel/mark
+    adapted from sh script: kss/mosfire/scripts/procs/tel/fromsky
     """
     @classmethod
     def add_cmdline_args(cls, parser, cfg=None):
@@ -42,8 +40,10 @@ class MarkCoords(TelescopeBase):
         # read the config file
         cfg = cls._load_config(cls, cfg)
 
-        parser.description = f'Stores current ra and dec offsets.  Modifies ' \
-                             f'Instrument Specific keywords for RA/Dec mark.'
+        # add the command line description
+        parser.description = f'Moves the telescope to Base from the Sky ' \
+                             f'position. Modifies Instrument specific KTL ' \
+                             f'keywords for Nod North and Nod East.'
 
         # add inst parameter as optional
         parser = cls._add_inst_arg(cls, parser, cfg, is_req=False)
@@ -76,28 +76,23 @@ class MarkCoords(TelescopeBase):
         """
         inst = cls.get_inst_name(cls, args, cfg)
 
-        # for precision read the raw (binary) versions -- in radians.
-        current_ra_offset = ktl.read('dcs', 'raoff', binary=True)
-        current_dec_offset = ktl.read('dcs', 'decoff', binary=True)
+        serv_name = cls._cfg_val(cfg, 'ktl_serv', inst)
 
-        current_ra_offset = current_ra_offset * 180.0 * 3600.0 / math.pi
-        current_dec_offset = current_dec_offset * 180.0 * 3600.0 / math.pi
+        if not hasattr(cls, 'key_east_offset'):
+            cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys',
+                                                    'tel_east_offset')
+        if not hasattr(cls, 'key_north_offset'):
+            cls.key_north_offset = cls._cfg_val(cfg, 'ob_keys',
+                                                     'tel_north_offset')
 
-        # There is a bug in DCS where the value of RAOFF read back has been
-        # divided by cos(Dec).  That is corrected here.
-        current_dec = ktl.read('dcs', 'dec', binary=True)
-        current_ra_offset = current_ra_offset * math.cos(current_dec)
+        ktl_nodded_north = cls._cfg_val(cfg, f'ktl_kw_{inst}', 'nod_north')
+        ktl_nodded_east = cls._cfg_val(cfg, f'ktl_kw_{inst}', 'nod_east')
 
-        inst_serv_name = cls._cfg_val(cfg, 'ktl_serv', inst)
+        nodded_north = ktl.read(serv_name, ktl_nodded_north)
+        nodded_east = ktl.read(serv_name, ktl_nodded_east)
 
-        # write to instrument keywords,  keys are cfg keys not ktl keys
-        key_val = {
-            'ra_mark': current_ra_offset,
-            'dec_mark': current_dec_offset
-        }
-        cls._write_to_kw(cls, cfg, inst_serv_name, key_val, logger,
-                         cls.__name__, cfg_key=True)
-
+        OffsetEastNorth.execute({cls.key_east_offset: -1.0 * nodded_east,
+                                 cls.key_north_offset: -1.0 * nodded_north})
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

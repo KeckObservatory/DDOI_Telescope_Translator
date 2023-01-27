@@ -1,49 +1,57 @@
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
 
 import ktl
 from collections import OrderedDict
 
 
-class SetPointingOriginName(TelescopeBase):
+class PMFM(TelescopeBase):
     """
-    poname -- set or show the current pointing origin
+    pmfm -- set the amount of focus mode in the telescope primary
 
+    Purpose: set primary mirror focus mode
 
     SYNOPSIS
-        SetPointingOriginName.execute({'tcs_cfg_po_name': ORIGIN})
+        PMFM.execute({'pmfm_nm': float})
 
     DESCRIPTION
-        With no argument, prints the name of the currently selected
-        pointing origin.  With one argument, reset the current
-        pointing origin to the named value.
+        With no argument, show the currently amount of primary mirror
+        focus mode.  With a argument, set the amount of primary mirror
+        focus mode to the specified number of nanometers.
+        script_name - brief description of script function
 
-        Only functions when DEIMOS is in nighttime mode and can
-        converse with the drive and control system (DCS) library.
-
-    ARGUMENTS
-        name = name of the pointing origin to select
     OPTIONS
 
     EXAMPLES
-        1) show the current pointing origin
-            SetPointingOriginName.execute({'print_only': True})
+    Example:
+        1) show the current amount of pmfm:
+            PMFM.execute({'print_only': True})
 
-        2) change the pointing origin to Slit:
-            SetPointingOriginName.execute({'tcs_cfg_po_name': SLIT})
+        2) apply 500 nm of primary mirror focus mode:
+            pmfm 500
+
+        3) make pmfm change in background:
+            pmfm 500 </dev/null &
 
     ENVIRONMENT VARIABLES
+        list of environment variables used
 
     FILES
+        list of files used
 
     SERVERS & KEYWORDS
-         dcs: poname
+        service = acs
+             pmfm: primary mirror focus mode
+
+    SCRIPTS CALLED
+        help, syncheck
+
     KTL SERVICE & KEYWORDS
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/
     """
 
     @classmethod
-    def add_cmdline_args(cls, parser, cfg=None):
+    def add_cmdline_args(cls, parser, cfg=None, descrip=None):
         """
         The arguments to add to the command line interface.
 
@@ -57,19 +65,14 @@ class SetPointingOriginName(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        parser.description = f'Set or show the current pointing origin. ' \
-                             f'Modifies DCS KTL Keyword: PONAME,  POSELECT.'
-
-        cls.key_po_name = cls._cfg_val(cfg, 'ob_keys', 'pointing_origin_name')
+        parser.description = f'Set the amount of focus mode in the telescope ' \
+                             f'primary. Modifies ACS KTL Keyword: PMFM.'
 
         args_to_add = OrderedDict([
-            (cls.key_po_name, {'type': str,
-                               'help': 'The name of the pointing origin to select'})
+            ('pmfm_nm', {'type': float,
+                         'help': 'The Primary Mirror Focus Mode (PMFM) to apply.'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
-
-        # add the required instrument
-        parser = cls._add_inst_arg(cls, parser, cfg)
 
         return super().add_cmdline_args(parser, cfg)
 
@@ -97,24 +100,31 @@ class SetPointingOriginName(TelescopeBase):
 
         :return: None
         """
-        if not hasattr(cls, 'key_po_name'):
-            cls.key_po_name = cls._cfg_val(cfg, 'ob_keys',
-                                                'pointing_origin_name')
-
-        # check if it is only set to print the current values
         if args.get('print_only', False):
-            cls.write_msg(logger, ktl.read('dcs', 'poname'),
-                          print_only=True)
+            current_pmfm = ktl.read('acs', 'pmfm')
+            cls.write_msg(logger, f"The current PMFM is {current_pmfm}",
+                          val=current_pmfm, print_only=True)
             return
 
-        po_name = cls._get_arg_value(args, cls.key_po_name)
+        pmfm_new = cls._get_arg_value(args, 'pmfm_nm')
 
         # the ktl key name to modify and the value
         key_val = {
-            'poname': po_name,
-            'poselect': 1
+            'pmfm': pmfm_new
         }
-        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
+        cls._write_to_kw(cls, cfg, 'acs', key_val, logger, cls.__name__)
+
+        timeout = float(cls._cfg_val(cfg, 'ktl_timeout', 'default'))
+        try:
+            ktl.waitfor(f"{'pmfm'}={pmfm_new}", service='acs', timeout=timeout)
+        except ktl.TimeoutException as err:
+            msg = f"{cls.__name__} current pmfm {ktl.read('acs', 'pmfm')}" \
+                  f",  timeout moving to {pmfm_new}. KTL Error: {err}"
+            if logger:
+                logger.error(msg)
+            raise ktl.TimeoutException(msg)
+
+        return
 
     @classmethod
     def post_condition(cls, args, logger, cfg):

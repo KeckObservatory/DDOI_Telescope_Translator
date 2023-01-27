@@ -1,46 +1,30 @@
-from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
-
-import tel_utils as utils
-
-import ktl
-from collections import OrderedDict
+from telescopetranslator.BaseTelescope import TelescopeBase
 
 
-class Boiler(TelescopeBase):
+class GoToBase(TelescopeBase):
     """
+    gotobase -- move the telescope to return to the base coordinates
+
+    SYNOPSIS
+        GoToBase.execute({})
+
+    DESCRIPTION
+        Return to the position previously marked as "base".
+
+    RUN
+        from ddoi_telescope_translator import gotobase
+        gotobase.GoToBase.execute({})
+
+    EXAMPLES
+        1) return to the position marked as base:
+            GoToBase.execute()
 
     KTL SERVICE & KEYWORDS
+        servers: dcs
+        keywords: raoff, decoff
 
-    adapted from sh script: kss/mosfire/scripts/procs/tel/
+    adapted from sh script: kss/mosfire/scripts/procs/tel/gotobase
     """
-
-    @classmethod
-    def add_cmdline_args(cls, parser, cfg=None):
-        """
-        The arguments to add to the command line interface.
-
-        :param parser: <ArgumentParser>
-            the instance of the parser to add the arguments to .
-        :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: <ArgumentParser>
-        """
-        # read the config file
-        cfg = cls._load_config(cls, cfg)
-
-        cls.xxx = cls._cfg_val(cfg, 'ob_keys', '...')
-
-        args_to_add = {
-            cls.xxx: {'type': float, 'req': True,
-                      'help': 'The offset in Azimuth in degrees.'},
-            cls.xxx: {'type': float, 'req': True,
-                      'help': 'The offset in Elevation in degrees.'}}
-        parser = cls._add_args(parser, args_to_add, print_only=False)
-
-        parser = cls._add_inst_arg(cls, parser)
-
-        return super().add_cmdline_args(parser, cfg)
 
     @classmethod
     def pre_condition(cls, args, logger, cfg):
@@ -53,9 +37,6 @@ class Boiler(TelescopeBase):
 
         :return: bool
         """
-        if not hasattr(cls, '...'):
-            cls.xxx = cls._cfg_val(cfg, 'ob_keys', '...')
-
         return True
 
     @classmethod
@@ -69,19 +50,14 @@ class Boiler(TelescopeBase):
 
         :return: None
         """
-        if not hasattr(cls, 'print_only'):
-            raise DDOIPreConditionNotRun(cls.__name__)
-
         # the ktl key name to modify and the value
         key_val = {
-            '': ,
-            '': ,
-            '':
+            'raoff': 0.0,
+            'decoff': 0.0,
+            'rel2base': 't'
         }
         cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
-
-        return
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -95,3 +71,7 @@ class Boiler(TelescopeBase):
         :return: None
         """
         return
+
+
+
+

@@ -1,36 +1,38 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
 
-import ddoi_telescope_translator.tel_utils as utils
-
-from time import sleep
+import telescopetranslator.tel_utils as utils
 from collections import OrderedDict
 
 
-class OffsetAzEl(TelescopeBase):
+class OffsetGuiderCoordXY(TelescopeBase):
     """
-    azel -- move the telescope x arcsec in azimuth and y arcsec in elevation
+    gxy -- move the telescope in GUIDER coordinates
 
     SYNOPSIS
-        OffsetAzEl.execute({'tcs_offset_az': 10.0,  'tcs_offset_el': 5.0})
+        OffsetGuiderCoordXY.execute({'guider_offset_x': 0.0, 'guider_offset_y': 1.0})
 
     RUN
-        from ddoi_telescope_translator import azel
-        azel.OffsetAzEl.execute({'tcs_offset_az': 0.0, 'tcs_offset_el': 0.0})
+        from ddoi_telescope_translator import gxy
+        gxy.OffsetGuiderCoordXY.execute({'guider_offset_x': 0.0, 'guider_offset_y': 1.0})
 
-    DESCRIPTION
-        Move the telescope the given number of arcseconds in the
-        azimuth and elevation directions.
+    Purpose:
+        Offset the telescope by the given number of arcseconds in the
+        guider coordinate system, which is rotated 180 degrees relative
+        to the DEIMOS coordinate system.
 
-    DICTIONARY KEYS
-        tcs_offset_az = distance to move in azimuth [arcsec]
-        tcs_offset_el = distance to move in elevation [arcsec]
+    ARGUMENTS
+        guider_x_offset = offset in the direction parallel with guider rows [arcsec]
+        guider_y_offset = offset in the direction parallel with guider columns [arcsec]
 
-     KTL SERVICE & KEYWORDS
-         service = dcs
-              keywords: azoff, rel2curr, axestat, autresum
+    OPTIONS
 
-    adapted from sh script: kss/mosfire/scripts/procs/tel/azel
+    KTL SERVICE & KEYWORDS
+        servers: dcs
+          keywords: tvxoff, tvyoff
+
+    adapted from sh script: kss/mosfire/scripts/procs/tel/telfoc
+
     """
 
     @classmethod
@@ -48,22 +50,24 @@ class OffsetAzEl(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        parser.description = f'Moves telescope X,Y arcseconds in Az and El.  ' \
-                             f'Modifies KTL DCS Keyword: AZOFF, ELOFF, ' \
-                             f'REL2BASE, REL2CURR.'
+        parser.description = f'Moves telescope X,Y Instrument Guider ' \
+                             f'Coordinates.  Modifies KTL DCS Keywords: ' \
+                             f'TVXOFF, TVYOFF.'
 
-        parser = cls._add_bool_arg(
-            parser, 'absolute',
-            'True if offset is relative to current position.', default=False)
+        cls.key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
+        cls.key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
 
-        cls.key_az_offset = cls._cfg_val(cfg, 'ob_keys', 'az_offset')
-        cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'el_offset')
+        parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
-            (cls.key_az_offset, {'type': float,
-                                 'help': 'The offset in Azimuth in arcseconds.'}),
-            (cls.key_el_offset, {'type': float,
-                                 'help': 'The offset in Elevation in arcseconds.'}),
+            (cls.key_x_offset, {
+                'type': float,
+                'help': 'The offset in Guider X offset in pixels.'
+            }),
+            (cls.key_y_offset, {
+                'type': float,
+                'help': 'The offset in Guider Y offset in pixels.'
+            })
         ])
         parser = cls._add_args(parser, args_to_add, print_only=False)
 
@@ -80,13 +84,11 @@ class OffsetAzEl(TelescopeBase):
 
         :return: bool
         """
-        if not hasattr(cls, 'key_az_offset'):
-            cls.key_az_offset = cls._cfg_val(cfg, 'ob_keys', 'az_offset')
-        if not hasattr(cls, 'key_el_offset'):
-            cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'el_offset')
+        key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
+        key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
 
-        cls.az_off = cls._get_arg_value(args, cls.key_az_offset)
-        cls.el_off = cls._get_arg_value(args, cls.key_el_offset)
+        cls.x_off = cls._get_arg_value(args, key_x_offset)
+        cls.y_off = cls._get_arg_value(args, key_y_offset)
 
         return True
 
@@ -101,23 +103,17 @@ class OffsetAzEl(TelescopeBase):
 
         :return: None
         """
-        if not hasattr(cls, 'az_off'):
+        if not hasattr(cls, 'x_off'):
             raise DDOIPreConditionNotRun(cls.__name__)
-
-        if args.get('relative', True):
-            relative = 'rel2curr'
-        else:
-            relative = 'rel2base'
 
         # the ktl key name to modify and the value
         key_val = {
-            'azoff': cls.az_off,
-            'eloff': cls.el_off,
-            relative: 't'
+            'tvxoff': cls.x_off,
+            'tvyoff': cls.y_off,
+            'rel2curr': 't'
         }
         cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
-        sleep(3)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -131,3 +127,4 @@ class OffsetAzEl(TelescopeBase):
         :return: None
         """
         utils.wait_for_cycle(cls, cfg, 'dcs', logger)
+

@@ -1,7 +1,7 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIDetectorAngleUndefined
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
 
-from ddoi_telescope_translator.mxy import OffsetXY
+from telescopetranslator.mxy import OffsetXY
 
 import math
 from collections import OrderedDict

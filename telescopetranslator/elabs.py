@@ -1,46 +1,36 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
 
 import ktl
 from collections import OrderedDict
 
 
-class SetNodNorthValue(TelescopeBase):
+class MoveToElevation(TelescopeBase):
     """
-    node - set nod parameters for north motions
+    elabs -- set/show telescope elevation
 
     SYNOPSIS
-        SetNodNorthValue.execute({
-            'tcs_offset_north': float,
-            'instrument': str of instrument name
-            })
+        MoveToElevation.execute({'tcs_coord_el': 10.0})
 
     RUN
-        from ddoi_telescope_translator import nod
-        nodn.SetNodNorthValue.execute({'tcs_offset_north': 10.0, 'instrument': 'KPF'})
+        from ddoi_telescope_translator import elabs
+        elabs.MoveToElevation.execute({'print_only': True})
 
     DESCRIPTION
-        sets the telescope nod parameters to dE arcsec East
-             and dN arcsec North
+        With no argument, return the current telescope absolute elevation.
+        With one argument, set the telescope elevation to the specified value.
+
+    ARGUMENTS
+        el = desired elevation angle [deg]
 
     EXAMPLES
-        1) Set north nod to 5 :
-            SetNodNorthValue.execute({'tcs_offset_north': 5.0, 'instrument': INST})
+        1) show the current elevation:
+            MoveToElevation.execute({'print_only': True})
 
-        2) Show current nod params:
-            SetNodNorthValue.execute('instrument': INST)
+        2) move the telescope to an elevation of 45 deg:
+            MoveToElevation.execute({'tcs_coord_el': 45.0})
 
-    ENVIRONMENT VARIABLES
-
-    FILES
-
-    SERVERS & KEYWORDS
-       servers: instrument
-        keywords: node nodn
-
-    KTL SERVICE & KEYWORDS
-
-    adapted from sh script: kss/mosfire/scripts/procs/tel/
+    adapted from sh script: kss/mosfire/scripts/procs/tel/elabs
     """
 
     @classmethod
@@ -58,16 +48,15 @@ class SetNodNorthValue(TelescopeBase):
         cfg = cls._load_config(cls, cfg)
 
         # add the command line description
-        parser.description = f'Set the nod parameters.  Modifies Instrument ' \
-                             f'Specific parameters for nodding North.'
+        parser.description = f'Moves telescope to Elevation in degrees.  ' \
+                             f'Modifies KTL DCS keyword: TARGEL, TARGFRAM,' \
+                             f' MOVETEL.'
 
-        cls.key_nod_north = cls._cfg_val(cfg, 'ob_keys', 'tel_north_offset')
-
-        parser = cls._add_inst_arg(cls, parser, cfg)
+        cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_elevation')
 
         args_to_add = OrderedDict([
-            (cls.key_nod_north, {'type': float,
-                                 'help': 'Set the North Nod value [arcseconds]'})
+            (cls.key_el_offset, {'type': float,
+                                'help': 'The offset in Elevation in degrees.'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
 
@@ -84,20 +73,16 @@ class SetNodNorthValue(TelescopeBase):
 
         :return: bool
         """
-        cls.inst = cls.get_inst_name(cls, args, cfg)
-
         # check if it is only set to print the current values
         cls.print_only = args.get('print_only', False)
-
         if cls.print_only:
             return True
 
-        if not hasattr(cls, 'key_nod_north'):
-            cls.key_nod_north = cls._cfg_val(cfg, 'ob_keys',
-                                                  'tel_north_offset')
+        if not hasattr(cls, 'key_el_offset'):
+            cls.key_el_offset = cls._cfg_val(cfg, 'ob_keys', 'tel_elevation')
 
-        cls.nod_north = cls._get_arg_value(args, cls.key_nod_north)
-        
+        cls.el_offset = cls._get_arg_value(args, cls.key_el_offset)
+
         return True
 
     @classmethod
@@ -114,22 +99,22 @@ class SetNodNorthValue(TelescopeBase):
         if not hasattr(cls, 'print_only'):
             raise DDOIPreConditionNotRun(cls.__name__)
 
-        serv_name = cls._cfg_val(cfg, 'ktl_serv', cls.inst)
-
+        # only print the elevation
         if cls.print_only:
-            key_nod_north = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}',
-                                               'nod_north')
-            msg = f"Current Nod Values E: {ktl.read(serv_name, key_nod_north)}"
-            cls.write_msg(logger, msg)
+            el_value = ktl.read('dcs', 'el')
+            msg = f"Current Elevation = {el_value}"
+            cls.write_msg(logger, msg, val=el_value, print_only=True)
+
             return
 
-        # write to instrument keywords,  keys are cfg keys not ktl keys
-        key_val = {'nod_north': cls.nod_north}
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__,
-                         cfg_key=True)
+        # the ktl key name to modify and the value
+        key_val = {
+            'targel': cls.el_offset,
+            'targfram': 'mount',
+            'movetel': 1
+        }
+        cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
-        msg = f"New Nod East Value: {cls.nod_north}"
-        cls.write_msg(logger, msg)
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
@@ -143,5 +128,4 @@ class SetNodNorthValue(TelescopeBase):
         :return: None
         """
         return
-
 

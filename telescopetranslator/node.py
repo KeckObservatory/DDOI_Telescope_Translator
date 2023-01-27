@@ -1,48 +1,43 @@
 from ddoitranslatormodule.ddoiexceptions.DDOIExceptions import DDOIPreConditionNotRun
-from ddoitranslatormodule.BaseTelescope import TelescopeBase
+from telescopetranslator.BaseTelescope import TelescopeBase
 
 import ktl
 from collections import OrderedDict
 
 
-class SetNodValues(TelescopeBase):
+class SetNodEastValue(TelescopeBase):
     """
-    nod - set nod parameters
+    node - set nod parameters for east motions
 
     SYNOPSIS
-        SetNodValues.execute({
-            'tcs_offset_east': float,
-            'tcs_offset_north': float,
-            'instrument': str of instrument name
-            })
+        SetNodEastValue.execute({'tcs_offset_east': float,
+                                 'inst': str of instrument name})
 
     RUN
         from ddoi_telescope_translator import nod
-        nod.SetNodValues.execute({'tcs_offset_north': 10.0,
-                                  'tcs_offset_east': 5.0,
-                                   'instrument': 'KPF'})
+        node.SetNodEastValue.execute({'tcs_offset_north': 10.0,
+                                      'tcs_offset_east': 5.0,
+                                      'instrument': 'KPF'})
 
     DESCRIPTION
         sets the telescope nod parameters to dE arcsec East
-             and dN arcsec North
-
-    ARGUMENTS
-
-    OPTIONS
 
     EXAMPLES
-        1) Show current nod params:
-            SetNodValues.execute({'print_only': True})
+        1) Set east nod to 5 :
+            SetNodEastValue.execute({'tcs_offset_east': 5.0})
 
+        2) Show current nod params:
+            SetNodEastValue.execute({'print_only': True})
 
-        1) Set east nod to 5 and north nod to 10:
-            SetNodValues.execute({'tcs_offset_north': 10.0,
-                                  'tcs_offset_east': 5.0,
-                                  'instrument': INST}})
+    ENVIRONMENT VARIABLES
 
-    KTL SERVICE & KEYWORDS
+    FILES
+
+    SERVERS & KEYWORDS
        servers: instrument
         keywords: node nodn
+
+    KTL SERVICE & KEYWORDS
 
     adapted from sh script: kss/mosfire/scripts/procs/tel/
     """
@@ -63,23 +58,15 @@ class SetNodValues(TelescopeBase):
 
         # add the command line description
         parser.description = f'Set the nod parameters.  Modifies Instrument ' \
-                             f'Specific parameters for nodding North and East.'
+                             f'Specific parameters for nodding East.'
 
-
-        cls.key_nod_north = cls._cfg_val(cfg, 'ob_keys', 'tel_north_offset').upper()
-        cls.key_nod_east = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset').upper()
+        cls.key_nod_east = cls._cfg_val(cfg, 'ob_keys', 'tel_east_offset')
 
         parser = cls._add_inst_arg(cls, parser, cfg)
 
         args_to_add = OrderedDict([
-            (cls.key_nod_north, {
-                'type': float,
-                'help': 'Set the North Nod value [arcseconds]'
-            }),
-            (cls.key_nod_east, {
-                'type': float,
-                'help': 'Set the East Nod value [arcseconds]'
-            })
+            (cls.key_nod_east, {'type': float,
+                                'help': 'Set the East Nod value [arcseconds]'})
         ])
         parser = cls._add_args(parser, args_to_add, print_only=True)
 
@@ -104,14 +91,10 @@ class SetNodValues(TelescopeBase):
         if cls.print_only:
             return True
 
-        if not hasattr(cls, 'key_nod_north'):
-            cls.key_nod_north = cls._cfg_val(cfg, 'ob_keys',
-                                                  'tel_north_offset')
         if not hasattr(cls, 'key_nod_east'):
             cls.key_nod_east = cls._cfg_val(cfg, 'ob_keys',
                                                  'tel_east_offset')
 
-        cls.nod_north = cls._get_arg_value(args, cls.key_nod_north)
         cls.nod_east = cls._get_arg_value(args, cls.key_nod_east)
         
         return True
@@ -133,26 +116,20 @@ class SetNodValues(TelescopeBase):
         serv_name = cls._cfg_val(cfg, 'ktl_serv', cls.inst)
 
         if cls.print_only:
-            key_nod_north = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}',
-                                              'nod_north')
             key_nod_east = cls._cfg_val(cfg, f'ktl_kw_{cls.inst}',
                                              'nod_east')
 
-            msg = f"Current Nod Values N: {ktl.read(serv_name, key_nod_north)}" \
-                  f", E: {ktl.read(serv_name, key_nod_east)}"
+            msg = f"Current Nod Values E: {ktl.read(serv_name, key_nod_east)}"
             cls.write_msg(logger, msg, print_only=True)
 
             return
 
         # write to instrument keywords,  keys are cfg keys not ktl keys
-        key_val = {
-            'nod_north': cls.nod_north,
-            'nod_east': cls.nod_east
-        }
-        cls._write_to_kw(cls, cfg, serv_name, key_val, logger,
-                         cls.__name__, cfg_key=True)
+        key_val = {'nod_east': cls.nod_east}
+        cls._write_to_kw(cls, cfg, serv_name, key_val, logger, cls.__name__,
+                         cfg_key=True)
 
-        msg = f"New Nod Values N: {cls.nod_north}. E: {cls.nod_east}"
+        msg = f"New Nod East Value: {cls.nod_east}"
         cls.write_msg(logger, msg)
 
     @classmethod
