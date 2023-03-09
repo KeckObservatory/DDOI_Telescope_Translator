@@ -1,7 +1,7 @@
 
 from telescopetranslator.BaseTelescope import TelescopeBase
 
-class begin_slew(TelescopeBase):
+class waitfor_slew(TelescopeBase):
 
     '''
     '''
