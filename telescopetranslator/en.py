@@ -77,8 +77,6 @@ class OffsetEastNorth(TelescopeBase):
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: bool
         """
         if not hasattr(cls, 'key_east_offset'):
             cls.key_east_offset = cls._cfg_val(cfg, 'ob_keys',
@@ -90,8 +88,6 @@ class OffsetEastNorth(TelescopeBase):
         cls.east_off = cls._get_arg_value(args, cls.key_east_offset)
         cls.north_off = cls._get_arg_value(args, cls.key_north_offset)
         utils.check_for_zero_offsets(cls.east_off, cls.north_off)
-
-        return True
 
     @classmethod
     def perform(cls, args, logger, cfg):
