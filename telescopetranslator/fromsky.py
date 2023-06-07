@@ -59,9 +59,7 @@ class OffsetBackFromNod(TelescopeBase):
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
 
-        :return: bool
         """
-        return True
 
     @classmethod
     def perform(cls, args, logger, cfg):

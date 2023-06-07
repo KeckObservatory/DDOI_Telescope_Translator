@@ -89,9 +89,7 @@ class OffsetEastNorth(TelescopeBase):
 
         cls.east_off = cls._get_arg_value(args, cls.key_east_offset)
         cls.north_off = cls._get_arg_value(args, cls.key_north_offset)
-
-        if utils.check_for_zero_offsets(cls.east_off, cls.north_off):
-            return False
+        utils.check_for_zero_offsets(cls.east_off, cls.north_off)
 
         return True
 

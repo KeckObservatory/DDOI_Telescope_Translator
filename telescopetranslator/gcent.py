@@ -95,8 +95,6 @@ class MoveToGuiderCenter(TelescopeBase):
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: bool
         """
         if not hasattr(cls, 'key_inst_x'):
             cls.key_inst_x = cls._cfg_val(cfg, 'tel_keys', 'inst_x1')
@@ -105,8 +103,6 @@ class MoveToGuiderCenter(TelescopeBase):
 
         cls.current_x = cls._get_arg_value(args, cls.key_inst_x)
         cls.current_y = cls._get_arg_value(args, cls.key_inst_y)
-
-        return True
 
     @classmethod
     def perform(cls, args, logger, cfg):

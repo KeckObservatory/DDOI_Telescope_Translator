@@ -21,8 +21,6 @@ def check_for_zero_offsets(offset1, offset2):
         msg = f'Both offsets are zero: {offset1}, {offset2}'
         raise DDOIZeroOffsets(msg)
 
-    return False
-
 
 def wait_for_cycle(cls, cfg, ktl_serv, logger):
     """

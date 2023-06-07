@@ -82,8 +82,6 @@ class MovePixelXY(TelescopeBase):
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: bool
         """
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
@@ -94,8 +92,6 @@ class MovePixelXY(TelescopeBase):
 
         cls.x_offset = cls._get_arg_value(args, cls.key_x_offset)
         cls.y_offset = cls._get_arg_value(args, cls.key_y_offset)
-
-        return True
 
     @classmethod
     def perform(cls, args, logger, cfg):

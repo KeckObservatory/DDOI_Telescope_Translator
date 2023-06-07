@@ -7,7 +7,7 @@ class waitfor_slew(TelescopeBase):
     '''
     @classmethod
     def pre_condition(cls, args, logger, cfg):
-        return True
+        pass 
 
     @classmethod
     def perform(cls, args, logger, cfg):
@@ -16,4 +16,4 @@ class waitfor_slew(TelescopeBase):
 
     @classmethod
     def post_condition(cls, args, logger, cfg):
-        return True
+        pass

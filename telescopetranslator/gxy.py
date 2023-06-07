@@ -81,16 +81,12 @@ class OffsetGuiderCoordXY(TelescopeBase):
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: bool
         """
         key_x_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_x_offset')
         key_y_offset = cls._cfg_val(cfg, 'ob_keys', 'guider_y_offset')
 
         cls.x_off = cls._get_arg_value(args, key_x_offset)
         cls.y_off = cls._get_arg_value(args, key_y_offset)
-
-        return True
 
     @classmethod
     def perform(cls, args, logger, cfg):

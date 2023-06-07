@@ -81,8 +81,6 @@ class SetNodNorthValue(TelescopeBase):
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: bool
         """
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
@@ -90,15 +88,13 @@ class SetNodNorthValue(TelescopeBase):
         cls.print_only = args.get('print_only', False)
 
         if cls.print_only:
-            return True
+            return
 
         if not hasattr(cls, 'key_nod_north'):
             cls.key_nod_north = cls._cfg_val(cfg, 'ob_keys',
                                                   'tel_north_offset')
 
         cls.nod_north = cls._get_arg_value(args, cls.key_nod_north)
-        
-        return True
 
     @classmethod
     def perform(cls, args, logger, cfg):

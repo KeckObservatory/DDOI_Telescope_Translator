@@ -106,15 +106,13 @@ class MoveP1ToP2(TelescopeBase):
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: bool
         """
         cls.inst = cls.get_inst_name(cls, args, cfg)
 
         tel_key_list = ['inst_x1', 'inst_y1', 'inst_x2', 'inst_y2']
         cls.print_only = args.get('print_only', False)
         if cls.print_only:
-            return True
+            return
 
         cls.coords = {}
         for tel_key in tel_key_list:
@@ -124,8 +122,6 @@ class MoveP1ToP2(TelescopeBase):
                 key_inst = getattr(cls, tel_key)
 
             cls.coords[tel_key] = cls._get_arg_value(args, key_inst)
-
-        return True
 
     @classmethod
     def perform(cls, args, logger, cfg):

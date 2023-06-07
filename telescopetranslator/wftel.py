@@ -68,8 +68,6 @@ class WaitForTel(TelescopeBase):
             The DDOILoggerClient that should be used. If none is provided,
             defaults to a generic name specified in the config, by default None
         :param cfg: <class 'configparser.ConfigParser'> the config file parser.
-
-        :return: bool
         """
         cls.timeout = cls._cfg_val(cfg, 'ktl_timeout', 'default')
         cls.auto_resume = args.get('auto_resume', None)
@@ -83,14 +81,12 @@ class WaitForTel(TelescopeBase):
         if not waited:
             msg = f'tracking was not established in {cls.timeout}'
             cls.write_msg(logger, msg)
-            return False
+            raise Exception(msg) 
 
         if ktl.read('dcs', 'autactiv') == 'no':
             msg = 'guider not currently active'
             cls.write_msg(logger, msg)
-            return False
-
-        return True
+            raise Exception(msg) 
 
     @classmethod
     def perform(cls, args, logger, cfg):

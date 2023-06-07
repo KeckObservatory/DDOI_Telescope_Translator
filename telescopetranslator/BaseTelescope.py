@@ -115,8 +115,8 @@ class TelescopeBase(TranslatorModuleFunction):
                     line_str = "="*80
                     msg = f"\n\n{line_str}\n{cls_name} error writing to " \
                           f"service: {ktl_service.upper()}, keyword: " \
-                          f"{ktl_key.upper()}, new value: {new_val}. \n\n" \
-                          f"Re-tried once. \n\n  KTL Error: {err}.\n" \
+                          f"{ktl_key.upper()}, new value: {new_val}. " \
+                          f"Re-tried once. \n\n  KTL Error: {err}. " \
                           f"{line_str}\n\n"
                     if logger:
                         logger.error(msg)
