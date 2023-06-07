@@ -141,9 +141,7 @@ class TelescopeBase(TranslatorModuleFunction):
             current_inst = cls.read_current_inst(cls, cfg)
             if current_inst != inst:
                 raise DDOINotSelectedInstrument(current_inst, inst.upper())
-            return inst.lower()
-
-        if allow_current:
+        elif allow_current:
             inst = cls.read_current_inst(cls, cfg)
         else:
             msg = f'{cls.__name__} requires instrument name to be defined'
@@ -174,7 +172,7 @@ class TelescopeBase(TranslatorModuleFunction):
         return inst.lower()
 
     @staticmethod
-    def write_msg(logger, msg, val=False, print_only=False):
+    def write_msg(logger, msg, print_only=False):
         """
         Write a message to logger if defined,  or to stdout if print_only
         or logger is not defined.
@@ -187,11 +185,7 @@ class TelescopeBase(TranslatorModuleFunction):
         :param print_only: <bool> True if it is meant to be printed to stdout
         """
         # if logger instance,  write to the log
-        if logger:
+        if not print_only:
             logger.info(msg)
-
-        # print to stdout for 'print_only'
-        if print_only:
-            if val:
-                msg = val
+        else: # print to stdout for 'print_only'
             print(msg)
