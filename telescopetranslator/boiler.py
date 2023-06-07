@@ -70,9 +70,9 @@ class Boiler(TelescopeBase):
 
         # the ktl key name to modify and the value
         key_val = {
-            '': ,
-            '': ,
-            '':
+            '': None,
+            '': None,
+            '': None
         }
         cls._write_to_kw(cls, cfg, 'dcs', key_val, logger, cls.__name__)
 
