@@ -100,7 +100,7 @@ class MoveAlongSlit(TelescopeBase):
         det_angle = cls._cfg_val(cfg, f'{inst}_parameters', 'det_angle')
 
         try:
-            det_angle = float()
+            det_angle = float(det_angle)
         except (ValueError, TypeError):
             msg = 'ERROR, could not determine detector angle'
             raise DDOIDetectorAngleUndefined(msg)
